@@ -1,18 +1,22 @@
-import { createContext, useState, ReactNode } from "react";
+import { createContext, useEffect, useState, useRef, ReactNode } from "react";
+import { SigningStargateClient } from "@cosmjs/stargate";
 import { AccountData } from "@keplr-wallet/types";
 import { useNetwork } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
 import { getNetConfigUrl } from "../lib/getNetworkConfig";
+import { registry } from "../lib/messageBuilder";
 
 interface WalletContext {
   walletAddress: string | null;
   connectWallet: () => Promise<void>;
+  stargateClient: SigningStargateClient | undefined;
   isLoading: boolean;
 }
 
 export const WalletContext = createContext<WalletContext>({
   walletAddress: null,
   connectWallet: () => Promise.resolve(undefined),
+  stargateClient: undefined,
   isLoading: false,
 });
 
@@ -21,6 +25,7 @@ export const WalletContextProvider = ({
 }: {
   children: ReactNode;
 }) => {
+  const stargateClient = useRef<SigningStargateClient | undefined>(undefined);
   const { netName } = useNetwork();
   const [currNetName, setCurrNetName] = useState(netName);
   const [walletAddress, setWalletAddress] = useState<
@@ -40,7 +45,7 @@ export const WalletContextProvider = ({
 
   const connectWallet = async () => {
     setIsLoading(true);
-    const { chainId } = await suggestChain(getNetConfigUrl(netName));
+    const { chainId, rpc } = await suggestChain(getNetConfigUrl(netName));
     if (chainId) {
       await window.keplr.enable(chainId);
       const offlineSigner = window.keplr.getOfflineSigner(chainId);
@@ -48,7 +53,18 @@ export const WalletContextProvider = ({
       if (accounts?.[0].address !== walletAddress) {
         saveAddress(accounts[0]);
       }
-      setIsLoading(false);
+      try {
+        stargateClient.current = await SigningStargateClient.connectWithSigner(
+          rpc,
+          offlineSigner,
+          { registry }
+        );
+      } catch (e) {
+        console.error("error stargateClient setup", e);
+        window.localStorage.removeItem("walletAddress");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -57,11 +73,18 @@ export const WalletContextProvider = ({
     setCurrNetName(netName);
   }
 
+  useEffect(() => {
+    if (walletAddress && !stargateClient.current) {
+      connectWallet();
+    }
+  }, [walletAddress, stargateClient]);
+
   return (
     <WalletContext.Provider
       value={{
         walletAddress,
         connectWallet,
+        stargateClient: stargateClient.current,
         isLoading,
       }}
     >
