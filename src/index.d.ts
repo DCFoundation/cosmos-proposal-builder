@@ -1,3 +1,4 @@
+import { NetName } from "./contexts/network";
 import { Keplr } from "@keplr-wallet/types";
 
 declare global {
@@ -9,5 +10,14 @@ declare global {
     rpc: string;
     chainName: string;
     netName: string;
+  }
+
+  interface QueryParams {
+    network: NetName;
+    msgType:
+      | "coreEvalProposal"
+      | "textProposal"
+      | "installBundle"
+      | "parameterChangeProposal";
   }
 }
