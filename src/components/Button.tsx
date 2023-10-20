@@ -3,11 +3,12 @@ import { WalletIcon } from "@heroicons/react/20/solid";
 import { classNames } from "../utils/classNames";
 
 export interface ButtonProps {
-  onClick: () => void;
+  onClick?: () => void;
   Icon?: ReactNode;
   text: string;
   theme: "light" | "dark" | "white";
   layoutStyle?: string;
+  type?: HTMLButtonElement["type"];
 }
 
 const butttonThemeStyles = {
@@ -24,9 +25,10 @@ const Button = ({
   Icon,
   theme,
   layoutStyle,
+  type = "button",
 }: ButtonProps): ReactNode => (
   <button
-    type="button"
+    type={type}
     className={classNames(
       "items-center justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
       butttonThemeStyles[theme],
