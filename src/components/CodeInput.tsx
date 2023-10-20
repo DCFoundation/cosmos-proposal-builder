@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { bytesToSize } from "../utils/bytesToSize";
-import { CodePreviewModal } from "./CodePreviewModalProps";
+import { CodePreviewModal } from "./CodePreviewModal";
 import { DragDrop, DragDropProps } from "./DragDrop";
 
 interface CodeInputProps {
