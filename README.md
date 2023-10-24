@@ -1,27 +1,47 @@
-# React + TypeScript + Vite
+# Gov Proposal Hub
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Getting Started
 
-Currently, two official plugins are available:
+- Node v18.x
+- Yarn v1.22.x
+- Keplr Wallet
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# install dependencies
+yarn install
 
-## Expanding the ESLint configuration
+# start dev server
+yarn dev
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+# build static files for production
+yarn build
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Contributing 
+
+Open an issue to request a feature or report a bug.
+
+
+## Features
+
+### 1. Text Proposals
+
+- /cosmos.gov.v1beta1.TextProposal
+
+### 2. Install Bundle Messages
+
+- /agoric.swingset.MsgInstallBundle
+
+### 3. CoreEval Proposals
+
+- /agoric.swingset.CoreEvalProposal
+
+### 4. Parameter Change Proposals (Coming Soon)
+
+- /cosmos.gov.v1.MsgUpdateParams
+
+
+## Technologies
+
+- React, TypeScript, Vite, Tailwind
+- @cosmjs, @agoric/cosmic-proto
