@@ -59,10 +59,10 @@ const CodeInput: React.FC<CodeInputProps> = ({
         </div>
       ) : (
         <div className="mt-2">
-          <div className="flex flex-row text-sm font-medium">
+          <div className="flex flex-row text-sm font-medium break-all">
             {filename && size ? (
               <>
-                <span>{filename}</span>
+                <span className="max-w-lg">{filename}</span>
                 <span className="mx-1">-</span>
                 <span>{bytesToSize(size)}</span>
               </>

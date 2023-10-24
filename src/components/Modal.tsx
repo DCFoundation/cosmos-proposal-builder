@@ -49,7 +49,7 @@ const Modal = ({ title, open, children, onClose }: ModalProps) => {
               >
                 <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4">
                   <h5
-                    className="text-lg font-medium text-black"
+                    className="text-lg font-medium text-black break-all max-w-[70%]"
                     id="exampleModalScrollableLabel"
                   >
                     {title}
