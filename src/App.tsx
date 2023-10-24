@@ -46,7 +46,9 @@ const App = () => {
       bundle: JSON.stringify(JSON.parse(vals.bundle)),
       submitter: walletAddress,
     });
-    await signAndBroadcast(proposalMsg);
+    // @todo gas estiates
+    const feeArgs: Partial<StdFee> = { gas: "50000000" };
+    await signAndBroadcast(proposalMsg, feeArgs);
   }
 
   function handleProposal(msgType: QueryParams["msgType"]) {
@@ -60,9 +62,9 @@ const App = () => {
           ...vals,
           proposer: walletAddress,
         });
-        // @todo set gasPrice in client setup
+        // @todo gas estiates
         // @ts-expect-error gas
-        feeArgs.gas = 2500000;
+        feeArgs.gas = "2500000";
       }
       if (msgType === "textProposal") {
         proposalMsg = makeTextProposalMsg({

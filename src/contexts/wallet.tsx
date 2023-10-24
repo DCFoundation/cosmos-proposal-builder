@@ -1,4 +1,5 @@
 import { createContext, useEffect, useState, useRef, ReactNode } from "react";
+import { Decimal } from "@cosmjs/math";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { AccountData } from "@keplr-wallet/types";
 import { useNetwork } from "../hooks/useNetwork";
@@ -57,7 +58,13 @@ export const WalletContextProvider = ({
         stargateClient.current = await SigningStargateClient.connectWithSigner(
           rpc,
           offlineSigner,
-          { registry }
+          {
+            registry,
+            gasPrice: {
+              denom: "uist",
+              amount: Decimal.fromUserInput("50000000", 0),
+            },
+          }
         );
       } catch (e) {
         console.error("error stargateClient setup", e);
