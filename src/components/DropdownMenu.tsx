@@ -5,15 +5,29 @@ import { Link } from "wouter";
 import { classNames } from "../utils/classNames";
 
 interface DropdownMenuProps {
+  status: "active" | "loading" | "error" | "default";
   title: string;
   items: { label: string; href: string }[];
 }
 
-const DropdownMenu = ({ title, items }: DropdownMenuProps) => {
+const statusColors = {
+  active: "bg-green-500",
+  loading: "bg-yellow-500",
+  error: "bg-red-500",
+  default: "bg-gray-500",
+};
+
+const DropdownMenu = ({ title, items, status }: DropdownMenuProps) => {
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
-        <Menu.Button className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+        <Menu.Button className="inline-flex w-36 justify-between gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+          <div
+            className={classNames(
+              "w-3 h-3 rounded-full inline-block mr-2 self-center",
+              statusColors[status]
+            )}
+          />
           {title}
           <ChevronDownIcon
             className="-mr-1 h-5 w-5 text-gray-400"
