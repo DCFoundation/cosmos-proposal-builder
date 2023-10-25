@@ -4,11 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "dev": "vite",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
+    "postinstall": "patch-package",
     "preview": "vite preview",
-    "ts-check": "tsc --noEmit"
+    "test": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest --watch",
+    "ts:check": "tsc --noEmit"
   },
   "dependencies": {
     "@agoric/cosmic-proto": "^0.3.0",
@@ -30,20 +34,26 @@
   "devDependencies": {
     "@keplr-wallet/types": "^0.12.35",
     "@tailwindcss/forms": "^0.5.5",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.0.0",
     "@types/prismjs": "^1.26.2",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@vitejs/plugin-react": "^4.1.0",
+    "@vitest/coverage-v8": "^0.34.6",
     "cosmjs-types": "^0.8.0",
     "eslint": "^8.45.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
+    "happy-dom": "^12.9.1",
+    "patch-package": "^8.0.0",
     "postcss": "^8.4.28",
     "postinstall-postinstall": "^2.1.0",
     "tailwindcss": "^3.3.3",
     "typescript": "^5.0.2",
-    "vite": "^4.4.5"
+    "vite": "^4.4.5",
+    "vitest": "^0.34.6"
   }
 }
