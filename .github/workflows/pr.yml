@@ -1,0 +1,25 @@
+name: Lint and Test
+
+on:
+  pull_request:
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
+      - name: yarn install
+        run: yarn install
+      - name: yarn build
+        run: yarn build
+      - name: yarn lint
+        run: yarn lint
+      - name: yarn ts:check
+        run: yarn ts:check
+      - name: yarn test
+        run: yarn test

@@ -5,9 +5,7 @@ import { fromBech32 } from "@cosmjs/encoding";
 import { coins, Registry } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes } from "@cosmjs/stargate";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
-import { Tx, TxBody } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { Any } from "cosmjs-types/google/protobuf/any";
-import Long from "long";
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
