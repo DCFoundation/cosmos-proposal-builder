@@ -9,7 +9,7 @@ export type NetName = (typeof _netNames)[number];
 type Watcher = ReturnType<typeof makeAgoricChainStorageWatcher>;
 
 interface NetworkContext {
-  netName: NetName;
+  netName: NetName | undefined;
   netNames: NetName[];
   setNetwork: (_netName: NetName) => void;
   networkConfig: NetworkConfig | null;
@@ -37,8 +37,8 @@ export const NetworkContextProvider = ({
   initWatcher?: boolean;
 }) => {
   const { network } = qs.parse(useSearch());
-  const [netName, setNameName] = useState<NetName>(
-    getNameName((network as string) || "local")
+  const [netName, setNameName] = useState<NetName | undefined>(
+    network ? getNameName(network as string) : undefined
   );
   const [networkConfig, setNetworkConfig] =
     useState<NetworkContext["networkConfig"]>(null);
@@ -53,14 +53,16 @@ export const NetworkContextProvider = ({
   }
 
   useEffect(() => {
-    if (network && network !== netName) {
-      const newNetName = getNameName(network as string);
-      if (newNetName !== netName) setNameName(newNetName);
+    if (network !== netName) {
+      if (!netName && network) {
+        const newNetName = getNameName(network as string);
+        if (newNetName !== netName) setNameName(newNetName);
+      } else setNameName(undefined);
     }
   }, [network, netName]);
 
   useEffect(() => {
-    if (netName !== networkConfig?.netName)
+    if (netName && netName !== networkConfig?.netName)
       getNetworkConfig(netName).then(setNetworkConfig).catch(setError);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [netName]);

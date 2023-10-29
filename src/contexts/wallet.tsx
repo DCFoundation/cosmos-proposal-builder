@@ -2,7 +2,7 @@ import { createContext, useEffect, useState, useRef, ReactNode } from "react";
 import { Decimal } from "@cosmjs/math";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { AccountData } from "@keplr-wallet/types";
-import { useNetwork } from "../hooks/useNetwork";
+import { useNetwork, NetName } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
 import { getNetConfigUrl } from "../lib/getNetworkConfig";
 import { registry } from "../lib/messageBuilder";
@@ -46,7 +46,9 @@ export const WalletContextProvider = ({
 
   const connectWallet = async () => {
     setIsLoading(true);
-    const { chainId, rpc } = await suggestChain(getNetConfigUrl(netName));
+    const { chainId, rpc } = await suggestChain(
+      getNetConfigUrl(netName as NetName)
+    );
     if (chainId) {
       await window.keplr.enable(chainId);
       const offlineSigner = window.keplr.getOfflineSigner(chainId);

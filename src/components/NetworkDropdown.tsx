@@ -6,11 +6,13 @@ import { DropdownMenu } from "../components/DropdownMenu";
 import { useSearch } from "wouter/use-location";
 import { useWallet } from "../hooks/useWallet";
 
+const placeholderText = "Select Network";
+
 const NetworkDropdown = () => {
   const searchString = useSearch();
   const { netName, netNames } = useNetwork();
   const { isLoading, stargateClient, walletAddress } = useWallet();
-  const title = netName ? capitalize(netName) : "Select Network";
+  const title = netName ? capitalize(netName) : placeholderText;
 
   const items = useMemo(
     () =>
@@ -25,11 +27,18 @@ const NetworkDropdown = () => {
   const status = useMemo(() => {
     if (isLoading) return "loading";
     if (stargateClient) return "active";
-    if (!walletAddress) return "default";
+    if (!walletAddress || !netName) return "default";
     return "error";
-  }, [isLoading, stargateClient, walletAddress]);
+  }, [isLoading, stargateClient, walletAddress, netName]);
 
-  return <DropdownMenu title={title} items={items} status={status} />;
+  return (
+    <DropdownMenu
+      title={title}
+      label={placeholderText}
+      items={items}
+      status={status}
+    />
+  );
 };
 
 export { NetworkDropdown };
