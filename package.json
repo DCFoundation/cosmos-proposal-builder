@@ -15,7 +15,7 @@
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
-    "@agoric/cosmic-proto": "^0.3.0",
+    "@agoric/cosmic-proto": "dev",
     "@agoric/eventual-send": "^0.14.1",
     "@agoric/notifier": "^0.6.2",
     "@agoric/rpc": "^0.5.0",
