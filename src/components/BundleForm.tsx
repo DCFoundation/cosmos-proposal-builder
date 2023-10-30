@@ -3,7 +3,7 @@ import { CodeInput } from "./CodeInput";
 import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
 import { Button } from "./Button";
 
-export type BundleFormArgs = Omit<MsgInstallBundle, "submitter">;
+export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
 
 interface BundleFormProps {
   title: string;

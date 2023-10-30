@@ -72,23 +72,40 @@ export const makeCoreEvalProposalMsg = ({
 });
 
 export interface MsgInstallArgs {
-  bundle: string;
+  compressedBundle: Uint8Array;
+  uncompressedSize: string;
   submitter: string;
 }
 
+// results in error: "Submitter address cannot be empty"
+// export const makeInstallBundleMsg = ({
+//   compressedBundle,
+//   uncompressedSize,
+//   submitter,
+// }: MsgInstallArgs) => ({
+//   typeUrl: "/agoric.swingset.MsgInstallBundle",
+//   value: Uint8Array.from(
+//     MsgInstallBundle.encode(
+//       MsgInstallBundle.fromPartial({
+//         compressedBundle,
+//         uncompressedSize,
+//         submitter: fromBech32(submitter).data,
+//       })
+//     ).finish()
+//   ),
+// });
+
 export const makeInstallBundleMsg = ({
-  bundle,
+  compressedBundle,
+  uncompressedSize,
   submitter,
 }: MsgInstallArgs) => ({
   typeUrl: "/agoric.swingset.MsgInstallBundle",
-  value: Uint8Array.from(
-    MsgInstallBundle.encode(
-      MsgInstallBundle.fromPartial({
-        bundle,
-        submitter: fromBech32(submitter).data,
-      })
-    ).finish()
-  ),
+  value: {
+    compressedBundle,
+    uncompressedSize,
+    submitter: fromBech32(submitter).data,
+  },
 });
 
 interface MakeFeeObjectArgs {
@@ -102,4 +119,3 @@ export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) =>
     amount: coins(amount || 2000, denom || "ubld"),
     gas: gas ? String(gas) : "180000",
   } as StdFee);
-
