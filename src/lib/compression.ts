@@ -1,4 +1,4 @@
-const stringToBlob = (text: string): Blob => {
+const jsonStringToBlob = (text: string): Blob => {
   return new Blob([text], { type: "application/json" });
 };
 
@@ -27,7 +27,7 @@ async function blobToUint8Array(blob: Blob): Promise<Uint8Array> {
 export const compressBundle = async (
   bundleJson: BundleJson
 ): Promise<{ compressedBundle: Uint8Array; uncompressedSize: string }> => {
-  const uncompressedBlob = stringToBlob(JSON.stringify(bundleJson));
+  const uncompressedBlob = jsonStringToBlob(JSON.stringify(bundleJson));
   const compressedBlob = await compressBlob(uncompressedBlob);
   const compressedBundle = await blobToUint8Array(compressedBlob);
 

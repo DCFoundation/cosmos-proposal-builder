@@ -26,10 +26,10 @@
     jsesc "^2.5.1"
     source-map "^0.5.0"
 
-"@agoric/cosmic-proto@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@agoric/cosmic-proto/-/cosmic-proto-0.3.0.tgz#c9d31d3946c91fbb1630f89d8ba63a662bcdacc5"
-  integrity sha512-cIunby6gs53sGkHx3ALraREbfVQXvsIcObMjQQ0/tZt5HVqwoS7Y1Qj1Xl0ZZvqE8B1Zyk7QMDj829mbTII+9g==
+"@agoric/cosmic-proto@dev":
+  version "0.3.1-dev-32c0df5.0"
+  resolved "https://registry.yarnpkg.com/@agoric/cosmic-proto/-/cosmic-proto-0.3.1-dev-32c0df5.0.tgz#38d62be226c2d9673c7fa5d2d91eff969f62f413"
+  integrity sha512-KnkPLkBdtcp+XPAS2MdRfYQ1RyEqgotoGDMDdxnvVxg54mDXBakpK/jzY6Qmf/IzDFVpIkjr7uJBFiUnpXTIdw==
   dependencies:
     protobufjs "^7.0.0"
 
