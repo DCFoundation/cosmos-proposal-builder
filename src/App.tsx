@@ -15,6 +15,7 @@ import {
   makeFeeObject,
 } from "./lib/messageBuilder";
 import { isValidBundle } from "./utils/validate";
+import { compressBundle } from "./lib/compression";
 
 const App = () => {
   const { walletAddress, stargateClient } = useWallet();
@@ -42,8 +43,12 @@ const App = () => {
   async function handleBundle(vals: BundleFormArgs) {
     if (!walletAddress) throw new Error("wallet not connected");
     if (!isValidBundle(vals.bundle)) throw new Error("Invalid bundle.");
+    const { compressedBundle, uncompressedSize } = await compressBundle(
+      JSON.parse(vals.bundle)
+    );
     const proposalMsg = makeInstallBundleMsg({
-      bundle: JSON.stringify(JSON.parse(vals.bundle)),
+      compressedBundle,
+      uncompressedSize,
       submitter: walletAddress,
     });
     // @todo gas estiates

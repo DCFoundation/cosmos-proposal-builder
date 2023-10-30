@@ -1,5 +1,5 @@
 export const isValidBundle = (bundleJson: string): boolean => {
-  let parsed;
+  let parsed: BundleJson;
   try {
     parsed = JSON.parse(bundleJson);
   } catch {

@@ -20,4 +20,10 @@ declare global {
       | "installBundle"
       | "parameterChangeProposal";
   }
+
+  interface BundleJson {
+    moduleFormat: string;
+    endoZipBase64: string;
+    endoZipBase64Sha512: string;
+  }
 }
