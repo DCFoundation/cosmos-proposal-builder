@@ -1,4 +1,8 @@
 import { StdFee } from "@cosmjs/amino";
+import { DeliverTxResponse } from "@cosmjs/stargate";
+import { EncodeObject } from "@cosmjs/proto-signing";
+import { createId } from "@paralleldrive/cuid2";
+import { toast, ToastContainer } from "react-toastify";
 import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
 import { ParameterChangeForm } from "./components/ParameterChangeForm";
@@ -7,26 +11,36 @@ import { Footer } from "./components/Footer";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { Tabs } from "./components/Tabs";
+import { TxToastMessage } from "./components/TxToastMessage";
+import { useNetwork, NetName } from "./hooks/useNetwork";
 import { useWallet } from "./hooks/useWallet";
+import { compressBundle } from "./lib/compression";
 import {
   makeCoreEvalProposalMsg,
   makeTextProposalMsg,
   makeInstallBundleMsg,
   makeFeeObject,
 } from "./lib/messageBuilder";
+import { parseError } from "./utils/transactionParser";
 import { isValidBundle } from "./utils/validate";
-import { compressBundle } from "./lib/compression";
 
 const App = () => {
+  const { netName } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
 
-  // @todo i think the type for proposalMsg should be import('@cosmjs/proto-signing').EncodeObject[]
-  // @ts-expect-error proposalMsg
-  async function signAndBroadcast(proposalMsg, feeArgs = {}) {
+  async function signAndBroadcast(
+    proposalMsg: EncodeObject,
+    feeArgs = {},
+    type: "bundle" | "proposal"
+  ) {
     if (!stargateClient) throw new Error("stargateClient not found");
     if (!walletAddress) throw new Error("wallet not connected");
     const fee = makeFeeObject(feeArgs);
-    let proposalResult;
+    const toastId = createId();
+    toast.loading("Broadcasting transaction...", {
+      toastId,
+    });
+    let proposalResult: DeliverTxResponse | undefined;
     try {
       proposalResult = await stargateClient.signAndBroadcast(
         walletAddress,
@@ -34,14 +48,33 @@ const App = () => {
         fee
       );
     } catch (e) {
-      console.error("broadcast error", e);
+      toast.update(toastId, {
+        render: parseError(e as Error),
+        type: "error",
+        isLoading: false,
+      });
     }
-
-    console.log("proposalResult", proposalResult);
+    if (proposalResult) {
+      toast.update(toastId, {
+        render: ({ closeToast }) => (
+          <TxToastMessage
+            resp={proposalResult as DeliverTxResponse}
+            netName={netName as NetName}
+            closeToast={closeToast as () => void}
+            type={type}
+          />
+        ),
+        type: "success",
+        isLoading: false,
+      });
+    }
   }
 
   async function handleBundle(vals: BundleFormArgs) {
-    if (!walletAddress) throw new Error("wallet not connected");
+    if (!walletAddress) {
+      toast.error("Wallet not connected.", { autoClose: 3000 });
+      throw new Error("wallet not connected");
+    }
     if (!isValidBundle(vals.bundle)) throw new Error("Invalid bundle.");
     const { compressedBundle, uncompressedSize } = await compressBundle(
       JSON.parse(vals.bundle)
@@ -53,13 +86,15 @@ const App = () => {
     });
     // @todo gas estiates
     const feeArgs: Partial<StdFee> = { gas: "50000000" };
-    await signAndBroadcast(proposalMsg, feeArgs);
+    await signAndBroadcast(proposalMsg, feeArgs, "bundle");
   }
 
   function handleProposal(msgType: QueryParams["msgType"]) {
     return async (vals: ProposalArgs) => {
-      if (!walletAddress) throw new Error("wallet not connected");
-
+      if (!walletAddress) {
+        toast.error("Wallet not connected.", { autoClose: 3000 });
+        throw new Error("wallet not connected");
+      }
       let proposalMsg;
       const feeArgs: Partial<StdFee> = {};
       if (msgType === "coreEvalProposal") {
@@ -79,7 +114,7 @@ const App = () => {
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
-      await signAndBroadcast(proposalMsg, feeArgs);
+      await signAndBroadcast(proposalMsg, feeArgs, "proposal");
     };
   }
 
@@ -149,6 +184,12 @@ const App = () => {
         />
       </main>
       <Footer />
+      <ToastContainer
+        autoClose={false}
+        position="bottom-right"
+        closeOnClick={false}
+        bodyClassName="text-sm font-medium text-gray-900"
+      />
     </div>
   );
 };
