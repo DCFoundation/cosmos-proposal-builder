@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { StdFee } from "@cosmjs/amino";
 import { DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
@@ -27,22 +28,28 @@ import { isValidBundle } from "./utils/validate";
 const App = () => {
   const { netName } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
+  const proposalFormRef = useRef<HTMLFormElement>(null);
+  const corEvalFormRef = useRef<HTMLFormElement>(null);
+  const bundleFormRef = useRef<HTMLFormElement>(null);
 
   async function signAndBroadcast(
     proposalMsg: EncodeObject,
     feeArgs = {},
     type: "bundle" | "proposal"
   ) {
-    if (!stargateClient) throw new Error("stargateClient not found");
+    if (!stargateClient) {
+      toast.error("Network not connected.", { autoClose: 3000 });
+      throw new Error("stargateClient not found");
+    }
     if (!walletAddress) throw new Error("wallet not connected");
     const fee = makeFeeObject(feeArgs);
     const toastId = createId();
     toast.loading("Broadcasting transaction...", {
       toastId,
     });
-    let proposalResult: DeliverTxResponse | undefined;
+    let txResult: DeliverTxResponse | undefined;
     try {
-      proposalResult = await stargateClient.signAndBroadcast(
+      txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
         fee
@@ -52,13 +59,14 @@ const App = () => {
         render: parseError(e as Error),
         type: "error",
         isLoading: false,
+        autoClose: 10000,
       });
     }
-    if (proposalResult) {
+    if (txResult) {
       toast.update(toastId, {
         render: ({ closeToast }) => (
           <TxToastMessage
-            resp={proposalResult as DeliverTxResponse}
+            resp={txResult as DeliverTxResponse}
             netName={netName as NetName}
             closeToast={closeToast as () => void}
             type={type}
@@ -67,6 +75,11 @@ const App = () => {
         type: "success",
         isLoading: false,
       });
+      if (type === "proposal") {
+        proposalFormRef.current?.reset();
+        corEvalFormRef.current?.reset();
+      }
+      if (type === "bundle") bundleFormRef.current?.reset();
     }
   }
 
@@ -140,6 +153,7 @@ const App = () => {
               msgType: "textProposal",
               content: (
                 <ProposalForm
+                  ref={proposalFormRef}
                   handleSubmit={handleProposal("textProposal")}
                   titleDescOnly={true}
                   title="/cosmos.gov.v1beta1.TextProposal"
@@ -152,6 +166,7 @@ const App = () => {
               msgType: "coreEvalProposal",
               content: (
                 <ProposalForm
+                  ref={corEvalFormRef}
                   handleSubmit={handleProposal("coreEvalProposal")}
                   titleDescOnly={false}
                   title="/agoric.swingset.CoreEvalProposal"
@@ -164,6 +179,7 @@ const App = () => {
               msgType: "installBundle",
               content: (
                 <BundleForm
+                  ref={bundleFormRef}
                   title="/agoric.swingset.MsgInstallBundle"
                   handleSubmit={handleBundle}
                   description="The install bundle message deploys and installs an external bundle that can be referenced in a CoreEval proposal."
@@ -188,6 +204,7 @@ const App = () => {
         autoClose={false}
         position="bottom-right"
         closeOnClick={false}
+        closeButton={true}
         bodyClassName="text-sm font-medium text-gray-900"
       />
     </div>
