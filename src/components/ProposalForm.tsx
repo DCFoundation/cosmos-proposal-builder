@@ -13,6 +13,7 @@ export interface ProposalArgs {
   title: string;
   description: string;
   evals: CoreEval[];
+  deposit: string | number;
 }
 
 interface ProposalFormProps {
@@ -47,7 +48,8 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
         if (formData) {
           const title = (formData.get("title") as string) || "";
           const description = (formData.get("description") as string) || "";
-          return handleSubmit({ title, description, evals });
+          const deposit = (formData.get("deposit") as string) || "";
+          return handleSubmit({ title, description, deposit, evals });
         }
       }
       throw new Error("Error reading form data.");
@@ -122,6 +124,32 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                   </div>
                 </div>
               ) : null}
+
+              <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+                <label
+                  htmlFor="description"
+                  className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+                >
+                  Deposit
+                </label>
+                <div className="mt-2 sm:col-span-3 sm:mt-0">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1" // ensures integer
+                    defaultValue="0"
+                    name="deposit"
+                    id="deposit"
+                    className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cardinal-600 sm:max-w-sm sm:text-sm sm:leading-6"
+                  />
+                  <p className="mt-3 text-sm leading-6 text-gray-600">
+                    A proposal requires{" "}
+                    <span className="font-semibold">10,000 ubld</span> to enter
+                    voting period. Current balance{" "}
+                    <span className="font-semibold">0 ubld</span>.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
