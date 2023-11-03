@@ -1,4 +1,4 @@
-# Gov Proposal Hub
+# Gov Proposal Builder
 
 ## Getting Started
 

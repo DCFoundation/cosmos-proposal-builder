@@ -121,7 +121,7 @@ const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Nav
-        title="Gov Proposal Hub"
+        title="Gov Proposal Builder"
         showLogo={true}
         rightContent={
           <>

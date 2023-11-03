@@ -6,7 +6,7 @@ describe("App.tsx", () => {
   it("renders app title", async () => {
     render(<App />);
 
-    const titleElement = await screen.findByText("Gov Proposal Hub");
+    const titleElement = await screen.findByText("Gov Proposal Builder");
     expect(titleElement).toBeTruthy();
   });
 
