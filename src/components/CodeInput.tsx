@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { TrashIcon } from "@heroicons/react/24/solid";
 import { bytesToSize } from "../utils/bytesToSize";
 import { CodePreviewModal } from "./CodePreviewModal";
 import { DragDrop, DragDropProps } from "./DragDrop";
+import { IconButton } from "./IconButton";
 
 interface CodeInputProps {
   label: string;
@@ -68,11 +70,19 @@ const CodeInput: React.FC<CodeInputProps> = ({
               </>
             ) : null}
           </div>
-          <CodePreviewModal
-            modalTitle={filename}
-            prismTag={prismTag}
-            content={content}
-          />
+          <div className="flex flex-row mt-2">
+            <CodePreviewModal
+              modalTitle={filename}
+              prismTag={prismTag}
+              content={content}
+            />
+            <IconButton
+              Icon={TrashIcon}
+              label="Delete"
+              onClick={() => setState({})}
+              buttonClassName="ml-3"
+            />
+          </div>
         </div>
       )}
     </div>
