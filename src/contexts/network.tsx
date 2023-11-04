@@ -1,4 +1,11 @@
-import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
+import {
+  ReactNode,
+  createContext,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from "react";
 import { makeAgoricChainStorageWatcher } from "@agoric/rpc";
 import { getNetworkConfig } from "../lib/getNetworkConfig";
 import { useSearch } from "wouter/use-location";
@@ -11,7 +18,6 @@ type Watcher = ReturnType<typeof makeAgoricChainStorageWatcher>;
 interface NetworkContext {
   netName: NetName | undefined;
   netNames: NetName[];
-  setNetwork: (_netName: NetName) => void;
   networkConfig: NetworkConfig | null;
   watcher: Watcher | undefined;
   error: string | null;
@@ -20,7 +26,6 @@ interface NetworkContext {
 export const NetworkContext = createContext<NetworkContext>({
   netName: "local",
   netNames: Array.from(_netNames) as NetName[],
-  setNetwork: () => {},
   networkConfig: null,
   watcher: undefined,
   error: null,
@@ -43,14 +48,7 @@ export const NetworkContextProvider = ({
   const [networkConfig, setNetworkConfig] =
     useState<NetworkContext["networkConfig"]>(null);
   const [error, setError] = useState<NetworkContext["error"]>(null);
-
-  let watcher: NetworkContext["watcher"];
-  if (initWatcher && networkConfig) {
-    watcher = makeAgoricChainStorageWatcher(
-      networkConfig.rpc,
-      networkConfig.chainName
-    );
-  }
+  const watcher = useRef<NetworkContext["watcher"] | undefined>(undefined);
 
   useEffect(() => {
     if (network !== netName) {
@@ -67,19 +65,19 @@ export const NetworkContextProvider = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [netName]);
 
-  const setNetwork = (_netName: NetName): Promise<void> =>
-    getNetworkConfig(_netName)
-      .then((newNetConfig) => {
-        setNetworkConfig(newNetConfig);
-        setNameName(netName);
-        if (initWatcher) {
-          watcher = makeAgoricChainStorageWatcher(
-            newNetConfig.rpc,
-            newNetConfig.chainName
-          );
-        }
-      })
-      .catch(setError);
+  useEffect(() => {
+    if (!initWatcher) return;
+    if (
+      (networkConfig?.chainName && !watcher.current) ||
+      (networkConfig?.chainName &&
+        watcher.current?.chainId !== networkConfig?.chainName)
+    ) {
+      watcher.current = makeAgoricChainStorageWatcher(
+        networkConfig.rpc,
+        networkConfig.chainName
+      );
+    }
+  }, [networkConfig, initWatcher]);
 
   const netNames = useMemo(() => Array.from(_netNames), []);
 
@@ -88,9 +86,8 @@ export const NetworkContextProvider = ({
       value={{
         netName,
         netNames,
-        setNetwork,
         networkConfig,
-        watcher,
+        watcher: watcher.current,
         error,
       }}
     >
