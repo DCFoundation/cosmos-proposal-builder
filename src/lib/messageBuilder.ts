@@ -18,14 +18,14 @@ interface MakeTextProposalArgs {
   title: string;
   description: string;
   proposer: string;
-  depositAmount?: number;
+  deposit?: string | number;
 }
 
 export const makeTextProposalMsg = ({
   title,
   description,
   proposer,
-  depositAmount = 1000000,
+  deposit,
 }: MakeTextProposalArgs) => ({
   typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
   value: {
@@ -41,7 +41,8 @@ export const makeTextProposalMsg = ({
       ),
     }),
     proposer,
-    initialDeposit: coins(depositAmount, "ubld"),
+    ...(deposit &&
+      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
   },
 });
 
@@ -50,8 +51,8 @@ export const makeCoreEvalProposalMsg = ({
   description,
   evals,
   proposer,
-  depositAmount = 1000000,
-}: CoreEvalProposal & { proposer: string; depositAmount?: number }) => ({
+  deposit,
+}: CoreEvalProposal & { proposer: string; deposit?: string | number }) => ({
   typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
   value: {
     content: Any.fromPartial({
@@ -67,7 +68,8 @@ export const makeCoreEvalProposalMsg = ({
       ),
     }),
     proposer,
-    initialDeposit: coins(depositAmount || 0, "ubld"),
+    ...(deposit &&
+      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
   },
 });
 

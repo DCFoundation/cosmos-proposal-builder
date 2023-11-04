@@ -1,4 +1,9 @@
+import { useRef } from "react";
 import { StdFee } from "@cosmjs/amino";
+import { DeliverTxResponse } from "@cosmjs/stargate";
+import { EncodeObject } from "@cosmjs/proto-signing";
+import { createId } from "@paralleldrive/cuid2";
+import { toast, ToastContainer } from "react-toastify";
 import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
 import { ParameterChangeForm } from "./components/ParameterChangeForm";
@@ -7,41 +12,82 @@ import { Footer } from "./components/Footer";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { Tabs } from "./components/Tabs";
+import { TxToastMessage } from "./components/TxToastMessage";
+import { useNetwork, NetName } from "./hooks/useNetwork";
 import { useWallet } from "./hooks/useWallet";
+import { compressBundle } from "./lib/compression";
 import {
   makeCoreEvalProposalMsg,
   makeTextProposalMsg,
   makeInstallBundleMsg,
   makeFeeObject,
 } from "./lib/messageBuilder";
+import { parseError } from "./utils/transactionParser";
 import { isValidBundle } from "./utils/validate";
-import { compressBundle } from "./lib/compression";
 
 const App = () => {
+  const { netName } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
+  const proposalFormRef = useRef<HTMLFormElement>(null);
+  const corEvalFormRef = useRef<HTMLFormElement>(null);
+  const bundleFormRef = useRef<HTMLFormElement>(null);
 
-  // @todo i think the type for proposalMsg should be import('@cosmjs/proto-signing').EncodeObject[]
-  // @ts-expect-error proposalMsg
-  async function signAndBroadcast(proposalMsg, feeArgs = {}) {
-    if (!stargateClient) throw new Error("stargateClient not found");
+  async function signAndBroadcast(
+    proposalMsg: EncodeObject,
+    feeArgs = {},
+    type: "bundle" | "proposal"
+  ) {
+    if (!stargateClient) {
+      toast.error("Network not connected.", { autoClose: 3000 });
+      throw new Error("stargateClient not found");
+    }
     if (!walletAddress) throw new Error("wallet not connected");
     const fee = makeFeeObject(feeArgs);
-    let proposalResult;
+    const toastId = createId();
+    toast.loading("Broadcasting transaction...", {
+      toastId,
+    });
+    let txResult: DeliverTxResponse | undefined;
     try {
-      proposalResult = await stargateClient.signAndBroadcast(
+      txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
         fee
       );
     } catch (e) {
-      console.error("broadcast error", e);
+      toast.update(toastId, {
+        render: parseError(e as Error),
+        type: "error",
+        isLoading: false,
+        autoClose: 10000,
+      });
     }
-
-    console.log("proposalResult", proposalResult);
+    if (txResult) {
+      toast.update(toastId, {
+        render: ({ closeToast }) => (
+          <TxToastMessage
+            resp={txResult as DeliverTxResponse}
+            netName={netName as NetName}
+            closeToast={closeToast as () => void}
+            type={type}
+          />
+        ),
+        type: "success",
+        isLoading: false,
+      });
+      if (type === "proposal") {
+        proposalFormRef.current?.reset();
+        corEvalFormRef.current?.reset();
+      }
+      if (type === "bundle") bundleFormRef.current?.reset();
+    }
   }
 
   async function handleBundle(vals: BundleFormArgs) {
-    if (!walletAddress) throw new Error("wallet not connected");
+    if (!walletAddress) {
+      toast.error("Wallet not connected.", { autoClose: 3000 });
+      throw new Error("wallet not connected");
+    }
     if (!isValidBundle(vals.bundle)) throw new Error("Invalid bundle.");
     const { compressedBundle, uncompressedSize } = await compressBundle(
       JSON.parse(vals.bundle)
@@ -53,13 +99,15 @@ const App = () => {
     });
     // @todo gas estiates
     const feeArgs: Partial<StdFee> = { gas: "50000000" };
-    await signAndBroadcast(proposalMsg, feeArgs);
+    await signAndBroadcast(proposalMsg, feeArgs, "bundle");
   }
 
   function handleProposal(msgType: QueryParams["msgType"]) {
     return async (vals: ProposalArgs) => {
-      if (!walletAddress) throw new Error("wallet not connected");
-
+      if (!walletAddress) {
+        toast.error("Wallet not connected.", { autoClose: 3000 });
+        throw new Error("wallet not connected");
+      }
       let proposalMsg;
       const feeArgs: Partial<StdFee> = {};
       if (msgType === "coreEvalProposal") {
@@ -79,14 +127,14 @@ const App = () => {
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
-      await signAndBroadcast(proposalMsg, feeArgs);
+      await signAndBroadcast(proposalMsg, feeArgs, "proposal");
     };
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Nav
-        title="Gov Proposal Hub"
+        title="Gov Proposal Builder"
         showLogo={true}
         rightContent={
           <>
@@ -105,6 +153,7 @@ const App = () => {
               msgType: "textProposal",
               content: (
                 <ProposalForm
+                  ref={proposalFormRef}
                   handleSubmit={handleProposal("textProposal")}
                   titleDescOnly={true}
                   title="/cosmos.gov.v1beta1.TextProposal"
@@ -117,6 +166,7 @@ const App = () => {
               msgType: "coreEvalProposal",
               content: (
                 <ProposalForm
+                  ref={corEvalFormRef}
                   handleSubmit={handleProposal("coreEvalProposal")}
                   titleDescOnly={false}
                   title="/agoric.swingset.CoreEvalProposal"
@@ -129,6 +179,7 @@ const App = () => {
               msgType: "installBundle",
               content: (
                 <BundleForm
+                  ref={bundleFormRef}
                   title="/agoric.swingset.MsgInstallBundle"
                   handleSubmit={handleBundle}
                   description="The install bundle message deploys and installs an external bundle that can be referenced in a CoreEval proposal."
@@ -149,6 +200,13 @@ const App = () => {
         />
       </main>
       <Footer />
+      <ToastContainer
+        autoClose={false}
+        position="bottom-right"
+        closeOnClick={false}
+        closeButton={true}
+        bodyClassName="text-sm font-medium text-gray-900"
+      />
     </div>
   );
 };
