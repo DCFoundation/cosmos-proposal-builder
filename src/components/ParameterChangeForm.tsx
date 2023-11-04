@@ -39,7 +39,8 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
   }, [networkConfig]); // should also depend on a "governance epoch"
   // that changes once per voting period / 2 (nyquist)
 
-  const showSwingsetPrice = async () => {
+  const proposeParamChange = async () => {
+    alert("TODO");
     return false;
   };
 
@@ -60,9 +61,25 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
     )),
   ];
 
+  const findFeeUnit = (items: StringBeans[]) =>
+    items.find(({ key }) => key === "feeUnit") || ({} as StringBeans);
+
+  const changeBeans = (key: string, ist: number) => {
+    if (!params) return;
+    const { beans_per_unit } = params;
+    const { beans: feeUnit } = findFeeUnit(beans_per_unit);
+    const beans = ist * Number(feeUnit);
+    beans_per_unit.forEach(({ key: candidate }, ix) => {
+      if (candidate === key) {
+        beans_per_unit[ix].beans = `${beans}`;
+      }
+    });
+    setParams({ ...params, beans_per_unit });
+  };
+
   const renderBeans = (items: StringBeans[]) => {
     // We assume fee_unit_price remains 1IST
-    const { beans: feeUnit } = items.find(({ key }) => key === "feeUnit") || {};
+    const { beans: feeUnit } = findFeeUnit(items);
 
     return [
       <thead>
@@ -77,7 +94,17 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
           <tr>
             <td>{key}</td>
             <td>{beans}</td>
-            <td>{Number(beans) / Number(feeUnit)}</td>
+            <td>
+              <input
+                type="number"
+                name={key}
+                onChange={({ target }) =>
+                  changeBeans(key, Number(target.value))
+                }
+                value={Number(beans) / Number(feeUnit)}
+                readOnly={key !== "storageByte"}
+              />
+            </td>
           </tr>
         ))}
       </tbody>,
@@ -123,31 +150,21 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
           </p>
 
           <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
-            <div className="p-10 text-center">
-              <span className="block text-sm leading-6 text-gray-900 sm:pt-1.5">
-                <Button
-                  onClick={showSwingsetPrice}
-                  Icon={null}
-                  text="Swingset Storage Price"
-                  theme="light"
-                  layoutStyle="flex w-1/3"
-                />
-              </span>
-            </div>
             {params ? renderParams(params) : []}
+            <div className="p-10 text-center">
+              <span className="block text-sm leading-6 text-gray-900 sm:pt-1.5"></span>
+            </div>
           </div>
         </div>
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-32">
-        {false && (
-          <Button
-            type="submit"
-            Icon={null}
-            text="Sign & Submit"
-            theme="dark"
-            layoutStyle="flex w-1/4"
-          />
-        )}
+        <Button
+          onClick={proposeParamChange}
+          Icon={null}
+          text="Sign & Submit"
+          theme="dark"
+          layoutStyle="flex w-1/4"
+        />
       </div>
     </form>
   );
