@@ -1,15 +1,22 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
+import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
+import { ProposalArgs } from "./ProposalForm.tsx";
 
 interface ParameterChangeFormProps {
   title: string;
   description: string;
+  handleSubmit: (proposal: ProposalArgs) => void;
 }
 
 type StringBeans = { key: string; beans: string };
 type PowerFlagFee = { power_flag: string; fee: Coins[] };
 type Coins = { denom: string; amount: string };
+/**
+ * TODO: import from "@agoric/cosmic-proto/swingset/swingset.js"
+ * which uses camelCase
+ */
 type SwingsetParams = {
   beans_per_unit: StringBeans[];
   fee_unit_price: Coins[];
@@ -20,14 +27,12 @@ type SwingsetParams = {
 const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
   title,
   description,
+  handleSubmit,
 }) => {
   const { networkConfig } = useNetwork();
-  const titleRef = useRef<HTMLInputElement>(null);
-  const descRef = useRef<HTMLTextAreaElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [params, setParams] = useState<SwingsetParams | null>(null);
-  const onSubmit = (e: FormEvent) => {
-    e.preventDefault();
-  };
+  const [_error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const getParams = async () => {
@@ -41,9 +46,40 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
   }, [networkConfig]); // should also depend on a "governance epoch"
   // that changes once per voting period / 2 (nyquist)
 
-  const proposeParamChange = async () => {
-    alert("TODO");
-    return false;
+  const findBean = (items: StringBeans[], target: string) =>
+    items.find(({ key }) => key === target) || ({} as StringBeans);
+
+  const msgType = "parameterChangeProposal";
+
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (!params) {
+      setError("Params not provided.");
+      return;
+    }
+    if (formRef?.current) {
+      const formData = new FormData(formRef.current);
+      if (formData) {
+        const title = (formData.get("title") as string) || "";
+        const description = (formData.get("description") as string) || "";
+        const deposit = (formData.get("deposit") as string) || "";
+        const changes: ParamChange[] = [
+          {
+            subspace: "swingset",
+            key: "beans_per_unit",
+            value: JSON.stringify(params.beans_per_unit),
+          },
+        ];
+        return handleSubmit({
+          title,
+          description,
+          deposit,
+          msgType,
+          changes,
+        });
+      }
+    }
+    throw new Error("Error reading form data.");
   };
 
   const renderCoins = (coins: Coins[]) => (
@@ -63,13 +99,10 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
     )),
   ];
 
-  const findFeeUnit = (items: StringBeans[]) =>
-    items.find(({ key }) => key === "feeUnit") || ({} as StringBeans);
-
   const changeBeans = (key: string, ist: number) => {
     if (!params) return;
     const { beans_per_unit } = params;
-    const { beans: feeUnit } = findFeeUnit(beans_per_unit);
+    const { beans: feeUnit } = findBean(beans_per_unit, "feeUnit");
     const beans = ist * Number(feeUnit);
     beans_per_unit.forEach(({ key: candidate }, ix) => {
       if (candidate === key) {
@@ -81,7 +114,7 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
 
   const renderBeans = (items: StringBeans[]) => {
     // We assume fee_unit_price remains 1IST
-    const { beans: feeUnit } = findFeeUnit(items);
+    const { beans: feeUnit } = findBean(items, "feeUnit");
 
     return [
       <thead>
@@ -144,7 +177,7 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
   // er... or expand ProposalForm to handle ParamChange?
 
   return (
-    <form className="py-6 px-8" onSubmit={onSubmit}>
+    <form ref={formRef} className="py-6 px-8" onSubmit={onSubmit}>
       <section>
         <div className="space-y-12 sm:space-y-16">
           <div>
@@ -169,7 +202,6 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
                     name="title"
                     id="title"
                     placeholder="Title"
-                    ref={titleRef}
                     className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cardinal-600 sm:max-w-sm sm:text-sm sm:leading-6"
                   />
                 </div>
@@ -190,7 +222,6 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
                     className="block w-full max-w-2xl rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cardinal-600 sm:text-sm sm:leading-6"
                     defaultValue={""}
                     placeholder="Description"
-                    ref={descRef}
                   />
                   <p className="mt-3 text-sm leading-6 text-gray-600">
                     Write a few sentences about the proposal and include any
@@ -249,7 +280,7 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
 
       <div className="mt-6 flex items-center justify-end gap-x-32">
         <Button
-          onClick={proposeParamChange}
+          type="submit"
           Icon={null}
           text="Sign & Submit"
           theme="dark"

@@ -21,6 +21,7 @@ import {
   makeTextProposalMsg,
   makeInstallBundleMsg,
   makeFeeObject,
+  makeParamChangeProposalMsg,
 } from "./lib/messageBuilder";
 import { parseError } from "./utils/transactionParser";
 import { isValidBundle } from "./utils/validate";
@@ -111,6 +112,8 @@ const App = () => {
       let proposalMsg;
       const feeArgs: Partial<StdFee> = {};
       if (msgType === "coreEvalProposal") {
+        if (vals.msgType !== "coreEvalProposal") return;
+        if (!vals.evals) return;
         proposalMsg = makeCoreEvalProposalMsg({
           ...vals,
           proposer: walletAddress,
@@ -121,6 +124,13 @@ const App = () => {
       }
       if (msgType === "textProposal") {
         proposalMsg = makeTextProposalMsg({
+          ...vals,
+          proposer: walletAddress,
+        });
+      }
+      if (msgType === "parameterChangeProposal") {
+        if (vals.msgType !== "parameterChangeProposal") return;
+        proposalMsg = makeParamChangeProposalMsg({
           ...vals,
           proposer: walletAddress,
         });
@@ -192,6 +202,7 @@ const App = () => {
               content: (
                 <ParameterChangeForm
                   title="/cosmos.gov.v1.MsgUpdateParams"
+                  handleSubmit={handleProposal("parameterChangeProposal")}
                   description="This is a governance proposal to change chain configuration parameters."
                 />
               ),

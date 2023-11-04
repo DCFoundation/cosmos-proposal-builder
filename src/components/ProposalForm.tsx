@@ -8,13 +8,18 @@ import {
 import { CodeInputGroup } from "./CodeInputGroup";
 import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
 import { Button } from "./Button";
+import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 
-export interface ProposalArgs {
+export type ProposalArgs = {
   title: string;
   description: string;
-  evals: CoreEval[];
   deposit: string | number;
-}
+} & ProposalDetail;
+
+export type ProposalDetail =
+  | { msgType: "textProposal"; evals: CoreEval[] }
+  | { msgType: "coreEvalProposal"; evals: CoreEval[] }
+  | { msgType: "parameterChangeProposal"; changes: ParamChange[] };
 
 interface ProposalFormProps {
   title: string;
@@ -26,6 +31,8 @@ interface ProposalFormProps {
 interface ProposalFormMethods {
   reset: () => void;
 }
+
+const msgType = "coreEvalProposal";
 
 const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
   ({ title, description, handleSubmit, titleDescOnly = false }, ref) => {
@@ -49,7 +56,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
           const title = (formData.get("title") as string) || "";
           const description = (formData.get("description") as string) || "";
           const deposit = (formData.get("deposit") as string) || "";
-          return handleSubmit({ title, description, deposit, evals });
+          return handleSubmit({ title, description, deposit, msgType, evals });
         }
       }
       throw new Error("Error reading form data.");
