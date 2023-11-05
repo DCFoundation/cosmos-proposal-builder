@@ -5,6 +5,7 @@ import {
   useImperativeHandle,
   FormEvent,
   useMemo,
+  ReactNode,
 } from "react";
 import { CodeInput, CodeInputMethods } from "./CodeInput";
 import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
@@ -19,7 +20,7 @@ export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
 
 interface BundleFormProps {
   title: string;
-  description: string;
+  description: string | ReactNode;
   handleSubmit: (proposal: BundleFormArgs) => void;
 }
 

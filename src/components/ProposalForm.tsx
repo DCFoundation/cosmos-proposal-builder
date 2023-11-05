@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   forwardRef,
   FormEvent,
+  ReactNode,
 } from "react";
 import { CodeInputGroup } from "./CodeInputGroup";
 import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
@@ -27,7 +28,7 @@ export type ProposalDetail =
 
 interface ProposalFormProps {
   title: string;
-  description: string;
+  description: string | ReactNode;
   handleSubmit: (proposal: ProposalArgs) => void;
   titleDescOnly?: boolean;
   msgType: QueryParams["msgType"];
@@ -87,7 +88,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             <h2 className="text-base font-semibold leading-7 text-gray-900">
               {title}
             </h2>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-600">
+            <p className="mt-2 max-w-4xl text-sm leading-6 text-gray-600">
               {description}
             </p>
 

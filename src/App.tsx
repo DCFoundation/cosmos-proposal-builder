@@ -4,6 +4,7 @@ import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast, ToastContainer } from "react-toastify";
+import { Code, Link } from "./components/inline";
 import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
 import { Nav } from "./components/Nav";
@@ -166,8 +167,15 @@ const App = () => {
                   handleSubmit={handleProposal("textProposal")}
                   titleDescOnly={true}
                   title="/cosmos.gov.v1beta1.TextProposal"
-                  description="This is a governance proposal that includes a title and description."
                   msgType="textProposal"
+                  description={
+                    <>
+                      This is a governance proposal that can be used for
+                      signaling support or agreement on a certain topic or idea.
+                      Text proposals do not contain any code, and do not
+                      directly enact changes after a passing vote.
+                    </>
+                  }
                 />
               ),
             },
@@ -180,8 +188,23 @@ const App = () => {
                   handleSubmit={handleProposal("coreEvalProposal")}
                   titleDescOnly={false}
                   title="/agoric.swingset.CoreEvalProposal"
-                  description="This is a governance proposal that executes code. You will need to provide a JS Bundle, and a JSON Permit file."
                   msgType="coreEvalProposal"
+                  description={
+                    <>
+                      This is a governance proposal that executes code after a
+                      passing vote. The JSON Permit grants{" "}
+                      <Link href="https://docs.agoric.com/guides/coreeval/permissions.html">
+                        capabilities
+                      </Link>{" "}
+                      and the JS Script can install and start a contract. These
+                      files can be generated with the <Code>agoric run</Code>{" "}
+                      command. For more details, see the{" "}
+                      <Link href="https://docs.agoric.com/guides/coreeval/">
+                        official docs
+                      </Link>
+                      .
+                    </>
+                  }
                 />
               ),
             },
@@ -193,7 +216,18 @@ const App = () => {
                   ref={bundleFormRef}
                   title="/agoric.swingset.MsgInstallBundle"
                   handleSubmit={handleBundle}
-                  description="The install bundle message deploys and installs an external bundle that can be referenced in a CoreEval proposal."
+                  description={
+                    <>
+                      The install bundle message deploys and installs an
+                      external bundle generated during the{" "}
+                      <Code>agoric run</Code> process. The resulting
+                      installation can be referenced in a{" "}
+                      <Link href="https://docs.agoric.com/guides/coreeval/">
+                        CoreEval proposal
+                      </Link>{" "}
+                      that starts or updates a contract.
+                    </>
+                  }
                 />
               ),
             },
