@@ -35,3 +35,12 @@ export type StakingParams = {
   historical_entries: number;
   bond_denom: string;
 };
+
+export type SlashingParams = {
+  max_evidence_age: string;
+  signed_blocks_window: string;
+  min_signed_per_window: string;
+  downtime_jail_duration: string;
+  slash_fraction_double_sign: string;
+  slash_fraction_downtime: string;
+};

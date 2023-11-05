@@ -32,8 +32,6 @@ export const DepositSection: React.FC<unknown> = () => {
     },
   });
 
-  console.log("minDeposit", minDeposit);
-
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const bldCoins = useMemo(
     () => selectBldCoins(accountBalances),
@@ -56,7 +54,7 @@ export const DepositSection: React.FC<unknown> = () => {
           name="deposit"
           id="deposit"
           ref={depositRef}
-          defaultValue={coinsUnit(minDeposit) || ""}
+          defaultValue={minDeposit ? coinsUnit(minDeposit) : ""}
           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cardinal-600 sm:max-w-sm sm:text-sm sm:leading-6"
         />
         <p className="mt-3 text-sm leading-6 text-gray-600">

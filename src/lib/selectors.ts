@@ -12,6 +12,15 @@ export const selectStorageCost = (query: UseQueryResult<SwingSetParams, unknown>
     : undefined;
 };
 
+export const selectBeansPerUnit = (
+  query: UseQueryResult<SwingSetParams, unknown>
+) => {
+  const { isLoading, data } = query;
+  if (isLoading || !data) return undefined;
+  return data?.beans_per_unit;
+};
+
+
 export const selectIstBalance = (
   query: UseQueryResult<BankBalances, unknown>
 ) => {

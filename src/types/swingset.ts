@@ -1,4 +1,6 @@
-type BeansPerUnit = {
+import type { Coin } from "./bank";
+
+export type BeansPerUnit = {
   key:
     | "blockComputeLimit"
     | "feeUnit"
@@ -17,12 +19,9 @@ type FeeUnitPrice = {
   amount: string;
 };
 
-type PowerFlagFee = {
+export type PowerFlagFee = {
   power_flag: "SMART_WALLET";
-  fee: {
-    denom: "ubld";
-    amount: string;
-  }[];
+  fee: Coin[];
 };
 
 type QueueMax = {

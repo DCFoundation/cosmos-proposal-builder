@@ -56,6 +56,7 @@ const Tabs = ({ tabs }: TabsProps) => {
           {tabs.map(({ content }, idx) => (
             <Tab.Panel
               key={idx}
+              unmount={false}
               className="flex flex-col min-w-full rounded-xl bg-white p-3"
             >
               {content}
