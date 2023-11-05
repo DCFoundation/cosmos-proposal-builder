@@ -34,13 +34,6 @@ const ParameterChangeFormSection = forwardRef<ParameterChangeFormMethods>(
       () => selectBeansPerUnit(swingsetParams),
       [swingsetParams]
     );
-
-    useEffect(() => {
-      if (!stagedParams && currentParams) {
-        setStagedParams(currentParams);
-      }
-    }, [currentParams, stagedParams]);
-
     const feeUnit = useMemo(() => {
       if (currentParams) {
         const param = currentParams.find((x) => x.key === "feeUnit");
@@ -48,6 +41,12 @@ const ParameterChangeFormSection = forwardRef<ParameterChangeFormMethods>(
       }
       return null;
     }, [currentParams]);
+
+    useEffect(() => {
+      if (!stagedParams && currentParams) {
+        setStagedParams(currentParams);
+      }
+    }, [currentParams, stagedParams]);
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -84,7 +83,7 @@ const ParameterChangeFormSection = forwardRef<ParameterChangeFormMethods>(
       toIst: useCallback(
         (value: string) => {
           if (feeUnit) return Number(value) / feeUnit;
-          return value;
+          return "...";
         },
         [feeUnit]
       ),
