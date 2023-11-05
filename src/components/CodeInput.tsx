@@ -1,9 +1,10 @@
-import { useState, forwardRef, useImperativeHandle } from "react";
+import { useState, forwardRef, useImperativeHandle, useMemo } from "react";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { bytesToSize } from "../utils/bytesToSize";
 import { CodePreviewModal } from "./CodePreviewModal";
 import { DragDrop, DragDropProps } from "./DragDrop";
 import { IconButton } from "./IconButton";
+import { classNames } from "../utils/classNames";
 
 interface CodeInputProps {
   label: string;
@@ -12,6 +13,8 @@ interface CodeInputProps {
   index?: number;
   prismTag: string;
   subtitle: DragDropProps["subtitle"];
+  costPerByte?: number;
+  istBalance?: bigint;
 }
 
 interface FileState {
@@ -20,12 +23,24 @@ interface FileState {
   content: string;
 }
 
-interface CodeInputMethods {
+export interface CodeInputMethods {
   reset: () => void;
+  getBundleCost?: () => number | null;
 }
 
 const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
-  ({ label, onContentChange, accept, prismTag, subtitle }, ref) => {
+  (
+    {
+      label,
+      onContentChange,
+      accept,
+      prismTag,
+      subtitle,
+      costPerByte,
+      istBalance,
+    },
+    ref
+  ) => {
     const [{ filename, size, content }, setState] = useState<
       FileState | Record<string, never>
     >({});
@@ -51,7 +66,20 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
       reset: () => {
         setState({});
       },
+      getBundleCost: () => bundleCost,
     }));
+
+    const bundleCost = useMemo(() => {
+      if (costPerByte && size) return costPerByte * size;
+      return null;
+    }, [costPerByte, size]);
+
+    const remainingCost = useMemo(() => {
+      if (istBalance && bundleCost) {
+        return Math.max(bundleCost - Number(istBalance) / 10 ** 6, 0);
+      }
+      return bundleCost;
+    }, [bundleCost, istBalance]);
 
     return (
       <div className="flex flex-col mr-8">
@@ -62,6 +90,13 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
               onFilesAdded={onDrop}
               accept={accept}
               subtitle={subtitle}
+              afterEl={
+                costPerByte ? (
+                  <p className="text-xs leading-5 text-gray-600">
+                    Upload Cost: {costPerByte} IST per byte
+                  </p>
+                ) : null
+              }
             />
           </div>
         ) : (
@@ -75,18 +110,38 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
                 </>
               ) : null}
             </div>
-            <div className="flex flex-row mt-2">
-              <CodePreviewModal
-                modalTitle={filename}
-                prismTag={prismTag}
-                content={content}
-              />
-              <IconButton
-                Icon={TrashIcon}
-                label="Delete"
-                onClick={() => setState({})}
-                buttonClassName="ml-3"
-              />
+            <div className="flex flex-col">
+              <div className="flex flex-row mt-2">
+                <CodePreviewModal
+                  modalTitle={filename}
+                  prismTag={prismTag}
+                  content={content}
+                />
+                <IconButton
+                  Icon={TrashIcon}
+                  label="Delete"
+                  onClick={() => setState({})}
+                  buttonClassName="ml-3"
+                />
+              </div>
+              {bundleCost ? (
+                <div className="self-end">
+                  <p className="mt-2 text-sm text-gray-600">
+                    Upload Cost:{" "}
+                    <span className="font-medium">{bundleCost} IST</span>
+                  </p>
+                  <p
+                    className={classNames(
+                      "mt-2 text-sm",
+                      !remainingCost ? "text-green-600" : "text-red-600"
+                    )}
+                  >
+                    {!remainingCost
+                      ? "Sufficient balance."
+                      : "Insufficient balance."}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </div>
         )}

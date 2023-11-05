@@ -1,4 +1,10 @@
-import { useRef, useState, DragEvent, InputHTMLAttributes } from "react";
+import {
+  useRef,
+  useState,
+  DragEvent,
+  InputHTMLAttributes,
+  ReactNode,
+} from "react";
 import { CodeBracketSquareIcon } from "@heroicons/react/24/solid";
 import { classNames } from "../utils/classNames";
 
@@ -8,6 +14,7 @@ export interface DragDropProps {
   accept?: InputHTMLAttributes<HTMLInputElement>["accept"];
   label: string;
   subtitle?: string;
+  afterEl?: ReactNode;
 }
 
 const DragDrop: React.FC<DragDropProps> = ({
@@ -16,6 +23,7 @@ const DragDrop: React.FC<DragDropProps> = ({
   accept,
   label,
   subtitle,
+  afterEl = null,
 }) => {
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -92,6 +100,7 @@ const DragDrop: React.FC<DragDropProps> = ({
         {subtitle ? (
           <p className="text-xs leading-5 text-gray-600">{subtitle}</p>
         ) : null}
+        {afterEl}
       </div>
     </div>
   );

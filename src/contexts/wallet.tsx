@@ -12,6 +12,7 @@ interface WalletContext {
   connectWallet: () => Promise<void>;
   stargateClient: SigningStargateClient | undefined;
   isLoading: boolean;
+  rpc: string | null;
 }
 
 export const WalletContext = createContext<WalletContext>({
@@ -19,6 +20,7 @@ export const WalletContext = createContext<WalletContext>({
   connectWallet: () => Promise.resolve(undefined),
   stargateClient: undefined,
   isLoading: false,
+  rpc: null,
 });
 
 export const WalletContextProvider = ({
@@ -29,6 +31,7 @@ export const WalletContextProvider = ({
   const stargateClient = useRef<SigningStargateClient | undefined>(undefined);
   const { netName } = useNetwork();
   const [currNetName, setCurrNetName] = useState(netName);
+  const [rpc, setRpc] = useState<WalletContext["rpc"]>(null);
   const [walletAddress, setWalletAddress] = useState<
     WalletContext["walletAddress"]
   >(() => {
@@ -49,6 +52,7 @@ export const WalletContextProvider = ({
     const { chainId, rpc } = await suggestChain(
       getNetConfigUrl(netName as NetName)
     );
+    setRpc(rpc);
     if (chainId) {
       await window.keplr.enable(chainId);
       const offlineSigner = window.keplr.getOfflineSigner(chainId);
@@ -77,16 +81,16 @@ export const WalletContextProvider = ({
     }
   };
 
-  if (currNetName !== netName) {
+  if (netName && currNetName !== netName) {
     if (walletAddress) connectWallet();
     setCurrNetName(netName);
   }
 
   useEffect(() => {
-    if (walletAddress && !stargateClient.current) {
+    if (walletAddress && netName && !stargateClient.current) {
       connectWallet();
     }
-  }, [walletAddress, stargateClient]);
+  }, [walletAddress, netName, stargateClient]);
 
   return (
     <WalletContext.Provider
@@ -95,6 +99,7 @@ export const WalletContextProvider = ({
         connectWallet,
         stargateClient: stargateClient.current,
         isLoading,
+        rpc,
       }}
     >
       {children}

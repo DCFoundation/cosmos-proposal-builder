@@ -65,7 +65,6 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
           const description = (formData.get("description") as string) || "";
           const depositBld = (formData.get("deposit") as string) || "";
           const deposit = Number(depositBld) * 1_000_000;
-          console.log("deposit", deposit);
           const args: BaseProposalArgs = { title, description, deposit };
           if (msgType === "coreEvalProposal" && evals.length) {
             return handleSubmit({ ...args, msgType, evals });
@@ -93,6 +92,9 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             </p>
 
             <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+              {msgType === "parameterChangeProposal" ? (
+                <ParameterChangeFormSection ref={paramChangeRef} />
+              ) : null}
               <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
                 <label
                   htmlFor="title"
@@ -149,10 +151,6 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                     />
                   </div>
                 </div>
-              ) : null}
-
-              {msgType === "parameterChangeProposal" ? (
-                <ParameterChangeFormSection ref={paramChangeRef} />
               ) : null}
 
               <DepositSection />

@@ -11,6 +11,7 @@ declare global {
     api: string[];
     chainName: string;
     netName: string;
+    apiAddrs: string[];
   }
 
   interface QueryParams {

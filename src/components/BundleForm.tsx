@@ -4,10 +4,16 @@ import {
   useRef,
   useImperativeHandle,
   FormEvent,
+  useMemo,
 } from "react";
-import { CodeInput } from "./CodeInput";
+import { CodeInput, CodeInputMethods } from "./CodeInput";
 import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
 import { Button } from "./Button";
+import { useNetwork } from "../hooks/useNetwork";
+import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
+import { useQuery } from "@tanstack/react-query";
+import { selectStorageCost, selectIstBalance } from "../lib/selectors";
+import { useWallet } from "../hooks/useWallet";
 
 export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
 
@@ -26,7 +32,19 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
     const [bundle, setBundle] = useState<BundleFormArgs["bundle"] | null>(null);
     const [error, setError] = useState<string | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
-    const codeInputRef = useRef<{ reset: () => void } | null>(null);
+    const codeInputRef = useRef<CodeInputMethods | null>(null);
+    const { api } = useNetwork();
+    const { walletAddress } = useWallet();
+    const swingsetParams = useQuery(swingSetParamsQuery(api));
+    const costPerByte = useMemo(
+      () => selectStorageCost(swingsetParams),
+      [swingsetParams]
+    );
+    const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
+    const istBalance = useMemo(
+      () => selectIstBalance(accountBalances),
+      [accountBalances]
+    );
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -38,8 +56,11 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
 
     const onSubmit = (e: FormEvent) => {
       e.preventDefault();
+      const cost = codeInputRef.current?.getBundleCost?.();
       if (!bundle) {
         setError("Bundle JSON not provided.");
+      } else if (cost && cost > Number(istBalance) / 10 ** 6) {
+        setError("Insufficient funds to install bundle.");
       } else {
         handleSubmit({ bundle });
       }
@@ -72,6 +93,8 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
                     prismTag="lang-json"
                     onContentChange={setBundle}
                     subtitle=".json files permitted"
+                    costPerByte={costPerByte}
+                    istBalance={istBalance}
                   />
                 </div>
               </div>
