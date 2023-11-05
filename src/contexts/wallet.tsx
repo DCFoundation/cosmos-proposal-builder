@@ -31,7 +31,6 @@ export const WalletContextProvider = ({
   const stargateClient = useRef<SigningStargateClient | undefined>(undefined);
   const { netName } = useNetwork();
   const [currNetName, setCurrNetName] = useState(netName);
-  const [balances, setBalances] = useState<WalletContext["balances"]>(null);
   const [rpc, setRpc] = useState<WalletContext["rpc"]>(null);
   const [walletAddress, setWalletAddress] = useState<
     WalletContext["walletAddress"]

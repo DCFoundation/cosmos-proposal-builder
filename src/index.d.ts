@@ -10,6 +10,7 @@ declare global {
     rpc: string;
     chainName: string;
     netName: string;
+    apiAddrs: string[];
   }
 
   interface QueryParams {

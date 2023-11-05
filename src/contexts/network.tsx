@@ -21,6 +21,7 @@ interface NetworkContext {
   networkConfig: NetworkConfig | null;
   watcher: Watcher | undefined;
   error: string | null;
+  api: string | undefined;
 }
 
 export const NetworkContext = createContext<NetworkContext>({
@@ -29,6 +30,7 @@ export const NetworkContext = createContext<NetworkContext>({
   networkConfig: null,
   watcher: undefined,
   error: null,
+  api: undefined,
 });
 
 const getNameName = (netName: string): NetName =>
@@ -81,12 +83,18 @@ export const NetworkContextProvider = ({
 
   const netNames = useMemo(() => Array.from(_netNames), []);
 
+  const api = useMemo(() => {
+    if (netName === "local") return "http://localhost:1317";
+    return networkConfig?.apiAddrs?.[0];
+  }, [networkConfig, netName]);
+
   return (
     <NetworkContext.Provider
       value={{
         netName,
         netNames,
         networkConfig,
+        api,
         watcher: watcher.current,
         error,
       }}

@@ -15,6 +15,7 @@ const getNetworkConfig = async (netName: NetName): Promise<NetworkConfig> => {
     rpc: networkConfig.rpcAddrs[0],
     chainName: networkConfig.chainName,
     netName,
+    apiAddrs: networkConfig.apiAddrs,
   };
 };
 
