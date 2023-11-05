@@ -1,8 +1,14 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
-import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
+import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
+import type {
+  DepositParams,
+  VotingParams,
+} from "cosmjs-types/cosmos/gov/v1beta1/gov";
+
 import { ProposalArgs } from "./ProposalForm.tsx";
+import { useWallet } from "../hooks/useWallet.ts";
 
 interface ParameterChangeFormProps {
   title: string;
@@ -11,17 +17,150 @@ interface ParameterChangeFormProps {
 }
 
 type StringBeans = { key: string; beans: string };
-type PowerFlagFee = { power_flag: string; fee: Coins[] };
-type Coins = { denom: string; amount: string };
+type PowerFlagFee = { power_flag: string; fee: Coin[] };
+type Coin = { denom: string; amount: string };
 /**
  * TODO: import from "@agoric/cosmic-proto/swingset/swingset.js"
  * which uses camelCase
  */
 type SwingsetParams = {
   beans_per_unit: StringBeans[];
-  fee_unit_price: Coins[];
+  fee_unit_price: Coin[];
   bootstrap_vat_config: string;
   power_flag_fees: PowerFlagFee[];
+};
+
+const logged =
+  (label: string) =>
+  <T,>(x: T) => {
+    console.log(label, x);
+    return x;
+  };
+
+const Unit6 = 1_000_000;
+
+const coinsUnit = (coins: Coin[] | undefined) =>
+  coins && coins.length === 1 ? Number(coins[0].amount) / Unit6 : NaN;
+
+const renderCoin = ({ denom, amount }: Coin) => {
+  if (denom.startsWith("u")) {
+    const bigd = denom.slice(1).toUpperCase();
+    const amt = Number(amount) / Unit6;
+    return `${amt} ${bigd}`;
+  }
+  return `${amount} ${denom}`;
+};
+
+const renderCoins = (coins: Coin[]) =>
+  coins.length > 0 ? coins.map(renderCoin).join(",") : "empty";
+
+const DepositSection: React.FC<unknown> = (_) => {
+  const { networkConfig } = useNetwork();
+  const { walletAddress } = useWallet();
+  const depositRef = useRef<HTMLInputElement>(null);
+
+  const [govParams, setGovParams] = useState<{
+    deposit: DepositParams & {
+      //  camelCase vs. snake_case
+      min_deposit: Coin[];
+    };
+    voting: VotingParams & {
+      //  camelCase vs. snake_case
+      voting_period: string;
+    };
+  } | null>(null);
+  const [balances, setBalances] = useState<Coin[] | null>(null);
+
+  const getJSON = async (url: string) =>
+    await fetch(url)
+      .then((resp) => resp.text()) // TODO: check resp.ok
+      .then((s) => JSON.parse(s));
+
+  useEffect(() => {
+    const getGovParams = async () => {
+      if (!networkConfig) return;
+      const base = networkConfig.api[0]; // round-robin etc.
+      const [deposit, voting] = await Promise.all([
+        getJSON(`${base}/cosmos/gov/v1beta1/params/deposit`),
+        getJSON(`${base}/cosmos/gov/v1beta1/params/voting`),
+      ]);
+
+      setGovParams({
+        deposit: deposit.deposit_params,
+        voting: voting.voting_params,
+      });
+    };
+    getGovParams();
+  }, [networkConfig]); // should also depend on a "governance epoch"
+  // that changes once per voting period / 2 (nyquist)
+
+  useEffect(() => {
+    if (depositRef.current && depositRef.current.value === "") {
+      depositRef.current.value = `${coinsUnit(govParams?.deposit.min_deposit)}`;
+    }
+  }, [govParams]);
+
+  useEffect(() => {
+    const getBalances = async () => {
+      if (!networkConfig) return;
+      if (!walletAddress) return;
+      const base = networkConfig.api[0]; // round-robin etc.
+      const balances = await getJSON(
+        `${base}/cosmos/bank/v1beta1/balances/${walletAddress}`
+      );
+      setBalances(logged("@@Bal")(balances.balances));
+    };
+    getBalances();
+  }, [networkConfig, walletAddress]);
+
+  return (
+    <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+      <label
+        htmlFor="description"
+        className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+      >
+        Deposit
+      </label>
+      <div className="mt-2 sm:col-span-3 sm:mt-0">
+        <input
+          type="number"
+          min="0"
+          step="1" // ensures integer
+          name="deposit"
+          id="deposit"
+          ref={depositRef}
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cardinal-600 sm:max-w-sm sm:text-sm sm:leading-6"
+        />
+        <p className="mt-3 text-sm leading-6 text-gray-600">
+          {govParams && (
+            <span>
+              A proposal requires{" "}
+              <span className="font-semibold">
+                {renderCoins(govParams.deposit.min_deposit)}
+              </span>{" "}
+              to enter voting period.
+            </span>
+          )}
+          <br />
+          {balances && (
+            <span>
+              Current balance
+              <span className="font-semibold"> {renderCoins(balances)}</span>.
+            </span>
+          )}
+          <br />
+          {govParams && (
+            <span>
+              Voting Period:{" "}
+              <span className="font-semibold">
+                {govParams.voting.voting_period}
+              </span>
+            </span>
+          )}
+        </p>
+      </div>
+    </div>
+  );
 };
 
 const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
@@ -73,7 +212,7 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
         return handleSubmit({
           title,
           description,
-          deposit,
+          deposit: Number(deposit) * Unit6,
           msgType,
           changes,
         });
@@ -81,10 +220,6 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
     }
     throw new Error("Error reading form data.");
   };
-
-  const renderCoins = (coins: Coins[]) => (
-    <td>{coins.map(({ denom, amount }) => `${amount} ${denom}`).join(",")}</td>
-  );
 
   const renderFees = (fees: PowerFlagFee[]) => [
     <tr>
@@ -94,7 +229,7 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
     ...fees.map(({ power_flag, fee }) => (
       <tr>
         <td>{power_flag}</td>
-        {renderCoins(fee)}
+        <td>{renderCoins(fee)}</td>
       </tr>
     )),
   ];
@@ -158,7 +293,9 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
         <tr>
           <th>fee_unit_price</th>
         </tr>
-        <tr>{renderCoins(params.fee_unit_price)}</tr>
+        <tr>
+          <td>{renderCoins(params.fee_unit_price)}</td>
+        </tr>
         <tr>
           <th>bootstrap_vat_config</th>
         </tr>
@@ -235,48 +372,15 @@ const ParameterChangeForm: React.FC<ParameterChangeFormProps> = ({
       </section>
 
       <div className="space-y-12 sm:space-y-16">
-        <div>
-          <h2 className="text-base font-semibold leading-7 text-gray-900">
-            {title}
-          </h2>
-          <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-600">
-            {description}
-          </p>
-
-          <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
-            {params ? renderParams(params) : []}
-            <div className="p-10 text-center">
-              <span className="block text-sm leading-6 text-gray-900 sm:pt-1.5"></span>
-            </div>
+        <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+          {params ? renderParams(params) : []}
+          <div className="p-10 text-center">
+            <span className="block text-sm leading-6 text-gray-900 sm:pt-1.5"></span>
           </div>
         </div>
       </div>
 
-      <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
-        <label
-          htmlFor="description"
-          className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
-        >
-          Deposit
-        </label>
-        <div className="mt-2 sm:col-span-3 sm:mt-0">
-          <input
-            type="number"
-            min="0"
-            step="1" // ensures integer
-            defaultValue="0"
-            name="deposit"
-            id="deposit"
-            className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-cardinal-600 sm:max-w-sm sm:text-sm sm:leading-6"
-          />
-          <p className="mt-3 text-sm leading-6 text-gray-600">
-            A proposal requires{" "}
-            <span className="font-semibold">XXX10,000 ubld</span> to enter
-            voting period. Current balance{" "}
-            <span className="font-semibold">XX0 ubld</span>.
-          </p>
-        </div>
-      </div>
+      <DepositSection />
 
       <div className="mt-6 flex items-center justify-end gap-x-32">
         <Button
