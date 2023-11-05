@@ -5,7 +5,9 @@ import { fromBech32 } from "@cosmjs/encoding";
 import { coins, Registry } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes } from "@cosmjs/stargate";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
+import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
+import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
@@ -63,6 +65,41 @@ export const makeCoreEvalProposalMsg = ({
             title,
             description,
             evals,
+          })
+        ).finish()
+      ),
+    }),
+    proposer,
+    ...(deposit &&
+      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
+  },
+});
+
+export interface ParamChangeArgs {
+  title: string;
+  description: string;
+  changes: ParamChange[];
+  proposer: string;
+  deposit?: number | string;
+}
+
+export const makeParamChangeProposalMsg = ({
+  title,
+  description,
+  changes,
+  proposer,
+  deposit = 1000000,
+}: ParamChangeArgs) => ({
+  typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+  value: {
+    content: Any.fromPartial({
+      typeUrl: "/cosmos.params.v1beta1.ParameterChangeProposal",
+      value: Uint8Array.from(
+        ParameterChangeProposal.encode(
+          ParameterChangeProposal.fromPartial({
+            title,
+            description,
+            changes,
           })
         ).finish()
       ),

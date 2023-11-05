@@ -11,8 +11,13 @@ const getNetworkConfig = async (netName: NetName): Promise<NetworkConfig> => {
   if (!networkConfig?.chainName || !networkConfig?.rpcAddrs?.[0])
     throw new Error("Error fetching network config");
 
+  const api = Array.isArray(networkConfig.apiAddrs)
+    ? (networkConfig.apiAddrs as string[])
+    : ["http://localhost:1317"];
+
   return {
     rpc: networkConfig.rpcAddrs[0],
+    api,
     chainName: networkConfig.chainName,
     netName,
   };

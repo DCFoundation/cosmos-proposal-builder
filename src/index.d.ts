@@ -8,6 +8,7 @@ declare global {
 
   interface NetworkConfig {
     rpc: string;
+    api: string[];
     chainName: string;
     netName: string;
   }
