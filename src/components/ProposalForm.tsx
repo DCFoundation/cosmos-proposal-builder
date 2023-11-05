@@ -17,7 +17,7 @@ export type ProposalArgs = {
 } & ProposalDetail;
 
 export type ProposalDetail =
-  | { msgType: "textProposal"; evals: CoreEval[] }
+  | { msgType: "textProposal" }
   | { msgType: "coreEvalProposal"; evals: CoreEval[] }
   | { msgType: "parameterChangeProposal"; changes: ParamChange[] };
 
