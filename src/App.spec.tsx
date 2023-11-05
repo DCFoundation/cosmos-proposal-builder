@@ -1,17 +1,26 @@
 import "./installSesLockdown.js";
 import { render, screen, within } from "@testing-library/react";
 import App from "./App";
+import { ContextProviders } from "./contexts/providers.tsx";
 
 describe("App.tsx", () => {
   it("renders app title", async () => {
-    render(<App />);
+    render(
+      <ContextProviders>
+        <App />
+      </ContextProviders>
+    );
 
     const titleElement = await screen.findByText("Gov Proposal Builder");
     expect(titleElement).toBeTruthy();
   });
 
   it("renders the wallet connection button", async () => {
-    render(<App />);
+    render(
+      <ContextProviders>
+        <App />
+      </ContextProviders>
+    );
 
     const buttonEl = await screen.findByRole("button", {
       name: "Connect Wallet",
@@ -20,7 +29,11 @@ describe("App.tsx", () => {
   });
 
   it("renders the network dropdown", async () => {
-    render(<App />);
+    render(
+      <ContextProviders>
+        <App />
+      </ContextProviders>
+    );
 
     const navElement = screen.getAllByRole("navigation")[0];
     const selectElement = within(navElement).getByRole("button", {
@@ -31,7 +44,11 @@ describe("App.tsx", () => {
   });
 
   it("renders proposal type tabs", async () => {
-    render(<App />);
+    render(
+      <ContextProviders>
+        <App />
+      </ContextProviders>
+    );
 
     const tabListEl = await screen.findByRole("tablist");
     expect(tabListEl).toBeTruthy();
@@ -47,7 +64,11 @@ describe("App.tsx", () => {
   });
 
   it("renders the footer with 3 links", async () => {
-    render(<App />);
+    render(
+      <ContextProviders>
+        <App />
+      </ContextProviders>
+    );
 
     const footerEl = await screen.findByRole("contentinfo");
     expect(footerEl.querySelectorAll("a").length).toBe(3);
