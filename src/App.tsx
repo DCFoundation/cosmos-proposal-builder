@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { StdFee } from "@cosmjs/amino";
-import { DeliverTxResponse } from "@cosmjs/stargate";
+import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast, ToastContainer } from "react-toastify";
@@ -54,6 +54,7 @@ const App = () => {
         [proposalMsg],
         fee
       );
+      assertIsDeliverTxSuccess(txResult);
     } catch (e) {
       toast.update(toastId, {
         render: parseError(e as Error),
@@ -62,7 +63,7 @@ const App = () => {
         autoClose: 10000,
       });
     }
-    if (txResult) {
+    if (txResult && txResult.code === 0) {
       toast.update(toastId, {
         render: ({ closeToast }) => (
           <TxToastMessage
