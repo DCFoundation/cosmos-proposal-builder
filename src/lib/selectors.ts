@@ -12,16 +12,19 @@ export const selectStorageCost = (query: UseQueryResult<SwingSetParams, unknown>
     : undefined;
 };
 
-export const selectIstBalance = (query: UseQueryResult<BankBalances, unknown>) => {
+export const selectIstBalance = (
+  query: UseQueryResult<BankBalances, unknown>
+) => {
   const { isLoading, data } = query;
   if (isLoading || !data) return undefined;
-  const itm = data?.find((x) => x.denom === "uist");
+  const itm = (data as BankBalances).find((x) => x.denom === "uist");
   return itm ? BigInt(itm.amount) : undefined;
 };
 
-export const selectBldBalance = (query: UseQueryResult<BankBalances, unknown>) => {
+export const selectBldCoins = (
+  query: UseQueryResult<BankBalances, unknown>
+) => {
   const { isLoading, data } = query;
   if (isLoading || !data) return undefined;
-  const itm = data?.find((x) => x.denom === "ubld");
-  return itm ? BigInt(itm.amount) : undefined;
+  return (data as BankBalances).filter((x) => x.denom === "ubld");
 };
