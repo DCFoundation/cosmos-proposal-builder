@@ -21,6 +21,7 @@ const NetworkDropdown = () => {
         href: updateSearchString({ network }),
       })),
     // incl searchString to regenerate links if query params change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [netNames, searchString]
   );
 

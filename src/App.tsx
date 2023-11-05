@@ -1,12 +1,11 @@
 import { useRef } from "react";
 import { StdFee } from "@cosmjs/amino";
-import { DeliverTxResponse } from "@cosmjs/stargate";
+import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast, ToastContainer } from "react-toastify";
 import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
-import { ParameterChangeForm } from "./components/ParameterChangeForm";
 import { Nav } from "./components/Nav";
 import { Footer } from "./components/Footer";
 import { NetworkDropdown } from "./components/NetworkDropdown";
@@ -21,6 +20,7 @@ import {
   makeTextProposalMsg,
   makeInstallBundleMsg,
   makeFeeObject,
+  makeParamChangeProposalMsg,
 } from "./lib/messageBuilder";
 import { parseError } from "./utils/transactionParser";
 import { isValidBundle } from "./utils/validate";
@@ -54,6 +54,7 @@ const App = () => {
         [proposalMsg],
         fee
       );
+      assertIsDeliverTxSuccess(txResult);
     } catch (e) {
       toast.update(toastId, {
         render: parseError(e as Error),
@@ -62,7 +63,7 @@ const App = () => {
         autoClose: 10000,
       });
     }
-    if (txResult) {
+    if (txResult && txResult.code === 0) {
       toast.update(toastId, {
         render: ({ closeToast }) => (
           <TxToastMessage
@@ -111,6 +112,7 @@ const App = () => {
       let proposalMsg;
       const feeArgs: Partial<StdFee> = {};
       if (msgType === "coreEvalProposal") {
+        if (!("evals" in vals)) throw new Error("Missing evals");
         proposalMsg = makeCoreEvalProposalMsg({
           ...vals,
           proposer: walletAddress,
@@ -121,6 +123,13 @@ const App = () => {
       }
       if (msgType === "textProposal") {
         proposalMsg = makeTextProposalMsg({
+          ...vals,
+          proposer: walletAddress,
+        });
+      }
+      if (msgType === "parameterChangeProposal") {
+        if (vals.msgType !== "parameterChangeProposal") return;
+        proposalMsg = makeParamChangeProposalMsg({
           ...vals,
           proposer: walletAddress,
         });
@@ -158,6 +167,7 @@ const App = () => {
                   titleDescOnly={true}
                   title="/cosmos.gov.v1beta1.TextProposal"
                   description="This is a governance proposal that includes a title and description."
+                  msgType="textProposal"
                 />
               ),
             },
@@ -171,6 +181,7 @@ const App = () => {
                   titleDescOnly={false}
                   title="/agoric.swingset.CoreEvalProposal"
                   description="This is a governance proposal that executes code. You will need to provide a JS Bundle, and a JSON Permit file."
+                  msgType="coreEvalProposal"
                 />
               ),
             },
@@ -190,9 +201,11 @@ const App = () => {
               title: "Parameter Change Proposal",
               msgType: "parameterChangeProposal",
               content: (
-                <ParameterChangeForm
+                <ProposalForm
                   title="/cosmos.gov.v1.MsgUpdateParams"
+                  handleSubmit={handleProposal("parameterChangeProposal")}
                   description="This is a governance proposal to change chain configuration parameters."
+                  msgType="parameterChangeProposal"
                 />
               ),
             },

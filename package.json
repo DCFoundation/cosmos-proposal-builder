@@ -6,6 +6,10 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": "vite",
+    "start:docker": "docker-compose up -d",
+    "agd": "docker-compose exec agd agd",
+    "list-proposals": "yarn run --silent agd query gov proposals -o json | jq -c '.proposals[] | [.proposal_id,.voting_end_time,.status]'",
+    "show-block-height": "yarn run --silent agd status|jq -r .SyncInfo.latest_block_height",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
     "preview": "vite preview",
     "test": "vitest",
