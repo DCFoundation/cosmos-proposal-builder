@@ -112,8 +112,7 @@ const App = () => {
       let proposalMsg;
       const feeArgs: Partial<StdFee> = {};
       if (msgType === "coreEvalProposal") {
-        if (vals.msgType !== "coreEvalProposal") return;
-        if (!vals.evals) return;
+        if (!("evals" in vals)) throw new Error("Missing evals");
         proposalMsg = makeCoreEvalProposalMsg({
           ...vals,
           proposer: walletAddress,
