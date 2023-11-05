@@ -3,7 +3,7 @@ import { NetworkContextProvider } from "./network";
 import { WalletContextProvider } from "./wallet";
 
 const ContextProviders: FC<PropsWithChildren> = ({ children }) => (
-  <NetworkContextProvider initWatcher={false}>
+  <NetworkContextProvider>
     <WalletContextProvider>{children}</WalletContextProvider>
   </NetworkContextProvider>
 );
