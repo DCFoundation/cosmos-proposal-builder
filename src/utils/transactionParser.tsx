@@ -3,9 +3,9 @@ import { NetName } from "../contexts/network";
 
 const blockExplorerUrls: Record<NetName, string | null> = {
   local: null,
-  devnet: "https://devnet.explorer.agoric.net",
-  emerynet: "https://emerynet.explorer.agoric.net",
-  ollinet: "https://ollinet.explorer.agoric.net",
+  devnet: "https://devnet.explorer.agoric.net/agoric",
+  emerynet: "https://emerynet.explorer.agoric.net/agoric",
+  ollinet: "https://ollinet.explorer.agoric.net/agoric",
   main: "https://ping.pub/agoric",
 };
 
