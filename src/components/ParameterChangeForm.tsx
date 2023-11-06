@@ -104,23 +104,25 @@ const ParameterChangeFormSection = forwardRef<ParameterChangeFormMethods>(
             </div>
           </div>
         </div>
-        <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
-          >
-            SwingSet Beans Params
-          </label>
-          <div className="sm:col-span-3">
-            <EditableTable
-              headers={["Key", "Beans", "IST"]}
-              rows={stagedParams as unknown as RowValue[]}
-              handleValueChanged={changeBeans}
-              transformInput={transformers.toIst}
-              valueKey="beans"
-            />
+        {api && (
+          <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+            >
+              SwingSet Beans Params
+            </label>
+            <div className="sm:col-span-3">
+              <EditableTable
+                headers={["Key", "Beans", "IST"]}
+                rows={stagedParams as unknown as RowValue[]}
+                handleValueChanged={changeBeans}
+                transformInput={transformers.toIst}
+                valueKey="beans"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </>
     );
   }
