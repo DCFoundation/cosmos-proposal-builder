@@ -2,6 +2,7 @@ import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
 import { getNetworkConfig } from "../lib/getNetworkConfig";
 import { useSearch } from "wouter/use-location";
 import qs from "query-string";
+import { toast } from "react-toastify";
 
 const _netNames = ["local", "devnet", "ollinet", "emerynet", "main"] as const;
 export type NetName = (typeof _netNames)[number];
@@ -22,32 +23,51 @@ export const NetworkContext = createContext<NetworkContext>({
   api: undefined,
 });
 
-const getNameName = (netName: string): NetName =>
-  _netNames.includes(netName as NetName) ? (netName as NetName) : "local";
+const getNameName = (netName: string): NetName | undefined =>
+  _netNames.includes(netName as NetName) ? (netName as NetName) : undefined;
 
-export const NetworkContextProvider = ({ children }: { children: ReactNode }) => {
+export const NetworkContextProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
   const { network } = qs.parse(useSearch());
   const [netName, setNameName] = useState<NetName | undefined>(
     network ? getNameName(network as string) : undefined
   );
-  const [networkConfig, setNetworkConfig] =
-    useState<NetworkContext["networkConfig"]>(null);
+  const [networkConfig, setNetworkConfig] = useState<NetworkConfig | null>(
+    null
+  );
   const [error, setError] = useState<NetworkContext["error"]>(null);
 
   useEffect(() => {
-    if (network !== netName) {
-      if (!netName && network) {
-        const newNetName = getNameName(network as string);
-        if (newNetName !== netName) setNameName(newNetName);
-      } else setNameName(undefined);
+    if (netName) {
+      getNetworkConfig(netName)
+        .then(setNetworkConfig)
+        .catch(() => {
+          setNetworkConfig(null);
+          setError("Failed to fetch network configuration.");
+          toast.error("Failed to fetch network configuration.", {
+            position: "bottom-center",
+            autoClose: 3000,
+          });
+        });
     }
-  }, [network, netName]);
+  }, [netName]);
 
   useEffect(() => {
-    if (netName && netName !== networkConfig?.netName)
-      getNetworkConfig(netName).then(setNetworkConfig).catch(setError);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [netName]);
+    const newNetName = getNameName(network as string);
+    if (newNetName !== netName) {
+      if (_netNames.includes(newNetName as NetName)) {
+        setNameName(newNetName);
+      } else {
+        toast.error("Invalid network in URL.", {
+          position: "bottom-center",
+          autoClose: 3000,
+        });
+      }
+    }
+  }, [network, netName]);
 
   const netNames = useMemo(() => Array.from(_netNames), []);
 

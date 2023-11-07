@@ -40,6 +40,7 @@
     "@keplr-wallet/types": "^0.12.35",
     "@tailwindcss/forms": "^0.5.5",
     "@tanstack/eslint-plugin-query": "^5.6.0",
+    "@tanstack/react-query-devtools": "^5.7.2",
     "@testing-library/jest-dom": "^6.1.4",
     "@testing-library/react": "^14.0.0",
     "@types/prismjs": "^1.26.2",

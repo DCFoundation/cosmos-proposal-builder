@@ -43,6 +43,10 @@ const ParameterChangeFormSection = forwardRef<ParameterChangeFormMethods>(
     }, [currentParams]);
 
     useEffect(() => {
+      setStagedParams(null);
+    }, [api]);
+
+    useEffect(() => {
       if (!stagedParams && currentParams) {
         setStagedParams(currentParams);
       }
@@ -104,7 +108,7 @@ const ParameterChangeFormSection = forwardRef<ParameterChangeFormMethods>(
             </div>
           </div>
         </div>
-        {api && (
+        {api && currentParams && (
           <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
             <label
               htmlFor="title"
