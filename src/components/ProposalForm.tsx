@@ -4,6 +4,7 @@ import {
   useImperativeHandle,
   forwardRef,
   FormEvent,
+  ReactNode,
 } from "react";
 import { CodeInputGroup } from "./CodeInputGroup";
 import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
@@ -27,10 +28,11 @@ export type ProposalDetail =
 
 interface ProposalFormProps {
   title: string;
-  description: string;
+  description: string | ReactNode;
   handleSubmit: (proposal: ProposalArgs) => void;
   titleDescOnly?: boolean;
   msgType: QueryParams["msgType"];
+  governanceForumLink: string;
 }
 
 interface ProposalFormMethods {
@@ -38,7 +40,7 @@ interface ProposalFormMethods {
 }
 
 const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
-  ({ title, description, handleSubmit, msgType }, ref) => {
+  ({ title, description, handleSubmit, msgType, governanceForumLink }, ref) => {
     const [evals, setEvals] = useState<CoreEval[]>([]);
     const formRef = useRef<HTMLFormElement>(null);
     const codeInputRef = useRef<{ reset: () => void } | null>(null);
@@ -87,7 +89,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             <h2 className="text-base font-semibold leading-7 text-gray-900">
               {title}
             </h2>
-            <p className="mt-1 max-w-3xl text-sm leading-6 text-gray-600">
+            <p className="mt-2 max-w-4xl text-sm leading-6 text-gray-600">
               {description}
             </p>
 
@@ -131,7 +133,15 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                   />
                   <p className="mt-3 text-sm leading-6 text-gray-600">
                     Write a few sentences about the proposal and include any
-                    relevant links.
+                    relevant links. Before proposing to Mainnet, please ensure
+                    you've started a discussion on the{" "}
+                    <a
+                      className="cursor-pointer hover:text-gray-900 underline"
+                      href={governanceForumLink}
+                    >
+                      Community Forum
+                    </a>
+                    .
                   </p>
                 </div>
               </div>

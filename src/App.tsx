@@ -4,6 +4,7 @@ import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast, ToastContainer } from "react-toastify";
+import { Code } from "./components/inline";
 import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
 import { Nav } from "./components/Nav";
@@ -165,9 +166,17 @@ const App = () => {
                   ref={proposalFormRef}
                   handleSubmit={handleProposal("textProposal")}
                   titleDescOnly={true}
-                  title="/cosmos.gov.v1beta1.TextProposal"
-                  description="This is a governance proposal that includes a title and description."
+                  title="Text Proposal"
                   msgType="textProposal"
+                  governanceForumLink="https://community.agoric.com/c/governance/signaling-proposals/17"
+                  description={
+                    <>
+                      This is a governance proposal that can be used for
+                      signaling support or agreement on a certain topic or idea.
+                      Text proposals do not contain any code, and do not
+                      directly enact changes after a passing vote.
+                    </>
+                  }
                 />
               ),
             },
@@ -179,9 +188,31 @@ const App = () => {
                   ref={corEvalFormRef}
                   handleSubmit={handleProposal("coreEvalProposal")}
                   titleDescOnly={false}
-                  title="/agoric.swingset.CoreEvalProposal"
-                  description="This is a governance proposal that executes code. You will need to provide a JS Bundle, and a JSON Permit file."
+                  title="CoreEval Proposal"
                   msgType="coreEvalProposal"
+                  governanceForumLink="https://community.agoric.com/c/governance/core-eval/31"
+                  description={
+                    <>
+                      This is a governance proposal that executes code after a
+                      passing vote. The JSON Permit grants{" "}
+                      <a
+                        className="cursor-pointer hover:text-gray-900 underline"
+                        href="https://docs.agoric.com/guides/coreeval/permissions.html"
+                      >
+                        capabilities
+                      </a>{" "}
+                      and the JS Script can start or update a contract. These
+                      files can be generated with the <Code>agoric run</Code>{" "}
+                      command. For more details, see the{" "}
+                      <a
+                        className="cursor-pointer hover:text-gray-900 underline"
+                        href="https://docs.agoric.com/guides/coreeval/"
+                      >
+                        official docs
+                      </a>
+                      .
+                    </>
+                  }
                 />
               ),
             },
@@ -191,9 +222,23 @@ const App = () => {
               content: (
                 <BundleForm
                   ref={bundleFormRef}
-                  title="/agoric.swingset.MsgInstallBundle"
+                  title="Install Bundle"
                   handleSubmit={handleBundle}
-                  description="The install bundle message deploys and installs an external bundle that can be referenced in a CoreEval proposal."
+                  description={
+                    <>
+                      The install bundle message deploys and installs an
+                      external bundle generated during the{" "}
+                      <Code>agoric run</Code> process. The resulting
+                      installation can be referenced in a{" "}
+                      <a
+                        className="cursor-pointer hover:text-gray-900 underline"
+                        href="https://docs.agoric.com/guides/coreeval/"
+                      >
+                        CoreEval proposal
+                      </a>{" "}
+                      that starts or updates a contract.
+                    </>
+                  }
                 />
               ),
             },
@@ -202,9 +247,10 @@ const App = () => {
               msgType: "parameterChangeProposal",
               content: (
                 <ProposalForm
-                  title="/cosmos.gov.v1.MsgUpdateParams"
+                  title="Parameter Change Proposal"
                   handleSubmit={handleProposal("parameterChangeProposal")}
                   description="This is a governance proposal to change chain configuration parameters."
+                  governanceForumLink="https://community.agoric.com/c/governance/parameter-changes/16"
                   msgType="parameterChangeProposal"
                 />
               ),
