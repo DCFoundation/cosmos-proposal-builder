@@ -15,7 +15,7 @@ export const getTxUrl = (netName: NetName, txHash: string) => {
 };
 
 export const getGovUrl = (netName: NetName, proposalId: string) => {
-  if (!blockExplorerUrls[netName]) return null;
+  if (!blockExplorerUrls[netName] || !proposalId) return null;
   return `${blockExplorerUrls[netName]}/gov/${proposalId}`;
 };
 
