@@ -201,7 +201,7 @@ const App = () => {
                       >
                         capabilities
                       </a>{" "}
-                      and the JS Script can install and start a contract. These
+                      and the JS Script can start or update a contract. These
                       files can be generated with the <Code>agoric run</Code>{" "}
                       command. For more details, see the{" "}
                       <a
