@@ -168,6 +168,7 @@ const App = () => {
                   titleDescOnly={true}
                   title="Text Proposal"
                   msgType="textProposal"
+                  governanceForumLink="https://community.agoric.com/c/governance/signaling-proposals/17"
                   description={
                     <>
                       This is a governance proposal that can be used for
@@ -189,6 +190,7 @@ const App = () => {
                   titleDescOnly={false}
                   title="CoreEval Proposal"
                   msgType="coreEvalProposal"
+                  governanceForumLink="https://community.agoric.com/c/governance/core-eval/31"
                   description={
                     <>
                       This is a governance proposal that executes code after a
@@ -248,6 +250,7 @@ const App = () => {
                   title="Parameter Change Proposal"
                   handleSubmit={handleProposal("parameterChangeProposal")}
                   description="This is a governance proposal to change chain configuration parameters."
+                  governanceForumLink="https://community.agoric.com/c/governance/parameter-changes/16"
                   msgType="parameterChangeProposal"
                 />
               ),
