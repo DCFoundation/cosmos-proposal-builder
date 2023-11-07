@@ -166,7 +166,7 @@ const App = () => {
                   ref={proposalFormRef}
                   handleSubmit={handleProposal("textProposal")}
                   titleDescOnly={true}
-                  title="/cosmos.gov.v1beta1.TextProposal"
+                  title="Text Proposal"
                   msgType="textProposal"
                   description={
                     <>
@@ -187,7 +187,7 @@ const App = () => {
                   ref={corEvalFormRef}
                   handleSubmit={handleProposal("coreEvalProposal")}
                   titleDescOnly={false}
-                  title="/agoric.swingset.CoreEvalProposal"
+                  title="CoreEval Proposal"
                   msgType="coreEvalProposal"
                   description={
                     <>
@@ -220,7 +220,7 @@ const App = () => {
               content: (
                 <BundleForm
                   ref={bundleFormRef}
-                  title="/agoric.swingset.MsgInstallBundle"
+                  title="Install Bundle"
                   handleSubmit={handleBundle}
                   description={
                     <>
@@ -245,7 +245,7 @@ const App = () => {
               msgType: "parameterChangeProposal",
               content: (
                 <ProposalForm
-                  title="/cosmos.gov.v1.MsgUpdateParams"
+                  title="Parameter Change Proposal"
                   handleSubmit={handleProposal("parameterChangeProposal")}
                   description="This is a governance proposal to change chain configuration parameters."
                   msgType="parameterChangeProposal"
