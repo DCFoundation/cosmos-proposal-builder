@@ -4,7 +4,7 @@ import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast, ToastContainer } from "react-toastify";
-import { Code, Link } from "./components/inline";
+import { Code } from "./components/inline";
 import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
 import { Nav } from "./components/Nav";
@@ -193,15 +193,21 @@ const App = () => {
                     <>
                       This is a governance proposal that executes code after a
                       passing vote. The JSON Permit grants{" "}
-                      <Link href="https://docs.agoric.com/guides/coreeval/permissions.html">
+                      <a
+                        className="cursor-pointer hover:text-gray-900 underline"
+                        href="https://docs.agoric.com/guides/coreeval/permissions.html"
+                      >
                         capabilities
-                      </Link>{" "}
+                      </a>{" "}
                       and the JS Script can install and start a contract. These
                       files can be generated with the <Code>agoric run</Code>{" "}
                       command. For more details, see the{" "}
-                      <Link href="https://docs.agoric.com/guides/coreeval/">
+                      <a
+                        className="cursor-pointer hover:text-gray-900 underline"
+                        href="https://docs.agoric.com/guides/coreeval/"
+                      >
                         official docs
-                      </Link>
+                      </a>
                       .
                     </>
                   }
@@ -222,9 +228,12 @@ const App = () => {
                       external bundle generated during the{" "}
                       <Code>agoric run</Code> process. The resulting
                       installation can be referenced in a{" "}
-                      <Link href="https://docs.agoric.com/guides/coreeval/">
+                      <a
+                        className="cursor-pointer hover:text-gray-900 underline"
+                        href="https://docs.agoric.com/guides/coreeval/"
+                      >
                         CoreEval proposal
-                      </Link>{" "}
+                      </a>{" "}
                       that starts or updates a contract.
                     </>
                   }

@@ -18,8 +18,6 @@ const Footer = ({ text, links }: FooterProps) => {
             <div key={item.name} className="pb-6">
               <a
                 href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="text-sm leading-6 text-gray-600 hover:text-gray-900"
               >
                 {item.name}

@@ -19,27 +19,3 @@ export function Code({
     </code>
   );
 }
-
-export function Link({
-  children,
-  classNames,
-  href,
-}: {
-  href: string;
-  children: ReactNode;
-  classNames?: string;
-}) {
-  return (
-    <a
-      className={cn(
-        "cursor-pointer hover:text-gray-900 underline",
-        classNames || ""
-      )}
-      target="_blank"
-      rel="noopener noreferrer"
-      href={href}
-    >
-      {children}
-    </a>
-  );
-}
