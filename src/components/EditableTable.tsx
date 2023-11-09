@@ -3,15 +3,7 @@ import { classNames } from "../utils/classNames";
 import { stepFromValue } from "../utils/stepFromValue";
 import { useClickOutside } from "../hooks/useClickOutside";
 
-// todo, make this generic. everything should have key
 export type RowValue = Record<string, string>;
-
-/*export type RowValue = {
-  key: string;
-  value: string;
-  unknown: string;
-  type?: "number" | "string" | "textarea"; // form input type?
-};*/
 
 interface EditableTableProps {
   handleValueChanged: (key: string, value: string) => void;
@@ -92,7 +84,7 @@ const EditableTable = ({
               <input
                 ref={inputRef}
                 type={inputType}
-                min="0"
+                min={inputType === "number" ? "0" : undefined}
                 //min="1e-12" // @todo, should be one bean (feeUnit)
                 step={
                   inputType === "number"

@@ -10,12 +10,14 @@ import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { useQuery } from "@tanstack/react-query";
 import { navigate, useSearch } from "wouter/use-location";
 import qs from "query-string";
+import isEqual from "lodash.isequal";
 import { useNetwork } from "../hooks/useNetwork";
 import { updateSearchString } from "../utils/updateSearchString";
 import { EditableTable, RowValue } from "./EditableTable";
 import { ParamsTypeSelector } from "./ParamsTypeSelector";
 import { BeansPerUnit } from "../types/swingset";
 import type { FormValue, ParameterChangeTypeOption } from "../types/form";
+import { toast } from "react-toastify";
 
 type ParameterChangeFormMethods = {
   getChanges: () => ParamChange[];
@@ -86,7 +88,10 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     },
     getChanges: () => {
       if (!stagedParams) throw new Error("No params");
-      // to do, throw error/warning if there's no diff
+      if (isEqual(stagedParams, currentParams)) {
+        toast.error("No parameter changes to submit!", { autoClose: 3000 });
+        throw new Error("No changes to submit.");
+      }
       const changes = match.submitFn(stagedParams);
       if (!changes) throw new Error("Error formatting changes");
       return changes;
