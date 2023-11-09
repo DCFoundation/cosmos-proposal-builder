@@ -2,80 +2,28 @@ import { ReactNode, Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import { classNames } from "../utils/classNames";
-import { Transformers } from "./ParameterChangeForm";
-// import { useLocation } from "wouter";
-// import { updateSearchString } from "../utils/updateSearchString";
+import type { FormValue, ParameterChangeTypeOption } from "../types/form";
 
-type ParameterChangeTypeOption = {
-  title: string;
-  description: string;
-  subspace: string; // @todo, add more specific type
-  key: string;
-  valueKey?: string;
-  transformerFn?: keyof Transformers;
-  headers: string[];
-};
-
-const formTypeOptions: ParameterChangeTypeOption[] = [
-  {
-    title: "Voting Parameters",
-    description: "Configure the voting period.",
-    subspace: "gov",
-    key: "voting_params",
-    valueKey: "beans",
-    transformerFn: "toIst",
-    headers: ["Key", "Beans", "IST"],
-  },
-  {
-    title: "Tally Parameters",
-    description: "Configure the vote tally parameters, like quorum.",
-    subspace: "gov",
-    key: "tally_params",
-    headers: [],
-  },
-  {
-    title: "Deposit Parameters",
-    description:
-      "Configure the proposal deposit parameters, like minimum deposit.",
-    subspace: "gov",
-    key: "deposit_params",
-    headers: [],
-  },
-  {
-    title: "SwingSet Bean Params",
-    description:
-      "Configure price parameters for SwingSet. These include the cost to deploy a bundle.",
-    subspace: "swingset",
-    key: "beans_per_unit",
-    headers: [],
-  },
-  // {
-  //   title: "SwingSet Fee Parameters",
-  //   description:
-  //     "Configure fee unit parameters for SwingSet. This includes...",
-  //   subspace: "swingset",
-  //   key: "fee_unit_price",
-  // },
-  // @todo SwingSet bootstrap_vat_config, power_flag_feees, queue_max
-  // @todo Distribution Params, Staking Params, Slashing Params
-];
-
-interface ParamsTypeSelectorProps {
-  initialMsgType: string;
+interface ParamsTypeSelectorProps<T, R extends FormValue[] | undefined> {
+  paramOptions: ParameterChangeTypeOption<T, R>[];
+  initialSelected: ParameterChangeTypeOption<T, R>;
+  onChange: (val: ParameterChangeTypeOption<T, R>) => void;
 }
 
-const ParamsTypeSelector = ({
-  initialMsgType,
-}: ParamsTypeSelectorProps): ReactNode => {
-  const [selected, setSelected] = useState<ParameterChangeTypeOption>(
-    formTypeOptions.find((x) => x.key === initialMsgType) || formTypeOptions[0]
-  );
-  // const [_, navigate] = useLocation();
+const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
+  paramOptions,
+  initialSelected,
+  onChange,
+}: ParamsTypeSelectorProps<T, R>): ReactNode => {
+  const [selected, setSelected] =
+    useState<ParameterChangeTypeOption<T, R>>(initialSelected);
 
-  const handleChange = (newSelection: ParameterChangeTypeOption) => {
+  const handleChange = (newSelection: ParameterChangeTypeOption<T, R>) => {
     setSelected(newSelection);
-    // const { key } = newSelection;
-    // navigate(updateSearchString({ key }));
+    if (onChange && typeof onChange === "function") {
+      onChange(newSelection);
+    }
+    // XXX if change, and no network, show modal warning
   };
 
   return (
@@ -104,7 +52,7 @@ const ParamsTypeSelector = ({
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute right-0 z-10 mt-2 w-72 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                {formTypeOptions.map((option) => (
+                {paramOptions.map((option) => (
                   <Listbox.Option
                     key={option.key}
                     className={({ active }) =>

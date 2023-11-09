@@ -21,6 +21,7 @@ declare global {
       | "textProposal"
       | "installBundle"
       | "parameterChangeProposal";
+    paramType: string;
   }
 
   interface BundleJson {

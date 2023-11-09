@@ -19,14 +19,16 @@ interface EditableTableProps {
   headers: string[];
   transformInput?: (value: string) => string | number;
   valueKey: string;
+  inputType?: HTMLInputElement["type"];
 }
 
 const EditableTable = ({
   handleValueChanged,
   rows,
   headers,
-  transformInput = (value: string) => value,
+  transformInput,
   valueKey = "value",
+  inputType = "number",
 }: EditableTableProps) => {
   const tableRef = useRef<HTMLTableElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -51,8 +53,12 @@ const EditableTable = ({
     </th>
   );
 
+  const shouldTransform = typeof transformInput === "function";
+
   const renderRow = (row: RowValue) => {
-    const transformedInput = transformInput(row[valueKey]);
+    const transformedInput = shouldTransform
+      ? transformInput(row[valueKey])
+      : row[valueKey];
     return (
       <tr key={row.key}>
         <td
@@ -64,12 +70,14 @@ const EditableTable = ({
         >
           {row.key}
         </td>
-        <td
-          scope="col"
-          className={"whitespace-nowrap px-3 py-4 text-sm text-gray-500"}
-        >
-          {row[valueKey]}
-        </td>
+        {shouldTransform && (
+          <td
+            scope="col"
+            className={"whitespace-nowrap px-3 py-4 text-sm text-gray-500"}
+          >
+            {row[valueKey]}
+          </td>
+        )}
         <td
           scope="col"
           className={classNames(
@@ -83,10 +91,14 @@ const EditableTable = ({
             ) : (
               <input
                 ref={inputRef}
-                type="number"
+                type={inputType}
                 min="0"
                 //min="1e-12" // @todo, should be one bean (feeUnit)
-                step={stepFromValue(transformedInput)}
+                step={
+                  inputType === "number"
+                    ? stepFromValue(transformedInput)
+                    : undefined
+                }
                 name={row.key}
                 id={row.key}
                 defaultValue={transformedInput}
@@ -96,23 +108,21 @@ const EditableTable = ({
           </div>
         </td>
         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-          <div className="w-10">
-            <button
-              className="text-cardinal-600 hover:text-cardinal-900"
-              onClick={(e) => {
-                e.preventDefault();
-                // turn on edit mode
-                if (editingKey !== row.key) return setEditingKey(row.key);
-                // save changes
-                handleValueChanged(row.key, inputRef?.current?.value as string);
-                // @todo, toast
-                setEditingKey(undefined);
-              }}
-            >
-              {editingKey !== row.key ? "Edit" : "Save"}
-              <span className="sr-only">, {row.key}</span>
-            </button>
-          </div>
+          <button
+            className="text-cardinal-600 hover:text-cardinal-900 w-10"
+            onClick={(e) => {
+              e.preventDefault();
+              // turn on edit mode
+              if (editingKey !== row.key) return setEditingKey(row.key);
+              // save changes
+              handleValueChanged(row.key, inputRef?.current?.value as string);
+              // @todo, toast
+              setEditingKey(undefined);
+            }}
+          >
+            {editingKey !== row.key ? "Edit" : "Save"}
+            <span className="sr-only">, {row.key}</span>
+          </button>
         </td>
       </tr>
     );

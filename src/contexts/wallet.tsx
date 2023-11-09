@@ -1,4 +1,11 @@
-import { createContext, useEffect, useState, useRef, ReactNode } from "react";
+import {
+  createContext,
+  useEffect,
+  useState,
+  useRef,
+  ReactNode,
+  useCallback,
+} from "react";
 import { Decimal } from "@cosmjs/math";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { AccountData } from "@keplr-wallet/types";
@@ -47,7 +54,7 @@ export const WalletContextProvider = ({
     setWalletAddress(address);
   };
 
-  const connectWallet = async () => {
+  const connectWallet = useCallback(async () => {
     setIsLoading(true);
     const { chainId, rpc } = await suggestChain(
       getNetConfigUrl(netName as NetName)
@@ -79,7 +86,7 @@ export const WalletContextProvider = ({
         setIsLoading(false);
       }
     }
-  };
+  }, [netName, walletAddress]);
 
   if (netName && currNetName !== netName) {
     if (walletAddress) connectWallet();
@@ -90,7 +97,7 @@ export const WalletContextProvider = ({
     if (walletAddress && netName && !stargateClient.current) {
       connectWallet();
     }
-  }, [walletAddress, netName, stargateClient]);
+  }, [walletAddress, netName, connectWallet]);
 
   return (
     <WalletContext.Provider
