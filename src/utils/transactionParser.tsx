@@ -35,6 +35,13 @@ export function parseError(error: Error) {
       return `Insufficient funds. ${required} ${currency} required, only ${available} ${currency} available.`;
     }
   }
+  if (error.message.includes("Query failed with")) {
+    const match = error.message.match(/desc = ([^:]+):/);
+    if (match) {
+      const message = match[1].trim();
+      return message.charAt(0).toUpperCase() + message.slice(1);
+    }
+  }
   return error.message;
 }
 
