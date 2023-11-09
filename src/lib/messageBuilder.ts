@@ -135,6 +135,6 @@ interface MakeFeeObjectArgs {
 
 export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) =>
   ({
-    amount: coins(amount || 2000, denom || "ubld"),
+    amount: coins(amount || 0, denom || "uist"),
     gas: gas ? String(gas) : "auto",
   } as StdFee);
