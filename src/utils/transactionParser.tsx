@@ -25,12 +25,14 @@ export function parseError(error: Error) {
     return "Account does not exist. Please provision smart wallet.";
   }
   if (error.message.includes("insufficient funds")) {
-    const match = error.message.match(/(\d+)uist is smaller than (\d+)uist/);
+    const match = error.message.match(
+      /(\d+)(uist|ubld) is smaller than (\d+)(uist|ubld)/
+    );
     if (match) {
-      // todo, round up or more precision
-      const availableIst = BigInt(match[1]) / BigInt(1e6);
-      const requiredIst = BigInt(match[2]) / BigInt(1e6);
-      return `Insufficient funds. ${requiredIst} IST required, only ${availableIst} IST available.`;
+      const available = BigInt(match[1]) / BigInt(1e6);
+      const required = BigInt(match[3]) / BigInt(1e6);
+      const currency = match[2].slice(1).toUpperCase();
+      return `Insufficient funds. ${required} ${currency} required, only ${available} ${currency} available.`;
     }
   }
   return error.message;
