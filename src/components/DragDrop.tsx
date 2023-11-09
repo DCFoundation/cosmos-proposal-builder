@@ -82,11 +82,12 @@ const DragDrop: React.FC<DragDropProps> = ({
         />
         <div className="mt-4 flex text-sm leading-6 text-gray-600">
           <label
-            htmlFor="file-upload"
+            htmlFor={label}
             className="relative cursor-pointer rounded-md bg-white font-semibold text-cardinal-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-cardinal-600 focus-within:ring-offset-2 hover:text-cardinal-500"
           >
             <span>{label}</span>
             <input
+              id={label}
               ref={fileInputRef}
               type="file"
               multiple={!!multiple}
