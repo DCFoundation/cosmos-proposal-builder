@@ -54,6 +54,9 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 
   const handleFormTypeChange = (val: ParameterChangeTypeOption<T, R>) => {
     setStagedParams(null);
+    if (!api) {
+      toast.error("Please select a network!", { autoClose: 3000 });
+    }
     navigate(updateSearchString({ paramType: val.key }));
   };
 
@@ -87,7 +90,10 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
       // todo, reset form state after succesful submission, or to initial values
     },
     getChanges: () => {
-      if (!stagedParams) throw new Error("No params");
+      if (!stagedParams) {
+        toast.error("Please select a network!", { autoClose: 3000 });
+        throw new Error("No params");
+      }
       if (isEqual(stagedParams, currentParams)) {
         toast.error("No parameter changes to submit!", { autoClose: 3000 });
         throw new Error("No changes to submit.");
