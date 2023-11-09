@@ -12,6 +12,8 @@ import { Button } from "./Button";
 import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { ParameterChangeFormSection } from "./ParameterChangeForm";
 import { DepositSection } from "./DepositSection";
+import { paramOptions } from "../config/agoric";
+import type { ParameterChangeTypeOption } from "../types/form";
 
 type BaseProposalArgs = {
   title: string;
@@ -20,6 +22,11 @@ type BaseProposalArgs = {
 };
 
 export type ProposalArgs = BaseProposalArgs & ProposalDetail;
+
+export type QueryType = ReturnType<(typeof paramOptions)[number]["query"]>;
+export type SelectorReturnType = ReturnType<
+  (typeof paramOptions)[number]["selector"]
+>;
 
 export type ProposalDetail =
   | { msgType: "textProposal" }
@@ -95,7 +102,15 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
 
             <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
               {msgType === "parameterChangeProposal" ? (
-                <ParameterChangeFormSection ref={paramChangeRef} />
+                <ParameterChangeFormSection<QueryType, SelectorReturnType>
+                  ref={paramChangeRef}
+                  options={
+                    paramOptions as unknown as ParameterChangeTypeOption<
+                      QueryType,
+                      SelectorReturnType
+                    >[]
+                  }
+                />
               ) : null}
               <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
                 <label

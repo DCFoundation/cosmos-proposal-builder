@@ -10,9 +10,9 @@ export type DepositParams = {
 };
 
 export type TallyParams = {
-  quorum: string;
-  threshold: string;
-  veto_threshold: string;
+  quorum: string; // string (dec) "0.334000000000000000"
+  threshold: string; // string (dec) "0.500000000000000000"
+  veto_threshold: string; // string (dec) "0.334000000000000000"
 };
 
 export type GovParamsQueryResponse = {

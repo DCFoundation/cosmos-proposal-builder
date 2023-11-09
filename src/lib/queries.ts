@@ -82,9 +82,9 @@ export const votingParamsQuery = (
 export const tallyParamsQuery = (
   api: string | undefined
 ): UseQueryOptions<TallyParams, unknown> => ({
-  queryKey: ["votingParams", api],
+  queryKey: ["tallyParams", api],
   queryFn: async (): Promise<TallyParams> => {
-    const res = await fetch(`${api}/cosmos/gov/v1beta1/params/tally`);
+    const res = await fetch(`${api}/cosmos/gov/v1beta1/params/tallying`);
     const data: GovParamsQueryResponse = await res.json();
     return data?.tally_params;
   },
