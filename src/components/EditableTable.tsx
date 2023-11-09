@@ -14,6 +14,10 @@ interface EditableTableProps {
   inputType?: HTMLInputElement["type"];
 }
 
+type InputRefs = {
+  [key: string]: HTMLInputElement | null;
+};
+
 const EditableTable = ({
   handleValueChanged,
   rows,
@@ -23,7 +27,7 @@ const EditableTable = ({
   inputType = "number",
 }: EditableTableProps) => {
   const tableRef = useRef<HTMLTableElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRefs = useRef<InputRefs>({});
   const [editingKey, setEditingKey] = useState<string | undefined>(undefined);
 
   useClickOutside(tableRef, () => {
@@ -45,12 +49,23 @@ const EditableTable = ({
     </th>
   );
 
+  const makeHandleKeyDown =
+    (key: string) => (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        if (!inputRefs.current[key]) throw new Error("Input ref not found.");
+        handleValueChanged(key, inputRefs.current[key]?.value as string);
+        setEditingKey(undefined);
+      }
+    };
+
   const shouldTransform = typeof transformInput === "function";
 
   const renderRow = (row: RowValue) => {
     const transformedInput = shouldTransform
       ? transformInput(row[valueKey])
       : row[valueKey];
+
     return (
       <tr key={row.key}>
         <td
@@ -82,7 +97,8 @@ const EditableTable = ({
               transformedInput
             ) : (
               <input
-                ref={inputRef}
+                ref={(el) => (inputRefs.current[row.key] = el)}
+                onKeyDown={makeHandleKeyDown(row.key)}
                 type={inputType}
                 min={inputType === "number" ? "0" : undefined}
                 //min="1e-12" // @todo, should be one bean (feeUnit)
@@ -104,12 +120,17 @@ const EditableTable = ({
             className="text-cardinal-600 hover:text-cardinal-900 w-10"
             onClick={(e) => {
               e.preventDefault();
-              // turn on edit mode
-              if (editingKey !== row.key) return setEditingKey(row.key);
-              // save changes
-              handleValueChanged(row.key, inputRef?.current?.value as string);
-              // @todo, toast
-              setEditingKey(undefined);
+              if (editingKey === row.key) {
+                if (!inputRefs?.current?.[row.key])
+                  throw new Error("Input ref not found.");
+                handleValueChanged(
+                  row.key,
+                  inputRefs.current[row.key]?.value as string
+                );
+                setEditingKey(undefined);
+              } else {
+                setEditingKey(row.key);
+              }
             }}
           >
             {editingKey !== row.key ? "Edit" : "Save"}
