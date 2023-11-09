@@ -11,8 +11,6 @@ import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
-  // ["/cosmos.tx.v1beta1.Tx", Tx],
-  // ["/cosmos.tx.v1beta1.TxBody", TxBody],
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
 ]);
 
@@ -116,24 +114,6 @@ export interface MsgInstallArgs {
   submitter: string;
 }
 
-// results in error: "Submitter address cannot be empty"
-// export const makeInstallBundleMsg = ({
-//   compressedBundle,
-//   uncompressedSize,
-//   submitter,
-// }: MsgInstallArgs) => ({
-//   typeUrl: "/agoric.swingset.MsgInstallBundle",
-//   value: Uint8Array.from(
-//     MsgInstallBundle.encode(
-//       MsgInstallBundle.fromPartial({
-//         compressedBundle,
-//         uncompressedSize,
-//         submitter: fromBech32(submitter).data,
-//       })
-//     ).finish()
-//   ),
-// });
-
 export const makeInstallBundleMsg = ({
   compressedBundle,
   uncompressedSize,
@@ -155,6 +135,6 @@ interface MakeFeeObjectArgs {
 
 export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) =>
   ({
-    amount: coins(amount || 2000, denom || "ubld"),
-    gas: gas ? String(gas) : "180000",
+    amount: coins(amount || 0, denom || "uist"),
+    gas: gas ? String(gas) : "auto",
   } as StdFee);

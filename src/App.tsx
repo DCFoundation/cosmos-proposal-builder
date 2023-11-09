@@ -1,5 +1,4 @@
 import { useRef } from "react";
-import { StdFee } from "@cosmjs/amino";
 import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
 import { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
@@ -35,7 +34,6 @@ const App = () => {
 
   async function signAndBroadcast(
     proposalMsg: EncodeObject,
-    feeArgs = {},
     type: "bundle" | "proposal"
   ) {
     if (!stargateClient) {
@@ -43,17 +41,21 @@ const App = () => {
       throw new Error("stargateClient not found");
     }
     if (!walletAddress) throw new Error("wallet not connected");
-    const fee = makeFeeObject(feeArgs);
     const toastId = createId();
     toast.loading("Broadcasting transaction...", {
       toastId,
     });
     let txResult: DeliverTxResponse | undefined;
     try {
+      const gas = await stargateClient.simulate(
+        walletAddress,
+        [proposalMsg],
+        undefined
+      );
       txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
-        fee
+        makeFeeObject({ gas })
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
@@ -99,9 +101,7 @@ const App = () => {
       uncompressedSize,
       submitter: walletAddress,
     });
-    // @todo gas estiates
-    const feeArgs: Partial<StdFee> = { gas: "50000000" };
-    await signAndBroadcast(proposalMsg, feeArgs, "bundle");
+    await signAndBroadcast(proposalMsg, "bundle");
   }
 
   function handleProposal(msgType: QueryParams["msgType"]) {
@@ -111,16 +111,12 @@ const App = () => {
         throw new Error("wallet not connected");
       }
       let proposalMsg;
-      const feeArgs: Partial<StdFee> = {};
       if (msgType === "coreEvalProposal") {
         if (!("evals" in vals)) throw new Error("Missing evals");
         proposalMsg = makeCoreEvalProposalMsg({
           ...vals,
           proposer: walletAddress,
         });
-        // @todo gas estiates
-        // @ts-expect-error gas
-        feeArgs.gas = "2500000";
       }
       if (msgType === "textProposal") {
         proposalMsg = makeTextProposalMsg({
@@ -137,7 +133,7 @@ const App = () => {
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
-      await signAndBroadcast(proposalMsg, feeArgs, "proposal");
+      await signAndBroadcast(proposalMsg, "proposal");
     };
   }
 

@@ -7,12 +7,14 @@ import {
   useMemo,
   ReactNode,
 } from "react";
-import { CodeInput, CodeInputMethods } from "./CodeInput";
 import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
+import { useQuery } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { CodeInput, CodeInputMethods } from "./CodeInput";
 import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
 import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
-import { useQuery } from "@tanstack/react-query";
+
 import { selectStorageCost, selectIstBalance } from "../lib/selectors";
 import { useWallet } from "../hooks/useWallet";
 
@@ -31,7 +33,6 @@ interface BundleFormMethods {
 const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
   ({ title, description, handleSubmit }, ref) => {
     const [bundle, setBundle] = useState<BundleFormArgs["bundle"] | null>(null);
-    const [error, setError] = useState<string | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const codeInputRef = useRef<CodeInputMethods | null>(null);
     const { api } = useNetwork();
@@ -59,9 +60,11 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       e.preventDefault();
       const cost = codeInputRef.current?.getBundleCost?.();
       if (!bundle) {
-        setError("Bundle JSON not provided.");
+        toast.error("Bundle JSON not provided.", { autoClose: 3000 });
       } else if (cost && cost > Number(istBalance) / 10 ** 6) {
-        setError("Insufficient funds to install bundle.");
+        toast.error("Insufficient funds to install bundle.", {
+          autoClose: 3000,
+        });
       } else {
         handleSubmit({ bundle });
       }
@@ -101,7 +104,6 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
               </div>
             </div>
           </div>
-          {error ? <p>{error}</p> : null}
         </div>
         <div className="mt-6 flex items-center justify-end gap-x-32">
           <Button
