@@ -4,7 +4,14 @@ import { useSearch } from "wouter/use-location";
 import qs from "query-string";
 import { toast } from "react-toastify";
 
-const _netNames = ["local", "devnet", "ollinet", "emerynet", "main"] as const;
+const _netNames = [
+  "local",
+  "devnet",
+  "ollinet",
+  "xnet",
+  "emerynet",
+  "main",
+] as const;
 export type NetName = (typeof _netNames)[number];
 
 interface NetworkContext {
