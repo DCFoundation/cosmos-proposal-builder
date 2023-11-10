@@ -5,6 +5,7 @@ const blockExplorerUrls: Record<NetName, string | null> = {
   local: null,
   devnet: "https://devnet.explorer.agoric.net/agoric",
   emerynet: "https://emerynet.explorer.agoric.net/agoric",
+  xnet: "https://xnet.explorer.agoric.net/agoric",
   ollinet: "https://ollinet.explorer.agoric.net/agoric",
   main: "https://ping.pub/agoric",
 };
