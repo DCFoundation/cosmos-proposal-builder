@@ -47,11 +47,13 @@ const App = () => {
     });
     let txResult: DeliverTxResponse | undefined;
     try {
-      const gas = await stargateClient.simulate(
+      const estimate = await stargateClient.simulate(
         walletAddress,
         [proposalMsg],
         undefined
       );
+      const adjustment = 1.2;
+      const gas = estimate * adjustment;
       txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
