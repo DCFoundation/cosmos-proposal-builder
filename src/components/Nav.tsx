@@ -28,7 +28,7 @@ const Nav = ({ title, showLogo, rightContent }: NavProps) => (
 );
 
 Nav.defaultProps = {
-  title: "Gov Proposal Builder",
+  title: "Agoric Gov Proposal Builder",
   showLogo: true,
 };
 
