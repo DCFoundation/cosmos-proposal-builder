@@ -71,7 +71,7 @@ const CodeInputGroup = forwardRef<CodeInputGroupMethods, CodeInputGroupProps>(
           onClick={addMore}
           Icon={null}
           text="Add more files"
-          theme="light"
+          theme="dark"
           layoutStyle="flex w-1/3"
         />
       </div>
