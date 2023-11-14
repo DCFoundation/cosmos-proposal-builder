@@ -143,24 +143,28 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
           </div>
         </div>
       </div>
-      <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
-        >
-          {match.title}
-        </label>
-        <div className="sm:col-span-3">
-          <EditableTable
-            headers={match.headers as string[]}
-            rows={stagedParams as unknown as RowValue[]}
-            handleValueChanged={handleValueChanged}
-            transformInput={match.transformColumn === "ist" ? toIst : undefined}
-            valueKey={match.valueKey || ("value" as string)}
-            inputType={match.inputType || "string"}
-          />
+      {api && (
+        <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+          <label
+            htmlFor="title"
+            className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+          >
+            {match.title}
+          </label>
+          <div className="sm:col-span-3">
+            <EditableTable
+              headers={match.headers as string[]}
+              rows={stagedParams as unknown as RowValue[]}
+              handleValueChanged={handleValueChanged}
+              transformInput={
+                match.transformColumn === "ist" ? toIst : undefined
+              }
+              valueKey={match.valueKey || ("value" as string)}
+              inputType={match.inputType || "string"}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 }
