@@ -13,7 +13,13 @@ const Nav = ({ title, showLogo, rightContent }: NavProps) => (
         <div className="flex items-center space-x-1">
           {showLogo ? (
             <div className="flex-shrink-0">
-              <img className="h-7 w-7" src="dcf.png" alt="DCFoundation" />
+              <a href="https://dcfoundation.io/">
+                <img
+                  className="h-7 w-7"
+                  src="dcf-black.png"
+                  alt="DCFoundation"
+                />
+              </a>
             </div>
           ) : null}
           <h1 className="text-white px-3 py-2 font-semibold text-md">
