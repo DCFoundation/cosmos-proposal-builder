@@ -61,6 +61,7 @@ const App = () => {
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
+      console.error(e);
       toast.update(toastId, {
         render: parseError(e as Error),
         type: "error",
