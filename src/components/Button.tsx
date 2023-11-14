@@ -12,9 +12,9 @@ export interface ButtonProps {
 }
 
 const butttonThemeStyles = {
-  dark: "text-white bg-cardinal-600 focus-visible:outline-cardinal-600 hover:opacity-80",
+  dark: "text-white bg-teal-600 focus-visible:outline-teal-600 hover:opacity-80",
   light:
-    "text-black bg-cardinal-200 focus-visible:outline-cardinal-200 hover:bg-cardinal-300",
+    "text-black bg-teal-200 focus-visible:outline-teal-200 hover:bg-teal-300",
   white:
     "text-gray-900 bg-white ring-1 ring-inset ring-gray-300 focus-visible:outline-gray-300 hover:bg-gray-50",
 };

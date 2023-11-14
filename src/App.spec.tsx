@@ -11,7 +11,7 @@ describe("App.tsx", () => {
       </ContextProviders>
     );
 
-    const titleElement = await screen.findByText("Gov Proposal Builder");
+    const titleElement = await screen.findByText("Agoric Gov Proposal Builder");
     expect(titleElement).toBeTruthy();
   });
 

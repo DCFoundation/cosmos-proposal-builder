@@ -83,7 +83,7 @@ const Modal = ({ title, open, children, onClose }: ModalProps) => {
                 <div className="flex flex-shrink-0 flex-wrap items-center justify-end rounded-b-md border-t-2 border-neutral-100 border-opacity-100 p-4">
                   <button
                     type="button"
-                    className="inline-block rounded bg-cardinal-100 px-6 pb-2 pt-2.5 text-xs font-medium uppercase text-black hover:bg-cardinl-50 focus:bg-cardinal-50 focus:outline-none focus:ring-0 active:bg-cardinal-200"
+                    className="inline-block rounded bg-teal-100 px-6 pb-2 pt-2.5 text-xs font-medium uppercase text-black hover:bg-cardinl-50 focus:bg-teal-50 focus:outline-none focus:ring-0 active:bg-teal-200"
                     onClick={onClose}
                   >
                     Close

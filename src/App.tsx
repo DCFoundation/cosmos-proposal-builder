@@ -143,7 +143,7 @@ const App = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Nav
-        title="Gov Proposal Builder"
+        title="Agoric Gov Proposal Builder"
         showLogo={true}
         rightContent={
           <>

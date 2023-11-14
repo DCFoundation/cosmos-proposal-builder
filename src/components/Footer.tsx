@@ -39,15 +39,15 @@ Footer.defaultProps = {
   links: [
     {
       name: "View Source",
-      href: "https://github.com/0xpatrickdev/agoric-gov-proposal-hub",
+      href: "https://github.com/DCFoundation/cosmos-proposal-builder",
     },
     {
       name: "Request a Feature",
-      href: "https://github.com/0xpatrickdev/agoric-gov-proposal-hub/issues/new",
+      href: "https://github.com/DCFoundation/cosmos-proposal-builder/issues/new",
     },
     {
       name: "Report a Bug",
-      href: "https://github.com/0xpatrickdev/agoric-gov-proposal-hub/issues/new",
+      href: "https://github.com/DCFoundation/cosmos-proposal-builder/issues/new",
     },
   ],
   text: undefined,

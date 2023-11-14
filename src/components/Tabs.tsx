@@ -34,17 +34,17 @@ const Tabs = ({ tabs }: TabsProps) => {
   return (
     <div className="w-full max-w-5xl px-2 py-2 sm:px-0 m-auto">
       <Tab.Group selectedIndex={selectedIdx} onChange={handleChange}>
-        <Tab.List className="flex space-x-1 rounded-xl bg-cardinal-900/20 p-1">
+        <Tab.List className="flex space-x-1 rounded-xl bg-teal-900/20 p-1">
           {tabs.map(({ title }) => (
             <Tab
               key={title}
               className={({ selected }) =>
                 classNames(
-                  "w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-cardinal-700",
-                  "ring-white ring-opacity-60 ring-offset-2 ring-offset-cardinal-400 focus:outline-none focus:ring-2",
+                  "w-full rounded-lg py-2.5 text-sm font-medium leading-5 text-teal-700",
+                  "ring-white ring-opacity-60 ring-offset-2 ring-offset-teal-400 focus:outline-none focus:ring-2",
                   selected
                     ? "bg-white shadow"
-                    : "text-cardinal-100 hover:bg-white/[0.12] hover:text-white"
+                    : "text-teal-100 hover:bg-white/[0.12] hover:text-white"
                 )
               }
             >

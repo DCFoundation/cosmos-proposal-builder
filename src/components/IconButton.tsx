@@ -18,7 +18,7 @@ export const IconButton = ({
     <button
       type="button"
       className={classNames(
-        "has-tooltip rounded-full bg-cardinal-600 p-2 text-white shadow-sm hover:bg-cardinal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cardinal-600",
+        "has-tooltip rounded-full bg-teal-600 p-2 text-white shadow-sm hover:bg-teal-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600",
         buttonClassName || ""
       )}
       onClick={onClick}
