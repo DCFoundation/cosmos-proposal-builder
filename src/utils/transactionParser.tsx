@@ -36,13 +36,16 @@ export function parseError(error: Error) {
       return `Insufficient funds. ${required} ${currency} required, only ${available} ${currency} available.`;
     }
   }
-  if (error.message.includes("Query failed with")) {
-    const match = error.message.match(/desc = ([^:]+):/);
-    if (match) {
-      const message = match[1].trim();
-      return message.charAt(0).toUpperCase() + message.slice(1);
-    }
+  if (error.message.includes(`key: votingparams, value: {"voting_period":"`)) {
+    return "Voting period currently only supports nanoseconds (1e-9). Encoding support for 's', 'm', 'h', 'd' will be added soon.";
   }
+  if (error.message.includes("proposal title cannot be blank")) {
+    return "Proposal title cannot be blank.";
+  }
+  if (error.message.includes("proposal description cannot be blank")) {
+    return "Proposal description cannot be blank.";
+  }
+  
   return error.message;
 }
 

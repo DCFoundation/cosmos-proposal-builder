@@ -95,7 +95,10 @@ const App = () => {
       toast.error("Wallet not connected.", { autoClose: 3000 });
       throw new Error("wallet not connected");
     }
-    if (!isValidBundle(vals.bundle)) throw new Error("Invalid bundle.");
+    if (!isValidBundle(vals.bundle)) {
+      toast.error("Invalid bundle format.", { autoClose: 3000 });
+      throw new Error("Invalid bundle.");
+    }
     const { compressedBundle, uncompressedSize } = await compressBundle(
       JSON.parse(vals.bundle)
     );
