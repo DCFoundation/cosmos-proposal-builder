@@ -52,8 +52,8 @@ const App = () => {
         [proposalMsg],
         undefined
       );
-      const adjustment = 1.2;
-      const gas = estimate * adjustment;
+      const adjustment = 1.3;
+      const gas = Math.ceil(estimate * adjustment);
       txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
