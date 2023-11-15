@@ -34,12 +34,12 @@ export const accountBalancesQuery = (
 ): UseQueryOptions<BankBalances, unknown> => ({
   queryKey: ["accountBalances", api, address],
   queryFn: async (): Promise<BankBalances> => {
-    // same as `/cosmos/bank/v1beta1/balances/${addr}` ?
-    const res = await fetch(`${api}/bank/balances/${address}`);
+    const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
     const data: BankBalanceResponse = await res.json();
     return data?.result;
   },
   enabled: !!api && !!address,
+  refetchInterval: 30 * 1e3,
 });
 
 export const bankAssetsQuery = (
