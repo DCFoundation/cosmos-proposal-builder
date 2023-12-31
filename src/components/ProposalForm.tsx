@@ -5,15 +5,16 @@ import {
   forwardRef,
   FormEvent,
   ReactNode,
-} from "react";
-import { CodeInputGroup } from "./CodeInputGroup";
-import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
-import { Button } from "./Button";
-import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
-import { ParameterChangeFormSection } from "./ParameterChangeForm";
-import { DepositSection } from "./DepositSection";
-import { paramOptions } from "../config/agoric";
-import type { ParameterChangeTypeOption } from "../types/form";
+} from 'react';
+import { CodeInputGroup } from './CodeInputGroup';
+import { CoreEval } from '@agoric/cosmic-proto/swingset/swingset.js';
+import { Button } from './Button';
+import { ParamChange } from 'cosmjs-types/cosmos/params/v1beta1/params';
+import { ParameterChangeFormSection } from './ParameterChangeForm';
+import { DepositSection } from './DepositSection';
+import { paramOptions } from '../config/agoric';
+import type { ParameterChangeTypeOption } from '../types/form';
+import { AssetInfo } from './AssetInfo.tsx';
 
 type BaseProposalArgs = {
   title: string;
@@ -23,22 +24,22 @@ type BaseProposalArgs = {
 
 export type ProposalArgs = BaseProposalArgs & ProposalDetail;
 
-export type QueryType = ReturnType<(typeof paramOptions)[number]["query"]>;
+export type QueryType = ReturnType<(typeof paramOptions)[number]['query']>;
 export type SelectorReturnType = ReturnType<
-  (typeof paramOptions)[number]["selector"]
+  (typeof paramOptions)[number]['selector']
 >;
 
 export type ProposalDetail =
-  | { msgType: "textProposal" }
-  | { msgType: "coreEvalProposal"; evals: CoreEval[] }
-  | { msgType: "parameterChangeProposal"; changes: ParamChange[] };
+  | { msgType: 'textProposal' }
+  | { msgType: 'coreEvalProposal'; evals: CoreEval[] }
+  | { msgType: 'parameterChangeProposal'; changes: ParamChange[] };
 
 interface ProposalFormProps {
   title: string;
   description: string | ReactNode;
   handleSubmit: (proposal: ProposalArgs) => void;
   titleDescOnly?: boolean;
-  msgType: QueryParams["msgType"];
+  msgType: QueryParams['msgType'];
   governanceForumLink: string;
 }
 
@@ -70,23 +71,23 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
       if (formRef?.current) {
         const formData = new FormData(formRef.current);
         if (formData) {
-          const title = (formData.get("title") as string) || "";
-          const description = (formData.get("description") as string) || "";
-          const depositBld = (formData.get("deposit") as string) || "";
+          const title = (formData.get('title') as string) || '';
+          const description = (formData.get('description') as string) || '';
+          const depositBld = (formData.get('deposit') as string) || '';
           const deposit = Number(depositBld) * 1_000_000;
           const args: BaseProposalArgs = { title, description, deposit };
-          if (msgType === "coreEvalProposal" && evals.length) {
+          if (msgType === 'coreEvalProposal' && evals.length) {
             return handleSubmit({ ...args, msgType, evals });
-          } else if (msgType == "textProposal") {
+          } else if (msgType == 'textProposal') {
             return handleSubmit({ ...args, msgType });
-          } else if (msgType === "parameterChangeProposal") {
+          } else if (msgType === 'parameterChangeProposal') {
             const changes = paramChangeRef.current?.getChanges();
-            if (!Array.isArray(changes)) throw new Error("No changes");
+            if (!Array.isArray(changes)) throw new Error('No changes');
             return handleSubmit({ ...args, msgType, changes });
           }
         }
       }
-      throw new Error("Error reading form data.");
+      throw new Error('Error reading form data.');
     };
 
     return (
@@ -101,7 +102,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             </p>
 
             <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
-              {msgType === "parameterChangeProposal" ? (
+              {msgType === 'parameterChangeProposal' ? (
                 <ParameterChangeFormSection<QueryType, SelectorReturnType>
                   ref={paramChangeRef}
                   options={
@@ -143,13 +144,13 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                     name="description"
                     rows={3}
                     className="block w-full max-w-2xl rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
-                    defaultValue={""}
+                    defaultValue={''}
                     placeholder="Description"
                   />
                   <p className="mt-3 text-sm leading-6 text-gray-600">
                     Write a few sentences about the proposal and include any
                     relevant links. Before proposing to Mainnet, please ensure
-                    you've started a discussion on the{" "}
+                    you've started a discussion on the{' '}
                     <a
                       className="cursor-pointer hover:text-gray-900 underline"
                       href={governanceForumLink}
@@ -161,7 +162,8 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                 </div>
               </div>
 
-              {msgType === "coreEvalProposal" ? (
+              <AssetInfo />
+              {msgType === 'coreEvalProposal' ? (
                 <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
                   <label
                     htmlFor="description"
