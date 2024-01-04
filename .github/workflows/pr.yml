@@ -44,23 +44,23 @@ jobs:
         run: sudo apt-get install jq
       - name: Wait for Docker container to be ready
         run: |
-          timeout 300 bash -c '
-          echo "Waiting for the agoric service to be ready...";
-          while true; do
-            response=$(curl --silent http://localhost:1317);
-            echo "Checking service response: $response";
-            code=$(echo $response | jq .code);
-            message=$(echo $response | jq -r .message);
-            if [ "$code" == "12" ] && [ "$message" == "Not Implemented" ]; then
-              echo "Service is ready!";
+          TARGET_HEIGHT=1001
+          SLEEP=10
+          echo "Waiting for the Agoric service to be fully ready..."
+          echo "Target block height: $TARGET_HEIGHT"
+          if ! timeout 180 bash -c 'while true; do 
+            response=$(curl --silent http://localhost:26657/abci_info);
+            height=$(echo $response | jq -r .result.response.last_block_height);
+            if [[ $((height)) -ge $TARGET_HEIGHT ]]; then
+              echo "Service is ready! Last block height: $height";
               break;
+            else
+              echo "Waiting for last block height to reach $TARGET_HEIGHT. Current height: $height";
             fi;
-            sleep 10;
-            timeout=$((timeout-10));
-            if [ "$timeout" -le 0 ]; then
-              echo "Service did not become ready in time";
-              exit 1;
-            fi;
-          done'
+            sleep $SLEEP;
+          done'; then
+            echo "Service did not become fully ready in time"
+            exit 1
+          fi
       - name: Run E2E Tests
         run: yarn test:e2e
