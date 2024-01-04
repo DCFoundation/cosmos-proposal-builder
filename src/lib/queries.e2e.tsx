@@ -36,6 +36,7 @@ beforeEach<QueryTestContext>(async (context) => {
 });
 
 describe("React Query Hook Tests for RPC Endpoints", () => {
+
   describe("swingSetParams Query", () => {
     it("should return data in a shape we're expecting", async ({
       api,
@@ -60,6 +61,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       expect(result.current.data).toMatchSnapshot();
     });
   });
+
   describe("accountBalancesQuery Query", () => {
     it("should return a uist balance > 0 for provisionPool addr", async ({
       api,
@@ -78,6 +80,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       expect(Number(istBalance?.amount ?? 0)).toBeGreaterThan(1);
     });
   });
+
   describe("bankAssetsQuery Query", () => {
     it("should return balances for ubld, uist, and ibc/*", async ({
       api,
@@ -102,6 +105,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       expect(ibcTokens?.length).toBeGreaterThan(1);
     });
   });
+
   describe("bankAssetsMetadataQuery Query", () => {
     it("does not return any data for agd", async ({
       api,
@@ -117,6 +121,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       expect(result.current.data).toMatchInlineSnapshot("[]");
     });
   });
+
   describe("votingParamsQuery Query", () => {
     it("should return data in a shape we're expecting", async ({
       api,
@@ -136,6 +141,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       `);
     });
   });
+
   describe("tallyParamsQuery Query", () => {
     it("should return quorum, threshold, veto_threshold", async ({
       api,
@@ -157,6 +163,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       `);
     });
   });
+
   describe("depositParamsQuery Query", () => {
     it("should return max_deposit_period, min_deposit: Coins[]", async ({
       api,
@@ -182,6 +189,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       `);
     });
   });
+
   describe("distributionParamsQuery Query", () => {
     it("should return data in a shape we're expecting", async ({
       api,
@@ -204,6 +212,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       `);
     });
   });
+
   describe("stakingParamsQuery Query", () => {
     it("should return data in a shape we're expecting", async ({
       api,
