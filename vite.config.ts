@@ -9,5 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "happy-dom",
+    // modified import('vitest/dist/config.js').defaultInclude
+    include: "**/*.{e2e,spec}.?(c|m)[jt]s?(x)",
   },
 });

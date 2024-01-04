@@ -27,6 +27,46 @@ yarn build
 
 Open an issue to request a feature or report a bug.
 
+## Testing
+
+We use [Vitest](https://vitest.dev/) as the test runner.
+
+### Unit Tests
+
+```bash
+yarn install    # Install project dependencies
+
+yarn test:unit  # Run all tests
+```
+
+### End-to-End Tests
+
+End-to-end tests simulate an actual blockchain. Make sure you have [Docker](https://docs.docker.com/engine/install/) installed to run these tests.
+
+#### 1. Start the Blockchain Node
+
+We use a fork of [agoric-3](https://github.com/Agoric/agoric-sdk/releases) for our tests. To start the simulation, run the following command which pulls and runs the [`agoric-3-proposals`](https://github.com/Agoric/agoric-3-proposals/) image, setting up an environment similar to the Agoric mainnet:
+
+```bash
+docker run -p 1317:1317 -p 26657:26657 ghcr.io/agoric/agoric-3-proposals:main
+```
+
+_The `-p` flags expose the API and RPC ports to localhost._  
+
+If you are on Apple Silicon, please ensure Rosetta is __*disabled*__ and include the platform option:
+
+```bash
+docker run -p 1317:1317 -p 26657:26657 --platform=linux/amd64 ghcr.io/agoric/agoric-3-proposals:main
+```
+
+####  2. Run the Tests
+
+With the simulated environment running, execute the end-to-end tests:
+
+```bash
+yarn test:e2e
+```
+
 ## Features
 
 ### 1. Text Proposals
