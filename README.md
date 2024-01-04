@@ -45,7 +45,7 @@ End-to-end tests simulate an actual blockchain. Make sure you have [Docker](http
 
 #### 1. Start the Blockchain Node
 
-We use a fork of [agoric-3](https://github.com/Agoric/agoric-sdk/releases) for our tests. To start the simulation, run the following command which pulls and runs the [`agoric-3-proposals`](https://github.com/Agoric/agoric-3-proposals/) image, setting up an environment similar to the Agoric mainnet:
+We use a simulation of `agoric-3` for our tests. To start the simulation, run the following command which pulls and runs the [`agoric-3-proposals`](https://github.com/Agoric/agoric-3-proposals/) image, setting up an environment similar to the Agoric mainnet:
 
 ```bash
 docker run -p 1317:1317 -p 26657:26657 ghcr.io/agoric/agoric-3-proposals:main
