@@ -7,7 +7,7 @@ export type BankBalances = Coin[];
 
 export type BankBalanceResponse = {
   height: string;
-  result: BankBalances;
+  balances: BankBalances;
 };
 
 export type BankSupplyResponse = {
@@ -15,10 +15,7 @@ export type BankSupplyResponse = {
     next_key: string;
     total: string;
   };
-  height: string;
-  result: {
-    supply: Coin[];
-  };
+  supply: Coin[];
 };
 
 export type DenomUnit = {

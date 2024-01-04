@@ -36,7 +36,7 @@ export const accountBalancesQuery = (
   queryFn: async (): Promise<BankBalances> => {
     const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
     const data: BankBalanceResponse = await res.json();
-    return data?.result;
+    return data?.balances;
   },
   enabled: !!api && !!address,
   refetchInterval: 30 * 1e3,
@@ -49,12 +49,12 @@ export const bankAssetsQuery = (
   queryFn: async (): Promise<Coin[]> => {
     const res = await fetch(`${api}/cosmos/bank/v1beta1/supply`);
     const data: BankSupplyResponse = await res.json();
-    return data?.result?.supply;
+    return data?.supply;
   },
   enabled: !!api,
 });
 
-// do not use, does not return values for agd
+/** @deprecated do not use, does not return values for agd */
 export const bankAssetsMetadataQuery = (
   api: string | undefined
 ): UseQueryOptions<BankAssetMetadataResponse["metadatas"], unknown> => ({
