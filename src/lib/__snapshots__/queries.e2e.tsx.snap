@@ -39,6 +39,10 @@ exports[`React Query Hook Tests for RPC Endpoints > swingSetParams Query > shoul
       "beans": "2000000000",
       "key": "storageByte",
     },
+    {
+      "beans": "1000000000000",
+      "key": "smartWalletProvision",
+    },
   ],
   "bootstrap_vat_config": "@agoric/vats/decentral-main-vaults-config.json",
   "fee_unit_price": [
