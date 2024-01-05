@@ -39,3 +39,16 @@ export type BankAssetMetadataResponse = {
     symbol: string;
   }[];
 };
+
+export type DenomTrace = {
+  path: string;
+  base_denom: string;
+};
+
+export type DenomTracesResponse = {
+  pagination: {
+    next_key: string;
+    total: string;
+  };
+  denom_traces: DenomTrace[];
+};

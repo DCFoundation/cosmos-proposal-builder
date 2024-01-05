@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -13,8 +14,8 @@ import {
   depositParamsQuery,
   distributionParamsQuery,
   stakingParamsQuery,
+  ibcDenomsQuery,
 } from "./queries";
-import { ReactNode } from "react";
 import { renderHook } from "@testing-library/react-hooks";
 
 interface QueryTestContext {
@@ -233,6 +234,21 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
           "unbonding_time": "1814400s",
         }
       `);
+    });
+  });
+
+  describe("ibcDenomsQuery Query", () => {
+    it("should return data", async ({ api, wrapper }: QueryTestContext) => {
+      const { result, waitFor } = renderHook(
+        () => useQuery(ibcDenomsQuery(api)),
+        { wrapper }
+      );
+
+      await waitFor(() => result.current.isSuccess);
+      expect(result.current.data).toBeDefined();
+      // XXX why does agoric-3-proposals not implement this endpoint?
+      // should be [{ "path": "transfer/channel-0", "base_denom": "uatom"}]
+      expect(result.current.data).toMatchInlineSnapshot("[]");
     });
   });
 });
