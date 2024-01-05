@@ -1,0 +1,68 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`React Query Hook Tests for RPC Endpoints > swingSetParams Query > should return data in a shape we're expecting 2`] = `
+{
+  "beans_per_unit": [
+    {
+      "beans": "6500000000",
+      "key": "blockComputeLimit",
+    },
+    {
+      "beans": "1000000000000",
+      "key": "feeUnit",
+    },
+    {
+      "beans": "10000000000",
+      "key": "inboundTx",
+    },
+    {
+      "beans": "1000000000",
+      "key": "message",
+    },
+    {
+      "beans": "20000000",
+      "key": "messageByte",
+    },
+    {
+      "beans": "200000000000",
+      "key": "minFeeDebit",
+    },
+    {
+      "beans": "30000000",
+      "key": "vatCreation",
+    },
+    {
+      "beans": "100",
+      "key": "xsnapComputron",
+    },
+    {
+      "beans": "2000000000",
+      "key": "storageByte",
+    },
+  ],
+  "bootstrap_vat_config": "@agoric/vats/decentral-main-vaults-config.json",
+  "fee_unit_price": [
+    {
+      "amount": "1000000",
+      "denom": "uist",
+    },
+  ],
+  "power_flag_fees": [
+    {
+      "fee": [
+        {
+          "amount": "10000000",
+          "denom": "ubld",
+        },
+      ],
+      "power_flag": "SMART_WALLET",
+    },
+  ],
+  "queue_max": [
+    {
+      "key": "inbound",
+      "size": 1000,
+    },
+  ],
+}
+`;
