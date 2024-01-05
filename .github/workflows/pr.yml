@@ -40,8 +40,6 @@ jobs:
           node-version: '18.8.x'
       - name: yarn install
         run: yarn install
-      - name: Install jq
-        run: sudo apt-get install jq
       - name: Wait for Docker container to be ready
         run: |
           timeout 180 bash -c '
