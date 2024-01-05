@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       agoric:
-        image: ghcr.io/agoric/agoric-3-proposals:main # fork of agoric-3
+        image: ghcr.io/agoric/agoric-3-proposals:main # simulation of agoric-3
         ports:
           - 1317:1317 # api port
           - 26657:26657 # rpc port
