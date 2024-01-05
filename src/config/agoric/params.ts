@@ -1,17 +1,17 @@
-import type { ParameterChangeTypeOption } from "../types/form";
+import type { ParameterChangeTypeOption } from "../../types/form";
 import {
   swingSetParamsQuery,
   tallyParamsQuery,
   votingParamsQuery,
-} from "../lib/queries";
+} from "../../lib/queries";
 import {
   selectBeansPerUnit,
   selectTallyParams,
   selectVotingParams,
-} from "../lib/selectors";
-import { arrayToObject } from "../utils/object";
-import { SwingSetParams } from "../types/swingset";
-import { TallyParams, VotingParams } from "../types/gov";
+} from "../../lib/selectors";
+import { arrayToObject } from "../../utils/object";
+import { SwingSetParams } from "../../types/swingset";
+import { TallyParams, VotingParams } from "../../types/gov";
 
 export type QueryType =
   | ReturnType<typeof swingSetParamsQuery>
