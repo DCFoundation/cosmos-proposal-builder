@@ -13,11 +13,11 @@ export type ParameterChangeTypeOption<T, R extends FormValue[] | undefined> = {
   headers: string[];
   query: (
     api: string | undefined,
-    walletAddress?: string
+    walletAddress?: string,
   ) => UseQueryOptions<T, unknown>;
   selector: (data: UseQueryResult<T, unknown>) => R;
   inputType?: HTMLInputElement["type"];
   submitFn: (
-    values: FormValue[]
+    values: FormValue[],
   ) => { subspace: string; key: string; value: string }[];
 };

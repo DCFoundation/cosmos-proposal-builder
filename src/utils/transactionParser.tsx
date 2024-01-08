@@ -27,7 +27,7 @@ export function parseError(error: Error) {
   }
   if (error.message.includes("insufficient funds")) {
     const match = error.message.match(
-      /(\d+)(uist|ubld) is smaller than (\d+)(uist|ubld)/
+      /(\d+)(uist|ubld) is smaller than (\d+)(uist|ubld)/,
     );
     if (match) {
       const available = BigInt(match[1]) / BigInt(1e6);
@@ -45,7 +45,7 @@ export function parseError(error: Error) {
   if (error.message.includes("proposal description cannot be blank")) {
     return "Proposal description cannot be blank.";
   }
-  
+
   return error.message;
 }
 

@@ -57,7 +57,7 @@ export const WalletContextProvider = ({
   const connectWallet = useCallback(async () => {
     setIsLoading(true);
     const { chainId, rpc } = await suggestChain(
-      getNetConfigUrl(netName as NetName)
+      getNetConfigUrl(netName as NetName),
     );
     setRpc(rpc);
     if (chainId) {
@@ -77,7 +77,7 @@ export const WalletContextProvider = ({
               denom: "uist",
               amount: Decimal.fromUserInput("50000000", 0),
             },
-          }
+          },
         );
       } catch (e) {
         console.error("error stargateClient setup", e);

@@ -34,7 +34,7 @@ const DropdownMenu = ({ title, items, status, label }: DropdownMenuProps) => {
           <div
             className={classNames(
               "w-3 h-3 rounded-full inline-block mr-2 self-center",
-              statusColors[status]
+              statusColors[status],
             )}
           />
           <span className="w-100">{title}</span>
@@ -63,7 +63,7 @@ const DropdownMenu = ({ title, items, status, label }: DropdownMenuProps) => {
                     href={href}
                     className={classNames(
                       active ? "bg-gray-100 text-gray-900" : "text-gray-700",
-                      "block px-4 py-2 text-sm"
+                      "block px-4 py-2 text-sm",
                     )}
                   >
                     {label}

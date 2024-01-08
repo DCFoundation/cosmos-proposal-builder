@@ -34,7 +34,7 @@ const App = () => {
 
   async function signAndBroadcast(
     proposalMsg: EncodeObject,
-    type: "bundle" | "proposal"
+    type: "bundle" | "proposal",
   ) {
     if (!stargateClient) {
       toast.error("Network not connected.", { autoClose: 3000 });
@@ -50,14 +50,14 @@ const App = () => {
       const estimate = await stargateClient.simulate(
         walletAddress,
         [proposalMsg],
-        undefined
+        undefined,
       );
       const adjustment = 1.3;
       const gas = Math.ceil(estimate * adjustment);
       txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
-        makeFeeObject({ gas })
+        makeFeeObject({ gas }),
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
@@ -100,7 +100,7 @@ const App = () => {
       throw new Error("Invalid bundle.");
     }
     const { compressedBundle, uncompressedSize } = await compressBundle(
-      JSON.parse(vals.bundle)
+      JSON.parse(vals.bundle),
     );
     const proposalMsg = makeInstallBundleMsg({
       compressedBundle,

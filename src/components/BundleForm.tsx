@@ -40,12 +40,12 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
     const swingsetParams = useQuery(swingSetParamsQuery(api));
     const costPerByte = useMemo(
       () => selectStorageCost(swingsetParams),
-      [swingsetParams]
+      [swingsetParams],
     );
     const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
     const istBalance = useMemo(
       () => selectIstBalance(accountBalances),
-      [accountBalances]
+      [accountBalances],
     );
 
     useImperativeHandle(ref, () => ({
@@ -116,7 +116,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
         </div>
       </form>
     );
-  }
+  },
 );
 
 export { BundleForm };

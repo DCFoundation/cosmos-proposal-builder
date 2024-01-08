@@ -36,7 +36,6 @@ beforeEach<QueryTestContext>(async (context) => {
 });
 
 describe("React Query Hook Tests for RPC Endpoints", () => {
-
   describe("swingSetParams Query", () => {
     it("should return data in a shape we're expecting", async ({
       api,
@@ -44,7 +43,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(swingSetParamsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -70,7 +69,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(accountBalancesQuery(api, addrs.provisionPool)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -88,7 +87,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(bankAssetsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -100,7 +99,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       expect(Number(uist?.amount ?? 0)).toBeGreaterThan(1);
 
       const ibcTokens = result.current.data?.filter((x) =>
-        x.denom.startsWith("ibc/")
+        x.denom.startsWith("ibc/"),
       );
       expect(ibcTokens?.length).toBeGreaterThan(1);
     });
@@ -113,7 +112,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(bankAssetsMetadataQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -129,7 +128,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(votingParamsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -149,7 +148,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(tallyParamsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -171,7 +170,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(depositParamsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -197,7 +196,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(distributionParamsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -220,7 +219,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(stakingParamsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);

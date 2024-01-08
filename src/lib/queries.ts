@@ -17,7 +17,7 @@ import type {
 } from "../types/gov";
 
 export const swingSetParamsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<SwingSetParams, unknown> => ({
   queryKey: ["swingSetParams", api],
   queryFn: async (): Promise<SwingSetParams> => {
@@ -30,7 +30,7 @@ export const swingSetParamsQuery = (
 
 export const accountBalancesQuery = (
   api: string | undefined,
-  address: string | null
+  address: string | null,
 ): UseQueryOptions<BankBalances, unknown> => ({
   queryKey: ["accountBalances", api, address],
   queryFn: async (): Promise<BankBalances> => {
@@ -43,7 +43,7 @@ export const accountBalancesQuery = (
 });
 
 export const bankAssetsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<Coin[], unknown> => ({
   queryKey: ["bankAssets", api],
   queryFn: async (): Promise<Coin[]> => {
@@ -56,7 +56,7 @@ export const bankAssetsQuery = (
 
 /** @deprecated do not use, does not return values for agd */
 export const bankAssetsMetadataQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<BankAssetMetadataResponse["metadatas"], unknown> => ({
   queryKey: ["bankAssetsMetadata", api],
   queryFn: async (): Promise<BankAssetMetadataResponse["metadatas"]> => {
@@ -68,7 +68,7 @@ export const bankAssetsMetadataQuery = (
 });
 
 export const votingParamsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<VotingParams, unknown> => ({
   queryKey: ["votingParams", api],
   queryFn: async (): Promise<VotingParams> => {
@@ -80,7 +80,7 @@ export const votingParamsQuery = (
 });
 
 export const tallyParamsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<TallyParams, unknown> => ({
   queryKey: ["tallyParams", api],
   queryFn: async (): Promise<TallyParams> => {
@@ -92,7 +92,7 @@ export const tallyParamsQuery = (
 });
 
 export const depositParamsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<DepositParams, unknown> => ({
   queryKey: ["depositParams", api],
   queryFn: async (): Promise<DepositParams> => {
@@ -104,7 +104,7 @@ export const depositParamsQuery = (
 });
 
 export const distributionParamsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<DistributionParams, unknown> => ({
   queryKey: ["distributionParams", api],
   queryFn: async (): Promise<DistributionParams> => {
@@ -116,7 +116,7 @@ export const distributionParamsQuery = (
 });
 
 export const stakingParamsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<StakingParams, unknown> => ({
   queryKey: ["stakingParams", api],
   queryFn: async (): Promise<StakingParams> => {

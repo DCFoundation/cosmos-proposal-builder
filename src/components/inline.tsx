@@ -12,7 +12,7 @@ export function Code({
     <code
       className={cn(
         "bg-gray-200 rounded p-1 font-mono text-xs",
-        classNames || ""
+        classNames || "",
       )}
     >
       {children}

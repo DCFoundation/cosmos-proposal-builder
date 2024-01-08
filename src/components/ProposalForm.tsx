@@ -193,7 +193,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
         </div>
       </form>
     );
-  }
+  },
 );
 
 export { ProposalForm };

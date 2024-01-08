@@ -17,7 +17,7 @@ const Tabs = ({ tabs }: TabsProps) => {
   const { msgType } = qs.parse(useSearch());
   const idxFromSearch = useMemo(
     () => tabs.findIndex((x) => x.msgType === msgType) || 0,
-    [msgType, tabs]
+    [msgType, tabs],
   );
   const [selectedIdx, setSelectedIdx] = useState(idxFromSearch);
 
@@ -44,7 +44,7 @@ const Tabs = ({ tabs }: TabsProps) => {
                   "ring-white ring-opacity-60 ring-offset-2 ring-offset-teal-400 focus:outline-none focus:ring-2",
                   selected
                     ? "bg-white shadow"
-                    : "text-teal-100 hover:bg-white/[0.12] hover:text-white"
+                    : "text-teal-100 hover:bg-white/[0.12] hover:text-white",
                 )
               }
             >

@@ -40,10 +40,10 @@ export const NetworkContextProvider = ({
 }) => {
   const { network } = qs.parse(useSearch());
   const [netName, setNameName] = useState<NetName | undefined>(
-    network ? getNameName(network as string) : undefined
+    network ? getNameName(network as string) : undefined,
   );
   const [networkConfig, setNetworkConfig] = useState<NetworkConfig | null>(
-    null
+    null,
   );
   const [error, setError] = useState<NetworkContext["error"]>(null);
 

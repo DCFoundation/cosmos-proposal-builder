@@ -29,7 +29,7 @@ type ParameterChangeFormProps<T, R extends FormValue[] | undefined> = {
 
 function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   { options }: ParameterChangeFormProps<T, R>,
-  ref: React.ForwardedRef<ParameterChangeFormMethods>
+  ref: React.ForwardedRef<ParameterChangeFormMethods>,
 ) {
   const { paramType } = qs.parse(useSearch());
   const { api } = useNetwork();
@@ -39,7 +39,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 
   const currentParams = useMemo(
     () => match.selector(paramsQuery),
-    [paramsQuery, match]
+    [paramsQuery, match],
   );
 
   useEffect(() => {
@@ -63,7 +63,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   const feeUnit = useMemo(() => {
     if (currentParams && match.transformColumn === "ist") {
       const param = (currentParams as unknown as BeansPerUnit[]).find(
-        (x: BeansPerUnit) => x.key === "feeUnit"
+        (x: BeansPerUnit) => x.key === "feeUnit",
       );
       return param ? Number(param.beans) : null;
     }
@@ -75,14 +75,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
       if (feeUnit) return Number(value) / feeUnit;
       return value;
     },
-    [feeUnit]
+    [feeUnit],
   );
   const fromIst = useCallback(
     (value: string) => {
       if (feeUnit) return String(Number(value) * feeUnit);
       return value;
     },
-    [feeUnit]
+    [feeUnit],
   );
 
   useImperativeHandle(ref, () => ({
@@ -170,11 +170,11 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 }
 
 const ParameterChangeFormSection = forwardRef(
-  ParameterChangeFormSectionBase
+  ParameterChangeFormSectionBase,
 ) as <T, R extends FormValue[] | undefined>(
   props: ParameterChangeFormProps<T, R> & {
     ref?: React.ForwardedRef<ParameterChangeFormMethods>;
-  }
+  },
 ) => ReturnType<typeof ParameterChangeFormSectionBase>;
 
 export { ParameterChangeFormSection };

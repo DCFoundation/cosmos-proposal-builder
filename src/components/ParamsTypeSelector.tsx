@@ -58,7 +58,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                     className={({ active }) =>
                       classNames(
                         active ? "bg-teal-600 text-white" : "text-gray-900",
-                        "cursor-default select-none p-4 text-sm"
+                        "cursor-default select-none p-4 text-sm",
                       )
                     }
                     value={option}
@@ -67,7 +67,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                       <div
                         className={classNames(
                           "flex flex-col",
-                          active ? "cursor-pointer" : ""
+                          active ? "cursor-pointer" : "",
                         )}
                       >
                         <div className="flex justify-between">
@@ -96,7 +96,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                         <p
                           className={classNames(
                             active ? "teal-600Light" : "text-gray-500",
-                            "mt-2"
+                            "mt-2",
                           )}
                         >
                           {option.description}

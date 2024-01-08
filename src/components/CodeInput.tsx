@@ -39,7 +39,7 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
       costPerByte,
       istBalance,
     },
-    ref
+    ref,
   ) => {
     const [{ filename, size, content }, setState] = useState<
       FileState | Record<string, never>
@@ -133,7 +133,7 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
                   <p
                     className={classNames(
                       "mt-2 text-sm",
-                      !remainingCost ? "text-green-600" : "text-red-600"
+                      !remainingCost ? "text-green-600" : "text-red-600",
                     )}
                   >
                     {!remainingCost
@@ -147,7 +147,7 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
         )}
       </div>
     );
-  }
+  },
 );
 
 export { CodeInput };

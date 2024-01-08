@@ -76,7 +76,7 @@ const CodeInputGroup = forwardRef<CodeInputGroupMethods, CodeInputGroupProps>(
         />
       </div>
     );
-  }
+  },
 );
 
 export { CodeInputGroup };

@@ -63,7 +63,7 @@ export const paramOptions = [
         subspace: "gov",
         key: "tallyparams",
         value: JSON.stringify(
-          arrayToObject(values as { key: string; value: string }[])
+          arrayToObject(values as { key: string; value: string }[]),
         ),
       },
     ],
@@ -87,7 +87,7 @@ export const paramOptions = [
         subspace: "gov",
         key: "votingparams",
         value: JSON.stringify(
-          arrayToObject(values as { key: string; value: string }[])
+          arrayToObject(values as { key: string; value: string }[]),
         ),
       },
     ],

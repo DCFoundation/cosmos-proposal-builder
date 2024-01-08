@@ -5,11 +5,11 @@ import { TallyParams, VotingParams, DepositParams } from "../types/gov";
 import { objectToArray } from "../utils/object";
 
 export type SelectorFn<T, R> = (
-  query: UseQueryResult<T, unknown>
+  query: UseQueryResult<T, unknown>,
 ) => R | undefined;
 
 export const selectStorageCost = (
-  query: UseQueryResult<SwingSetParams, unknown>
+  query: UseQueryResult<SwingSetParams, unknown>,
 ) => {
   const { isLoading, data } = query;
   if (isLoading || !data) return undefined;
@@ -21,14 +21,14 @@ export const selectStorageCost = (
 };
 
 export const selectBeansPerUnit = (
-  query: UseQueryResult<SwingSetParams, unknown>
+  query: UseQueryResult<SwingSetParams, unknown>,
 ) => {
   if (!query?.data) return undefined;
   return query.data?.beans_per_unit;
 };
 
 export const selectIstBalance = (
-  query: UseQueryResult<BankBalances, unknown>
+  query: UseQueryResult<BankBalances, unknown>,
 ) => {
   if (!query?.data) return undefined;
   const itm = (query.data as BankBalances).find((x) => x.denom === "uist");
@@ -36,27 +36,27 @@ export const selectIstBalance = (
 };
 
 export const selectBldCoins = (
-  query: UseQueryResult<BankBalances, unknown>
+  query: UseQueryResult<BankBalances, unknown>,
 ) => {
   if (!query?.data) return undefined;
   return (query.data as BankBalances).filter((x) => x.denom === "ubld");
 };
 export const selectVotingParams = (
-  query: UseQueryResult<VotingParams, unknown>
+  query: UseQueryResult<VotingParams, unknown>,
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
 };
 
 export const selectTallyParams = (
-  query: UseQueryResult<TallyParams, unknown>
+  query: UseQueryResult<TallyParams, unknown>,
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
 };
 
 export const selectDepsoitParams = (
-  query: UseQueryResult<DepositParams, unknown>
+  query: UseQueryResult<DepositParams, unknown>,
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
