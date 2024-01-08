@@ -2,7 +2,7 @@ import { readFileSync } from "fs";
 import { createRequire } from "module";
 import { generateFromTemplate } from "./generateFromTemplate";
 
-const myRequire = createRequire(import.meta.url);
+const nodeRequire = createRequire(import.meta.url);
 
 describe("proposal builders - generateFromTemplate", () => {
   it("should generate code from addPsm template", () => {
@@ -14,11 +14,11 @@ describe("proposal builders - generateFromTemplate", () => {
         "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
     };
     const template = readFileSync(
-      myRequire.resolve("./addPSM/gov-start-psm.js"),
+      nodeRequire.resolve("./addPSM/gov-start-psm.js"),
       "utf8"
     );
     const expectedCode = readFileSync(
-      myRequire.resolve("./__fixtures__/gov-start-usdc-psm.js"),
+      nodeRequire.resolve("./__fixtures__/gov-start-usdc-psm.js"),
       "utf8"
     );
     const generatedCode = generateFromTemplate<AddPSMParams>(template, values);
@@ -36,13 +36,13 @@ describe("proposal builders - generateFromTemplate", () => {
       oracleBrand: "stATOM",
     };
     const [vaultTemplate, oracleTemplate] = [
-      readFileSync(myRequire.resolve("./addVault/add-vault.js"), "utf8"),
-      readFileSync(myRequire.resolve("./addVault/add-oracle.js"), "utf8"),
+      readFileSync(nodeRequire.resolve("./addVault/add-vault.js"), "utf8"),
+      readFileSync(nodeRequire.resolve("./addVault/add-oracle.js"), "utf8"),
     ];
     const [expectedVault, expectedOracle] = [
-      readFileSync(myRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
+      readFileSync(nodeRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
       readFileSync(
-        myRequire.resolve("./__fixtures__/add-stATOM-oracles.js"),
+        nodeRequire.resolve("./__fixtures__/add-stATOM-oracles.js"),
         "utf8"
       ),
     ];
