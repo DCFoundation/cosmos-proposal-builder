@@ -17,7 +17,7 @@ const imageMap: Record<ChainName, string> = {
 
 export type ChainListItem = {
   label: string;
-  value: string;
+  value: ChainName;
   href: string;
   image: string;
 };

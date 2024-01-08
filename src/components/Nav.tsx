@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { Link } from "wouter";
 
 interface NavProps {
   title?: string;
@@ -23,7 +24,7 @@ const Nav = ({ title, showLogo, rightContent }: NavProps) => (
             </div>
           ) : null}
           <h1 className="text-white px-3 py-2 font-semibold text-md">
-            <a href="/">{title}</a>
+            <Link href="/">{title}</Link>
           </h1>
         </div>
 

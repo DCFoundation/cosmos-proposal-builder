@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
+import { Router, Route } from "wouter";
 import { Nav } from "./components/Nav";
 import { Footer } from "./components/Footer";
 import { ChainDropdown } from "./components/ChainDropdown";
@@ -6,13 +8,14 @@ import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { ChainTiles } from "./components/ChainTiles";
 import { useChain } from "./hooks/useChain";
+import { chainConfigMap } from "./config";
 
 const App = () => {
-  const { chain, chains } = useChain();
+  const { chains } = useChain();
   return (
     <div className="flex flex-col min-h-screen">
       <Nav
-        title="Cosmos Proposal Builder"
+        title="Agoric Gov Proposal Builder"
         showLogo={true}
         rightContent={
           <>
@@ -27,7 +30,23 @@ const App = () => {
         }
       />
       <main className="flex-grow mx-auto max-w-7xl min-w-full py-6 sm:px-6 lg:px-8">
-        {!chain ? <ChainTiles chains={chains} /> : <Agoric />}
+        <Router>
+          <Route path="/" component={() => <ChainTiles chains={chains} />} />
+          {chains.map(({ href, value }) => {
+            const LazyComponent = chainConfigMap[value];
+            return (
+              <Route
+                key={value}
+                path={href}
+                component={() => (
+                  <Suspense fallback={<></>}>
+                    <LazyComponent />
+                  </Suspense>
+                )}
+              />
+            );
+          })}
+        </Router>
       </main>
       <Footer />
       <ToastContainer
