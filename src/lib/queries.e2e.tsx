@@ -241,7 +241,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     it("should return data", async ({ api, wrapper }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(ibcDenomsQuery(api)),
-        { wrapper }
+        { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);

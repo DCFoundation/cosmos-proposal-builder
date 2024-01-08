@@ -15,15 +15,14 @@ function unescapeBackticksInComments(code: string) {
   return code.replace(/(\/\/.*?)\\`/g, "$1`");
 }
 
-
 export function generateFromTemplate<T extends Record<string, unknown>>(
   template: string,
-  values: T
+  values: T,
 ) {
   template = escapeTemplateLiterals(template);
   template = escapeBackticksInComments(template);
 
-  Object.keys(values).forEach(key => {
+  Object.keys(values).forEach((key) => {
     // replace quoted strings
     const quoted = new RegExp(`"%%${key}%%"`, "g");
     if (template.match(quoted)) {
@@ -32,13 +31,13 @@ export function generateFromTemplate<T extends Record<string, unknown>>(
 
     // replace numbers
     const numbers = new RegExp(`"%%N${key}N%%"`, "g");
-    if (template.match(numbers))  {
+    if (template.match(numbers)) {
       template = template.replace(numbers, values[key] as string);
     }
 
     // replace intra-string values with unquoted values
     const unQuoted = new RegExp(`%%U${key}U%%`, "g");
-    if (template.match(unQuoted))  {
+    if (template.match(unQuoted)) {
       template = template.replace(unQuoted, values[key] as string);
     }
   });

@@ -15,11 +15,11 @@ describe("proposal builders - generateFromTemplate", () => {
     };
     const template = readFileSync(
       nodeRequire.resolve("./addPSM/gov-start-psm.js"),
-      "utf8"
+      "utf8",
     );
     const expectedCode = readFileSync(
       nodeRequire.resolve("./__fixtures__/gov-start-usdc-psm.js"),
-      "utf8"
+      "utf8",
     );
     const generatedCode = generateFromTemplate<AddPSMParams>(template, values);
     expect(generatedCode).toEqual(expectedCode);
@@ -43,7 +43,7 @@ describe("proposal builders - generateFromTemplate", () => {
       readFileSync(nodeRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
       readFileSync(
         nodeRequire.resolve("./__fixtures__/add-stATOM-oracles.js"),
-        "utf8"
+        "utf8",
       ),
     ];
     const [generatedVault, generatedOracle] = [

@@ -130,7 +130,7 @@ export const stakingParamsQuery = (
 });
 
 export const ibcDenomsQuery = (
-  api: string | undefined
+  api: string | undefined,
 ): UseQueryOptions<DenomTrace[], unknown> => ({
   queryKey: ["ibcDenoms", api],
   queryFn: async (): Promise<DenomTrace[]> => {
