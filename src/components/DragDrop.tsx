@@ -72,7 +72,7 @@ const DragDrop: React.FC<DragDropProps> = ({
       onClick={handleClick}
       className={classNames(
         "flex max-w-2xl justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
-        isDragging ? "border-teal-600 bg-gray-300/10" : ""
+        isDragging ? "border-teal-600 bg-gray-300/10" : "",
       )}
     >
       <div className="text-center">

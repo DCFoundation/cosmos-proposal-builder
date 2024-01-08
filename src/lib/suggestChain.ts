@@ -50,7 +50,7 @@ const makeChainInfo = (
   networkConfig: AgoricNetworkConfig,
   caption: string,
   randomFloat: number,
-  walletUrlForStaking: string | undefined
+  walletUrlForStaking: string | undefined,
 ): ChainInfo => {
   const { chainName, rpcAddrs, apiAddrs } = networkConfig;
   const index = Math.floor(randomFloat * rpcAddrs.length);
@@ -79,7 +79,7 @@ const makeChainInfo = (
 
 export async function suggestChain(
   networkConfigHref: string,
-  caption?: string
+  caption?: string,
 ): Promise<ChainInfo> {
   const { keplr } = window;
 
@@ -107,7 +107,7 @@ export async function suggestChain(
     networkConfig,
     caption,
     Math.random(),
-    walletUrlForStaking
+    walletUrlForStaking,
   );
   console.debug("chainInfo", chainInfo);
   await keplr.experimentalSuggestChain(chainInfo);

@@ -21,8 +21,8 @@ export const DepositSection: React.FC<unknown> = () => {
     combine: (
       results: [
         UseQueryResult<DepositParams, unknown>,
-        UseQueryResult<VotingParams, unknown>
-      ]
+        UseQueryResult<VotingParams, unknown>,
+      ],
     ) => {
       const [deposit, voting] = results;
       return {
@@ -35,7 +35,7 @@ export const DepositSection: React.FC<unknown> = () => {
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const bldCoins = useMemo(
     () => selectBldCoins(accountBalances),
-    [accountBalances]
+    [accountBalances],
   );
 
   return (

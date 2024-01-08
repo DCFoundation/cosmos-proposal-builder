@@ -44,7 +44,7 @@ const Modal = ({ title, open, children, onClose }: ModalProps) => {
                 className={classNames(
                   "relative transform rounded-lg bg-white text-left shadow-xl transition-all",
                   "flex flex-col max-h-[80%] max-w-[70%]",
-                  "overflow-hidden"
+                  "overflow-hidden",
                 )}
               >
                 <div className="flex flex-shrink-0 items-center justify-between rounded-t-md border-b-2 border-neutral-100 border-opacity-100 p-4">

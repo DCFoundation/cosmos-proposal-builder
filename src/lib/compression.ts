@@ -25,7 +25,7 @@ async function blobToUint8Array(blob: Blob): Promise<Uint8Array> {
 }
 
 export const compressBundle = async (
-  bundleJson: BundleJson
+  bundleJson: BundleJson,
 ): Promise<{ compressedBundle: Uint8Array; uncompressedSize: string }> => {
   const uncompressedBlob = jsonStringToBlob(JSON.stringify(bundleJson));
   const compressedBlob = await compressBlob(uncompressedBlob);

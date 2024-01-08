@@ -32,7 +32,7 @@ const Button = ({
     className={classNames(
       "items-center justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
       butttonThemeStyles[theme],
-      layoutStyle || "inline-flex w-48"
+      layoutStyle || "inline-flex w-48",
     )}
     onClick={onClick}
   >

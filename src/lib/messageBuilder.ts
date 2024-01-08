@@ -36,8 +36,8 @@ export const makeTextProposalMsg = ({
           TextProposal.fromPartial({
             title,
             description,
-          })
-        ).finish()
+          }),
+        ).finish(),
       ),
     }),
     proposer,
@@ -63,8 +63,8 @@ export const makeCoreEvalProposalMsg = ({
             title,
             description,
             evals,
-          })
-        ).finish()
+          }),
+        ).finish(),
       ),
     }),
     proposer,
@@ -98,8 +98,8 @@ export const makeParamChangeProposalMsg = ({
             title,
             description,
             changes,
-          })
-        ).finish()
+          }),
+        ).finish(),
       ),
     }),
     proposer,
@@ -137,4 +137,4 @@ export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) =>
   ({
     amount: coins(amount || 0, denom || "uist"),
     gas: gas ? String(gas) : "auto",
-  } as StdFee);
+  }) as StdFee;

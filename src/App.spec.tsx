@@ -8,7 +8,7 @@ describe("App.tsx", () => {
     render(
       <ContextProviders>
         <App />
-      </ContextProviders>
+      </ContextProviders>,
     );
 
     const titleElement = await screen.findByText("Agoric Gov Proposal Builder");
@@ -19,7 +19,7 @@ describe("App.tsx", () => {
     render(
       <ContextProviders>
         <App />
-      </ContextProviders>
+      </ContextProviders>,
     );
 
     const buttonEl = await screen.findByRole("button", {
@@ -32,7 +32,7 @@ describe("App.tsx", () => {
     render(
       <ContextProviders>
         <App />
-      </ContextProviders>
+      </ContextProviders>,
     );
 
     const navElement = screen.getAllByRole("navigation")[0];
@@ -47,13 +47,13 @@ describe("App.tsx", () => {
     render(
       <ContextProviders>
         <App />
-      </ContextProviders>
+      </ContextProviders>,
     );
 
     const tabListEl = await screen.findByRole("tablist");
     expect(tabListEl).toBeTruthy();
     const tabs = [...tabListEl.querySelectorAll("button")].map(
-      (x) => x.innerText
+      (x) => x.innerText,
     );
     expect(tabs).toEqual([
       "Text Proposal",
@@ -67,7 +67,7 @@ describe("App.tsx", () => {
     render(
       <ContextProviders>
         <App />
-      </ContextProviders>
+      </ContextProviders>,
     );
 
     const footerEl = await screen.findByRole("contentinfo");

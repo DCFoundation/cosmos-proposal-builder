@@ -42,7 +42,7 @@ const EditableTable = ({
       scope="col"
       className={classNames(
         "px-3 py-3.5 text-left text-sm font-semibold text-gray-900",
-        idx === 0 ? "sm:pl-0" : ""
+        idx === 0 ? "sm:pl-0" : "",
       )}
     >
       {title}
@@ -72,7 +72,7 @@ const EditableTable = ({
           scope="col"
           className={classNames(
             "whitespace-nowrap px-3 py-4 text-sm text-gray-500",
-            "text-gray-900 sm:pl-0"
+            "text-gray-900 sm:pl-0",
           )}
         >
           {row.key}
@@ -89,7 +89,7 @@ const EditableTable = ({
           scope="col"
           className={classNames(
             "whitespace-nowrap text-sm text-gray-500 w-44",
-            editingKey !== row.key ? "px-3 py-4" : ""
+            editingKey !== row.key ? "px-3 py-4" : "",
           )}
         >
           <div style={{ width: "100%", height: "100%" }}>
@@ -125,7 +125,7 @@ const EditableTable = ({
                   throw new Error("Input ref not found.");
                 handleValueChanged(
                   row.key,
-                  inputRefs.current[row.key]?.value as string
+                  inputRefs.current[row.key]?.value as string,
                 );
                 setEditingKey(undefined);
               } else {

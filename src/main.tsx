@@ -11,5 +11,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ContextProviders>
       <App />
     </ContextProviders>
-  </React.StrictMode>
+  </React.StrictMode>,
 );
