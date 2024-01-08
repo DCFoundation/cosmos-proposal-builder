@@ -12,7 +12,7 @@ import { Button } from "./Button";
 import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { ParameterChangeFormSection } from "./ParameterChangeForm";
 import { DepositSection } from "./DepositSection";
-import { paramOptions } from "../config/agoric";
+import { paramOptions } from "../config/agoric/params";
 import type { ParameterChangeTypeOption } from "../types/form";
 
 type BaseProposalArgs = {

@@ -6,6 +6,8 @@ import type {
   BankSupplyResponse,
   Coin,
   BankAssetMetadataResponse,
+  DenomTrace,
+  DenomTracesResponse,
 } from "../types/bank";
 import type {
   GovParamsQueryResponse,
@@ -123,6 +125,18 @@ export const stakingParamsQuery = (
     const res = await fetch(`${api}/cosmos/staking/v1beta1/params`);
     const data: { params: StakingParams } = await res.json();
     return data?.params;
+  },
+  enabled: !!api,
+});
+
+export const ibcDenomsQuery = (
+  api: string | undefined,
+): UseQueryOptions<DenomTrace[], unknown> => ({
+  queryKey: ["ibcDenoms", api],
+  queryFn: async (): Promise<DenomTrace[]> => {
+    const res = await fetch(`${api}/ibc/apps/transfer/v1/denom_traces`);
+    const data: DenomTracesResponse = await res.json();
+    return data?.denom_traces;
   },
   enabled: !!api,
 });
