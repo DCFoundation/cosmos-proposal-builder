@@ -4,13 +4,15 @@ import { Footer } from "./components/Footer";
 import { ChainDropdown } from "./components/ChainDropdown";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
-import { Agoric } from "./config/agoric";
+import { ChainTiles } from "./components/ChainTiles";
+import { useChain } from "./hooks/useChain";
 
 const App = () => {
+  const { chain, chains } = useChain();
   return (
     <div className="flex flex-col min-h-screen">
       <Nav
-        title="Agoric Gov Proposal Builder"
+        title="Cosmos Proposal Builder"
         showLogo={true}
         rightContent={
           <>
@@ -25,7 +27,7 @@ const App = () => {
         }
       />
       <main className="flex-grow mx-auto max-w-7xl min-w-full py-6 sm:px-6 lg:px-8">
-        <Agoric />
+        {!chain ? <ChainTiles chains={chains} /> : <Agoric />}
       </main>
       <Footer />
       <ToastContainer

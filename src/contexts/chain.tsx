@@ -15,12 +15,15 @@ const imageMap: Record<ChainName, string> = {
   inter: "/assets/inter.png",
 };
 
-export type ChainList = {
+export type ChainListItem = {
   label: string;
   value: string;
   href: string;
   image: string;
-}[];
+};
+
+export type ChainList = ChainListItem[];
+
 interface ChainContext {
   chain: ChainName | undefined;
   chains: ChainList;
