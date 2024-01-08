@@ -94,6 +94,10 @@ export const WalletContextProvider = ({
   }
 
   useEffect(() => {
+    if (!netName && stargateClient.current) {
+      stargateClient.current = undefined;
+      return;
+    }
     if (walletAddress && netName && !stargateClient.current) {
       connectWallet();
     }

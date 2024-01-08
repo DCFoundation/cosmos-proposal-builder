@@ -28,6 +28,24 @@ describe("App.tsx", () => {
     expect(buttonEl).toBeTruthy();
   });
 
+  it("renders the chain dropdown", async () => {
+    render(
+      <ContextProviders>
+        <App />
+      </ContextProviders>,
+    );
+
+    const navElement = screen.getAllByRole("navigation")[0];
+    const selectElement = within(navElement).getByRole("button", {
+      name: "Select",
+      expanded: false,
+    });
+    expect(selectElement).toBeTruthy();
+
+    describe.todo("selecting value puts chain in pathname");
+    describe.todo("changing value resets the network dropdown value");
+  });
+
   it("renders the network dropdown", async () => {
     render(
       <ContextProviders>
@@ -37,7 +55,7 @@ describe("App.tsx", () => {
 
     const navElement = screen.getAllByRole("navigation")[0];
     const selectElement = within(navElement).getByRole("button", {
-      description: "Select Network",
+      name: "Select Network",
       expanded: false,
     });
     expect(selectElement).toBeTruthy();

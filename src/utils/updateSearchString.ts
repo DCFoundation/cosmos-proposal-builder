@@ -1,6 +1,6 @@
 import qs from "query-string";
 
 export const updateSearchString = (newParam: Partial<QueryParams>) =>
-  `/?${qs.stringify(
+  `${window.location.pathname}?${qs.stringify(
     Object.assign(qs.parse(window.location.search), newParam),
   )}`;

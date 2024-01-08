@@ -65,7 +65,7 @@ export const NetworkContextProvider = ({
   useEffect(() => {
     const newNetName = getNameName(network as string);
     if (newNetName !== netName) {
-      if (_netNames.includes(newNetName as NetName)) {
+      if (_netNames.includes(newNetName as NetName) || !newNetName) {
         setNameName(newNetName);
       } else {
         toast.error("Invalid network in URL.", {

@@ -8,6 +8,7 @@ import { BundleForm, BundleFormArgs } from "./components/BundleForm";
 import { ProposalForm, ProposalArgs } from "./components/ProposalForm";
 import { Nav } from "./components/Nav";
 import { Footer } from "./components/Footer";
+import { ChainDropdown } from "./components/ChainDropdown";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { Tabs } from "./components/Tabs";
@@ -150,6 +151,9 @@ const App = () => {
         showLogo={true}
         rightContent={
           <>
+            <div className="mr-6 relative">
+              <ChainDropdown />
+            </div>
             <div className="mr-6 relative">
               <NetworkDropdown />
             </div>
