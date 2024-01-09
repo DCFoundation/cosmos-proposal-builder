@@ -126,14 +126,15 @@ const Inter = () => {
                 <>
                   The PSM (Parity Stability Module) is a smart contract that
                   mints IST in exchange for approved stablecoins at a 1-to-1
-                  ratio. This form will generate a new{" "}
+                  ratio. This form will generate a{" "}
                   <a
                     className="cursor-pointer hover:text-gray-900 underline"
                     href="https://docs.agoric.com/guides/coreeval/"
                   >
                     CoreEval
                   </a>{" "}
-                  proposal that starts a new PSM instance.
+                  proposal that will start a new PSM instance upon successful
+                  passing.
                   <br />
                   <br />
                   Learn more from the{" "}
@@ -169,17 +170,17 @@ const Inter = () => {
               governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30"
               description={
                 <>
-                  The Add Vault proposal enables a new collateral type to be
-                  used for opening Vaults. Vaults allow users to mint IST by
-                  using their assets as collateral. This form will generate a
-                  new{" "}
+                  Vaults allow users to mint IST by using their assets as
+                  collateral. The Add Vault proposal enables a new collateral
+                  type to be used for opening vaults. This form will generate a{" "}
                   <a
                     className="cursor-pointer hover:text-gray-900 underline"
                     href="https://docs.agoric.com/guides/coreeval/"
                   >
                     CoreEval
                   </a>{" "}
-                  proposal that starts a new Vault Manager instance.
+                  proposal that will start a new Vault Manager instance upon
+                  successful passing.
                   <br />
                   <br />
                   Learn more from the{" "}
