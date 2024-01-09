@@ -26,7 +26,7 @@ const ChainTiles = ({ chains }: { chains: ChainList }) => {
               {chains.map(({ value, label, image }: ChainListItem) => (
                 <li
                   key={value}
-                  className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow hover:bg-gray-50"
+                  className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-gray-50 text-center shadow-md hover:bg-gray-100"
                 >
                   <Link
                     href={`/${value}`}
@@ -37,14 +37,7 @@ const ChainTiles = ({ chains }: { chains: ChainList }) => {
                       src={image}
                       alt={`${label} logo`}
                     />
-                    <dl className="mt-1 flex flex-grow flex-col justify-between">
-                      <dt className="sr-only">Chain</dt>
-                      <dd className="mt-3">
-                        <span className="inline-flex items-center rounded-full bg-teal-50 px-4 py-2 text-sm font-medium text-teal-700 ring-1 ring-inset ring-teal-600/20">
-                          {label}
-                        </span>
-                      </dd>
-                    </dl>
+                    <span className="font-medium -mb-4 mt-5">{label}</span>
                   </Link>
                 </li>
               ))}
