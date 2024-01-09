@@ -1,20 +1,15 @@
-import { useRef } from "react";
-import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import { createId } from "@paralleldrive/cuid2";
+import { useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import { ProposalForm, ProposalArgs } from "../../components/ProposalForm";
 import { Tabs } from "../../components/Tabs";
-import { TxToastMessage } from "../../components/TxToastMessage";
-import { useNetwork, NetName } from "../../hooks/useNetwork";
+import { useNetwork } from "../../hooks/useNetwork";
 import { useWallet } from "../../hooks/useWallet";
 import {
   makeCoreEvalProposalMsg,
   makeTextProposalMsg,
-  makeFeeObject,
   makeParamChangeProposalMsg,
 } from "../../lib/messageBuilder";
-import { parseError } from "../../utils/transactionParser";
+import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 
 const Inter = () => {
   const { netName } = useNetwork();
@@ -22,58 +17,10 @@ const Inter = () => {
   const psmFormRef = useRef<HTMLFormElement>(null);
   const vaultFormRef = useRef<HTMLFormElement>(null);
 
-  async function signAndBroadcast(proposalMsg: EncodeObject) {
-    if (!stargateClient) {
-      toast.error("Network not connected.", { autoClose: 3000 });
-      throw new Error("stargateClient not found");
-    }
-    if (!walletAddress) throw new Error("wallet not connected");
-    const toastId = createId();
-    toast.loading("Broadcasting transaction...", {
-      toastId,
-    });
-    let txResult: DeliverTxResponse | undefined;
-    try {
-      const estimate = await stargateClient.simulate(
-        walletAddress,
-        [proposalMsg],
-        undefined,
-      );
-      const adjustment = 1.3;
-      const gas = Math.ceil(estimate * adjustment);
-      txResult = await stargateClient.signAndBroadcast(
-        walletAddress,
-        [proposalMsg],
-        makeFeeObject({ gas }),
-      );
-      assertIsDeliverTxSuccess(txResult);
-    } catch (e) {
-      console.error(e);
-      toast.update(toastId, {
-        render: parseError(e as Error),
-        type: "error",
-        isLoading: false,
-        autoClose: 10000,
-      });
-    }
-    if (txResult && txResult.code === 0) {
-      toast.update(toastId, {
-        render: ({ closeToast }) => (
-          <TxToastMessage
-            resp={txResult as DeliverTxResponse}
-            netName={netName as NetName}
-            closeToast={closeToast as () => void}
-            type="proposal"
-          />
-        ),
-        type: "success",
-        isLoading: false,
-      });
-
-      psmFormRef.current?.reset();
-      vaultFormRef.current?.reset();
-    }
-  }
+  const signAndBroadcast = useMemo(
+    () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
+    [stargateClient, walletAddress, netName],
+  );
 
   function handleProposal(msgType: QueryParams["msgType"]) {
     return async (vals: ProposalArgs) => {
@@ -105,6 +52,13 @@ const Inter = () => {
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
       await signAndBroadcast(proposalMsg);
+      try {
+        await signAndBroadcast(proposalMsg, "proposal");
+        psmFormRef.current?.reset();
+        vaultFormRef.current?.reset();
+      } catch (e) {
+        console.error(e);
+      }
     };
   }
 

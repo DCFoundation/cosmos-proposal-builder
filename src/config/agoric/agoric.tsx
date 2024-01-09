@@ -1,25 +1,20 @@
-import { useRef } from "react";
-import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import { createId } from "@paralleldrive/cuid2";
+import { useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import { Code } from "../../components/inline";
 import { BundleForm, BundleFormArgs } from "../../components/BundleForm";
 import { ProposalForm, ProposalArgs } from "../../components/ProposalForm";
 import { Tabs } from "../../components/Tabs";
-import { TxToastMessage } from "../../components/TxToastMessage";
-import { useNetwork, NetName } from "../../hooks/useNetwork";
+import { useNetwork } from "../../hooks/useNetwork";
 import { useWallet } from "../../hooks/useWallet";
 import { compressBundle } from "../../lib/compression";
 import {
   makeCoreEvalProposalMsg,
   makeTextProposalMsg,
   makeInstallBundleMsg,
-  makeFeeObject,
   makeParamChangeProposalMsg,
 } from "../../lib/messageBuilder";
-import { parseError } from "../../utils/transactionParser";
 import { isValidBundle } from "../../utils/validate";
+import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 
 const Agoric = () => {
   const { netName } = useNetwork();
@@ -28,63 +23,10 @@ const Agoric = () => {
   const corEvalFormRef = useRef<HTMLFormElement>(null);
   const bundleFormRef = useRef<HTMLFormElement>(null);
 
-  async function signAndBroadcast(
-    proposalMsg: EncodeObject,
-    type: "bundle" | "proposal",
-  ) {
-    if (!stargateClient) {
-      toast.error("Network not connected.", { autoClose: 3000 });
-      throw new Error("stargateClient not found");
-    }
-    if (!walletAddress) throw new Error("wallet not connected");
-    const toastId = createId();
-    toast.loading("Broadcasting transaction...", {
-      toastId,
-    });
-    let txResult: DeliverTxResponse | undefined;
-    try {
-      const estimate = await stargateClient.simulate(
-        walletAddress,
-        [proposalMsg],
-        undefined,
-      );
-      const adjustment = 1.3;
-      const gas = Math.ceil(estimate * adjustment);
-      txResult = await stargateClient.signAndBroadcast(
-        walletAddress,
-        [proposalMsg],
-        makeFeeObject({ gas }),
-      );
-      assertIsDeliverTxSuccess(txResult);
-    } catch (e) {
-      console.error(e);
-      toast.update(toastId, {
-        render: parseError(e as Error),
-        type: "error",
-        isLoading: false,
-        autoClose: 10000,
-      });
-    }
-    if (txResult && txResult.code === 0) {
-      toast.update(toastId, {
-        render: ({ closeToast }) => (
-          <TxToastMessage
-            resp={txResult as DeliverTxResponse}
-            netName={netName as NetName}
-            closeToast={closeToast as () => void}
-            type={type}
-          />
-        ),
-        type: "success",
-        isLoading: false,
-      });
-      if (type === "proposal") {
-        proposalFormRef.current?.reset();
-        corEvalFormRef.current?.reset();
-      }
-      if (type === "bundle") bundleFormRef.current?.reset();
-    }
-  }
+  const signAndBroadcast = useMemo(
+    () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
+    [stargateClient, walletAddress, netName],
+  );
 
   async function handleBundle(vals: BundleFormArgs) {
     if (!walletAddress) {
@@ -103,7 +45,12 @@ const Agoric = () => {
       uncompressedSize,
       submitter: walletAddress,
     });
-    await signAndBroadcast(proposalMsg, "bundle");
+    try {
+      await signAndBroadcast(proposalMsg, "bundle");
+      bundleFormRef.current?.reset();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   function handleProposal(msgType: QueryParams["msgType"]) {
@@ -135,7 +82,13 @@ const Agoric = () => {
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
-      await signAndBroadcast(proposalMsg, "proposal");
+      try {
+        await signAndBroadcast(proposalMsg, "proposal");
+        proposalFormRef.current?.reset();
+        corEvalFormRef.current?.reset();
+      } catch (e) {
+        console.error(e);
+      }
     };
   }
 
