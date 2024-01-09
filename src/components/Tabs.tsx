@@ -16,7 +16,11 @@ interface TabsProps {
 const Tabs = ({ tabs }: TabsProps) => {
   const { msgType } = qs.parse(useSearch());
   const idxFromSearch = useMemo(
-    () => tabs.findIndex((x) => x.msgType === msgType) || 0,
+    () =>
+      Math.max(
+        tabs.findIndex((x) => x.msgType === msgType),
+        0,
+      ),
     [msgType, tabs],
   );
   const [selectedIdx, setSelectedIdx] = useState(idxFromSearch);
