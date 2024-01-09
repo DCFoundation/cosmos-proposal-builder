@@ -1,3 +1,4 @@
+import { Link } from "wouter";
 import type { ChainListItem, ChainList } from "../hooks/useChain";
 
 const selectChainTitle = "Cosmos Proposal Builder";
@@ -27,7 +28,10 @@ const ChainTiles = ({ chains }: { chains: ChainList }) => {
                   key={value}
                   className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow hover:bg-gray-50"
                 >
-                  <a href={`/${value}`} className="flex flex-1 flex-col p-8 ">
+                  <Link
+                    href={`/${value}`}
+                    className="flex flex-1 flex-col p-8 "
+                  >
                     <img
                       className="mx-auto h-28 w-28 flex-shrink-0"
                       src={image}
@@ -41,7 +45,7 @@ const ChainTiles = ({ chains }: { chains: ChainList }) => {
                         </span>
                       </dd>
                     </dl>
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
