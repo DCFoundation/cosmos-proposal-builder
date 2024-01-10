@@ -7,7 +7,7 @@ import { useChain } from "../hooks/useChain";
 // XXX Select Chain, Select App ?
 const placeholderText = "Select";
 
-const ChainDropdown = () => {
+const ChainMenu = () => {
   const { chain, chains } = useChain();
 
   const title = chain ? capitalize(chain) : placeholderText;
@@ -28,4 +28,4 @@ const ChainDropdown = () => {
   );
 };
 
-export { ChainDropdown };
+export { ChainMenu };

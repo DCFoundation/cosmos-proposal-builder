@@ -3,7 +3,7 @@ import { ToastContainer } from "react-toastify";
 import { Switch, Route } from "wouter";
 import { Nav } from "./components/Nav";
 import { Footer } from "./components/Footer";
-import { ChainDropdown } from "./components/ChainDropdown";
+import { ChainMenu } from "./components/ChainMenu";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { ChainTiles } from "./components/ChainTiles";
@@ -20,7 +20,7 @@ const App = () => {
         rightContent={
           <>
             <div className="mr-6 relative">
-              <ChainDropdown />
+              <ChainMenu />
             </div>
             <div className="mr-6 relative">
               <NetworkDropdown />
