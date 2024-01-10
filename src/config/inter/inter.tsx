@@ -20,6 +20,7 @@ import {
   addOraclePermit,
 } from "./addVault";
 import { generateFromTemplate } from "./generateFromTemplate";
+import { InterLearnMore } from "./components/InterLearnMore";
 
 const Inter = () => {
   const { netName } = useNetwork();
@@ -119,7 +120,7 @@ const Inter = () => {
       const decimalPlaces = formData.get("decimalPlaces") as string;
       const issuerName = formData.get("issuerName") as string;
 
-      if (!denom && !denom.startsWith("ibc/")) {
+      if (!denom || !denom.startsWith("ibc/")) {
         toast.error("Invalid IBC Denom.", { autoClose: 3000 });
         return;
       }
@@ -203,29 +204,7 @@ const Inter = () => {
                 <>
                   The PSM (Parity Stability Module) is a smart contract that
                   mints IST in exchange for approved stablecoins at a 1-to-1
-                  ratio. Learn more in the{" "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://assets.ctfassets.net/h28d7ezxdyti/7fpv0Ir6wkCxjoTY1hhDUn/b64d2be55e2fb228fdd36dfa1e106011/whitepaper.pdf"
-                  >
-                    Inter Whitepaper
-                  </a>
-                  {", "}
-                  the{" "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://info.inter.trade/psm"
-                  >
-                    Inter Dashboard
-                  </a>
-                  {", or the "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://community.agoric.com/t/playbook-for-adding-new-collateral-type-to-inter-protocol-for-vaults-or-the-psm/563"
-                  >
-                    Asset Onboarding Playbook
-                  </a>
-                  .
+                  ratio. <InterLearnMore />
                 </>
               }
               tabs={[
@@ -256,29 +235,7 @@ const Inter = () => {
                 <>
                   Vaults allow users to mint IST by using their assets as
                   collateral. The Add Vault proposal enables a new collateral
-                  type to be used for opening vaults. Learn more in the{" "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://assets.ctfassets.net/h28d7ezxdyti/7fpv0Ir6wkCxjoTY1hhDUn/b64d2be55e2fb228fdd36dfa1e106011/whitepaper.pdf"
-                  >
-                    Inter Whitepaper
-                  </a>
-                  {", "}
-                  the{" "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://info.inter.trade/psm"
-                  >
-                    Inter Dashboard
-                  </a>
-                  {", or the "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://community.agoric.com/t/playbook-for-adding-new-collateral-type-to-inter-protocol-for-vaults-or-the-psm/563"
-                  >
-                    Asset Onboarding Playbook
-                  </a>
-                  .
+                  type to be used for opening vaults. <InterLearnMore />
                 </>
               }
               tabs={[

@@ -2,6 +2,7 @@ import { ReactNode, createContext, useMemo } from "react";
 import { useLocation } from "wouter";
 import { capitalize } from "../utils/capitalize";
 
+/** "chains" can be apps or chains */
 const _chainNames = [
   "agoric",
   "inter",
