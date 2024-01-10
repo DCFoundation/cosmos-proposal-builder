@@ -36,6 +36,15 @@ const Inter = () => {
     e.preventDefault();
     const formData = psmFormRef.current?.data();
 
+    if (!walletAddress) {
+      toast.error("Wallet not connected.", { autoClose: 3000 });
+      return;
+    }
+    if (!netName) {
+      toast.error("Network not selected.", { autoClose: 3000 });
+      return;
+    }
+
     if (formData) {
       const denom = formData.get("denom") as string;
       const decimalPlaces = formData.get("decimalPlaces") as string;
@@ -95,6 +104,15 @@ const Inter = () => {
   const handleVaultSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const formData = vaultFormRef.current?.data();
+
+    if (!walletAddress) {
+      toast.error("Wallet not connected.", { autoClose: 3000 });
+      return;
+    }
+    if (!netName) {
+      toast.error("Network not selected.", { autoClose: 3000 });
+      return;
+    }
 
     if (formData) {
       const denom = formData.get("denom") as string;
