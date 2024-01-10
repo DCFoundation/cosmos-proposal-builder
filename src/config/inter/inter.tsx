@@ -1,15 +1,25 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, FormEvent } from "react";
 import { toast } from "react-toastify";
-import { ProposalForm, ProposalArgs } from "../../components/ProposalForm";
+import type { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
+import { MultiStepProposalForm } from "../../components/MultiStepProposalForm";
 import { Tabs } from "../../components/Tabs";
 import { useNetwork } from "../../hooks/useNetwork";
 import { useWallet } from "../../hooks/useWallet";
-import {
-  makeCoreEvalProposalMsg,
-  makeTextProposalMsg,
-  makeParamChangeProposalMsg,
-} from "../../lib/messageBuilder";
+import { makeCoreEvalProposalMsg } from "../../lib/messageBuilder";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
+import { PSMParameterInputs } from "../../config/inter/components/PSMParameterInputs";
+import { VaultParameterInputs } from "../../config/inter/components/VaultParameterInputs";
+import { DepositSection } from "../../components/DepositSection";
+import { TitleDescriptionInputs } from "../../components/TitleDescriptionInputs";
+import { capitalize, firstLetterIsUpperCase } from "../../utils/capitalize";
+import { psmJS, psmPermit } from "./addPSM";
+import {
+  addVaultJs,
+  addVaultPermit,
+  addOracleJs,
+  addOraclePermit,
+} from "./addVault";
+import { generateFromTemplate } from "./generateFromTemplate";
 
 const Inter = () => {
   const { netName } = useNetwork();
@@ -22,45 +32,142 @@ const Inter = () => {
     [stargateClient, walletAddress, netName],
   );
 
-  function handleProposal(msgType: QueryParams["msgType"]) {
-    return async (vals: ProposalArgs) => {
-      if (!walletAddress) {
-        toast.error("Wallet not connected.", { autoClose: 3000 });
-        throw new Error("wallet not connected");
-      }
-      let proposalMsg;
-      if (msgType === "coreEvalProposal") {
-        if (!("evals" in vals)) throw new Error("Missing evals");
-        proposalMsg = makeCoreEvalProposalMsg({
-          ...vals,
-          proposer: walletAddress,
-        });
-      }
-      if (msgType === "textProposal") {
-        proposalMsg = makeTextProposalMsg({
-          ...vals,
-          proposer: walletAddress,
-        });
-      }
-      if (msgType === "parameterChangeProposal") {
-        if (vals.msgType !== "parameterChangeProposal") return;
-        proposalMsg = makeParamChangeProposalMsg({
-          ...vals,
-          proposer: walletAddress,
-        });
-      }
-      if (!proposalMsg) throw new Error("Error parsing query or inputs.");
+  const handlePsmSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const formData = psmFormRef.current?.data();
 
-      await signAndBroadcast(proposalMsg);
+    if (formData) {
+      const denom = formData.get("denom") as string;
+      const decimalPlaces = formData.get("decimalPlaces") as string;
+      const keyword = formData.get("keyword") as string;
+      const proposedName = formData.get("proposedName") as string;
+
+      if (!denom && !denom.startsWith("ibc/")) {
+        toast.error("Invalid IBC Denom.", { autoClose: 3000 });
+        return;
+      }
+      if (!keyword || !firstLetterIsUpperCase(keyword)) {
+        toast.error("Invalid Issuer Keyword.", { autoClose: 3000 });
+        return;
+      }
+      if (isNaN(parseInt(decimalPlaces))) {
+        toast.error("Invalid Decimal Places.", { autoClose: 3000 });
+        return;
+      }
+      if (!proposedName) {
+        toast.error("Proposed Name not provided.", { autoClose: 3000 });
+        return;
+      }
+
+      const generatedAddPsm = generateFromTemplate<AddPSMParams>(psmJS, {
+        denom,
+        decimalPlaces: Number(decimalPlaces),
+        keyword,
+        proposedName,
+      });
+
+      const evals: CoreEval[] = [
+        { jsonPermits: psmPermit, jsCode: generatedAddPsm },
+      ];
+
+      const title = (formData.get("title") as string) || "";
+      const description = (formData.get("description") as string) || "";
+      const depositBld = (formData.get("deposit") as string) || "";
+      const deposit = Number(depositBld) * 1_000_000;
+
+      const proposalMsg = makeCoreEvalProposalMsg({
+        evals,
+        title,
+        description,
+        deposit,
+        proposer: walletAddress as string,
+      });
+
       try {
         await signAndBroadcast(proposalMsg, "proposal");
         psmFormRef.current?.reset();
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
+  const handleVaultSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    const formData = vaultFormRef.current?.data();
+
+    if (formData) {
+      const denom = formData.get("denom") as string;
+      const decimalPlaces = formData.get("decimalPlaces") as string;
+      const issuerName = formData.get("issuerName") as string;
+
+      if (!denom && !denom.startsWith("ibc/")) {
+        toast.error("Invalid IBC Denom.", { autoClose: 3000 });
+        return;
+      }
+      if (isNaN(parseInt(decimalPlaces))) {
+        toast.error("Invalid Decimal Places.", { autoClose: 3000 });
+        return;
+      }
+      if (!issuerName) {
+        toast.error("Issuer Name not provided.", { autoClose: 3000 });
+        return;
+      }
+
+      const templateParams = {
+        denom,
+        decimalPlaces: Number(decimalPlaces),
+        issuerName,
+        keyword: capitalize(issuerName),
+        oracleBrand: issuerName,
+        proposedName: issuerName,
+      };
+      const generatedAddVaultJs = generateFromTemplate<AddVaultParams>(
+        addVaultJs,
+        templateParams,
+      );
+      const generatedAddOracleJs = generateFromTemplate<AddVaultParams>(
+        addOracleJs,
+        templateParams,
+      );
+
+      const evals: CoreEval[] = [
+        { jsonPermits: addOraclePermit, jsCode: generatedAddOracleJs },
+        { jsonPermits: addVaultPermit, jsCode: generatedAddVaultJs },
+      ];
+
+      const title = (formData.get("title") as string) || "";
+      const description = (formData.get("description") as string) || "";
+      const depositBld = (formData.get("deposit") as string) || "";
+      const deposit = Number(depositBld) * 1_000_000;
+
+      const proposalMsg = makeCoreEvalProposalMsg({
+        evals,
+        title,
+        description,
+        deposit,
+        proposer: walletAddress as string,
+      });
+
+      try {
+        await signAndBroadcast(proposalMsg, "proposal");
         vaultFormRef.current?.reset();
       } catch (e) {
         console.error(e);
       }
-    };
-  }
+    }
+  };
+
+  const GovDetails = ({
+    governanceForumLink,
+  }: {
+    governanceForumLink: string;
+  }) => (
+    <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+      <TitleDescriptionInputs communityForumLink={governanceForumLink} />
+      <DepositSection />
+    </div>
+  );
 
   return (
     <Tabs
@@ -69,45 +176,52 @@ const Inter = () => {
           title: "Add PSM",
           msgType: "addPSM",
           content: (
-            <ProposalForm
+            <MultiStepProposalForm
               ref={psmFormRef}
-              handleSubmit={handleProposal("textProposal")}
+              handleSubmit={handlePsmSubmit}
               titleDescOnly={true}
               title="Add PSM"
-              msgType="addPSM"
-              governanceForumLink="https://community.agoric.com/tags/c/inter-protocol/5/psm"
               description={
                 <>
                   The PSM (Parity Stability Module) is a smart contract that
                   mints IST in exchange for approved stablecoins at a 1-to-1
-                  ratio. This form will generate a{" "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://docs.agoric.com/guides/coreeval/"
-                  >
-                    CoreEval
-                  </a>{" "}
-                  proposal that will start a new PSM instance upon successful
-                  passing.
-                  <br />
-                  <br />
-                  Learn more from the{" "}
+                  ratio. Learn more in the{" "}
                   <a
                     className="cursor-pointer hover:text-gray-900 underline"
                     href="https://assets.ctfassets.net/h28d7ezxdyti/7fpv0Ir6wkCxjoTY1hhDUn/b64d2be55e2fb228fdd36dfa1e106011/whitepaper.pdf"
                   >
                     Inter Whitepaper
-                  </a>{" "}
-                  and the{" "}
+                  </a>
+                  {", "}
+                  the{" "}
                   <a
                     className="cursor-pointer hover:text-gray-900 underline"
                     href="https://info.inter.trade/psm"
                   >
-                    Inter Stats
-                  </a>{" "}
-                  page.
+                    Inter Dashboard
+                  </a>
+                  {", or the "}
+                  <a
+                    className="cursor-pointer hover:text-gray-900 underline"
+                    href="https://community.agoric.com/t/playbook-for-adding-new-collateral-type-to-inter-protocol-for-vaults-or-the-psm/563"
+                  >
+                    Asset Onboarding Playbook
+                  </a>
+                  .
                 </>
               }
+              tabs={[
+                {
+                  title: "Asset Details",
+                  content: <PSMParameterInputs />,
+                },
+                {
+                  title: "Governance Proposal",
+                  content: (
+                    <GovDetails governanceForumLink="https://community.agoric.com/tags/c/inter-protocol/5/psm" />
+                  ),
+                },
+              ]}
             />
           ),
         },
@@ -115,45 +229,52 @@ const Inter = () => {
           title: "Add Vault Collateral Type",
           msgType: "addVault",
           content: (
-            <ProposalForm
+            <MultiStepProposalForm
               ref={vaultFormRef}
-              handleSubmit={handleProposal("coreEvalProposal")}
+              handleSubmit={handleVaultSubmit}
               titleDescOnly={false}
               title="Add Vault Collateral Type"
-              msgType="addVault"
-              governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30"
               description={
                 <>
                   Vaults allow users to mint IST by using their assets as
                   collateral. The Add Vault proposal enables a new collateral
-                  type to be used for opening vaults. This form will generate a{" "}
-                  <a
-                    className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://docs.agoric.com/guides/coreeval/"
-                  >
-                    CoreEval
-                  </a>{" "}
-                  proposal that will start a new Vault Manager instance upon
-                  successful passing.
-                  <br />
-                  <br />
-                  Learn more from the{" "}
+                  type to be used for opening vaults. Learn more in the{" "}
                   <a
                     className="cursor-pointer hover:text-gray-900 underline"
                     href="https://assets.ctfassets.net/h28d7ezxdyti/7fpv0Ir6wkCxjoTY1hhDUn/b64d2be55e2fb228fdd36dfa1e106011/whitepaper.pdf"
                   >
                     Inter Whitepaper
-                  </a>{" "}
-                  and the{" "}
+                  </a>
+                  {", "}
+                  the{" "}
                   <a
                     className="cursor-pointer hover:text-gray-900 underline"
-                    href="https://info.inter.trade/vaults"
+                    href="https://info.inter.trade/psm"
                   >
-                    Inter Stats
-                  </a>{" "}
-                  page.
+                    Inter Dashboard
+                  </a>
+                  {", or the "}
+                  <a
+                    className="cursor-pointer hover:text-gray-900 underline"
+                    href="https://community.agoric.com/t/playbook-for-adding-new-collateral-type-to-inter-protocol-for-vaults-or-the-psm/563"
+                  >
+                    Asset Onboarding Playbook
+                  </a>
+                  .
                 </>
               }
+              tabs={[
+                {
+                  title: "Asset Details",
+                  content: <VaultParameterInputs />,
+                },
+                {
+                  title: "Governance Proposal",
+                  content: (
+                    <GovDetails governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30" />
+                  ),
+                },
+              ]}
             />
           ),
         },

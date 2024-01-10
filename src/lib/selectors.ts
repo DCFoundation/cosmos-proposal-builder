@@ -1,6 +1,6 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { SwingSetParams } from "../types/swingset";
-import type { BankBalances } from "../types/bank";
+import type { BankBalances, DenomTrace } from "../types/bank";
 import { TallyParams, VotingParams, DepositParams } from "../types/gov";
 import { objectToArray } from "../utils/object";
 
@@ -41,6 +41,7 @@ export const selectBldCoins = (
   if (!query?.data) return undefined;
   return (query.data as BankBalances).filter((x) => x.denom === "ubld");
 };
+
 export const selectVotingParams = (
   query: UseQueryResult<VotingParams, unknown>,
 ) => {
@@ -60,4 +61,23 @@ export const selectDepsoitParams = (
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
+};
+
+/** filter bank assets, so only ibc/* assets are returned */
+export const selectIbcAssets = (
+  query: UseQueryResult<BankBalances, unknown>,
+) => {
+  if (!query?.data) return undefined;
+  return (query.data as BankBalances).filter((x) => x.denom.startsWith("ibc"));
+};
+
+export const selectSinglePathDenomTraces = (
+  query: UseQueryResult<DenomTrace[], unknown>,
+) => {
+  if (!query?.data) return undefined;
+  function hasOnePath(trace: DenomTrace): boolean {
+    const matches = trace.path.match(/channel/g);
+    return !matches || matches.length === 1;
+  }
+  return query.data.filter(hasOnePath);
 };
