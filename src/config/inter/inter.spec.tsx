@@ -15,7 +15,7 @@ describe("Inter Config", () => {
       </Router>,
     );
 
-    const tabListEl = await screen.findByRole("tablist");
+    const tabListEl = (await screen.findAllByRole("tablist"))[0];
     expect(tabListEl).toBeTruthy();
 
     const tabs = [...tabListEl.querySelectorAll("button")].map(
