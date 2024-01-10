@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { Tab } from "@headlessui/react";
 import { classNames } from "../utils/classNames";
 
@@ -7,31 +7,32 @@ interface TabsProps {
     title: string;
     content: ReactNode;
   }[];
-  onChange?: (idx: number) => void;
-  initialIndex?: number;
+  onChange: (idx: number) => void;
+  currentStep: number;
 }
 
-const Stepper = ({ tabs, onChange, initialIndex = 0 }: TabsProps) => {
-  const [selectedIdx, setSelectedIdx] = useState(initialIndex);
-
+const Stepper = ({ tabs, onChange, currentStep }: TabsProps) => {
   const handleChange = (idx: number) => {
-    setSelectedIdx(idx);
-    if (onChange && typeof onChange === "function") onChange(idx);
+    if (!onChange || typeof onChange !== "function") {
+      throw new Error("onChange handle not provided.");
+    }
+    onChange(idx);
   };
 
   return (
-    <Tab.Group selectedIndex={selectedIdx} onChange={handleChange}>
+    <Tab.Group selectedIndex={currentStep} onChange={handleChange}>
       <Tab.List className="space-y-4 md:flex md:space-x-8 md:space-y-0">
         {tabs.map(({ title }, index) => {
-          const isPrev = index < selectedIdx;
-          const isNext = index > selectedIdx;
-          const isCurr = index === selectedIdx;
+          const isPrev = index < currentStep;
+          const isNext = index > currentStep;
+          const isCurr = index === currentStep;
           return (
             <Tab
               key={title}
               className={() =>
                 classNames(
-                  "flex flex-col w-64 py-2 pl-4 border-teal-600 border-l-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-1",
+                  "flex flex-col w-64 py-2 pl-4 border-l-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-1 rounded focus:outline-1 focus:outline-dashed focus:outline-offset-4 focus:outline-gray-300",
+                  isCurr && "border-teal-600",
                   isPrev && "hover:border-teal-800",
                   isNext && "border-gray-200 hover:border-gray-300",
                 )

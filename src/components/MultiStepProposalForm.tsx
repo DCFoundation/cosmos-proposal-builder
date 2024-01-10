@@ -27,7 +27,7 @@ const MultiStepProposalForm = forwardRef<
   ProposalFormProps
 >(({ title, description, handleSubmit, tabs }, ref) => {
   const formRef = useRef<HTMLFormElement>(null);
-  const [currentStep, setCurrentStep] = useState<number | undefined>(undefined);
+  const [currentStep, setCurrentStep] = useState<number>(0);
 
   useImperativeHandle(ref, () => ({
     data: () => {
@@ -39,17 +39,20 @@ const MultiStepProposalForm = forwardRef<
     },
   }));
 
-  const handleStepChanged = (idx: number) => {
-    setCurrentStep(idx);
-  };
-
   const isFinalStep = useMemo(
     () => currentStep === tabs.length - 1,
     [currentStep, tabs.length],
   );
 
+  const onSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    if (isFinalStep) return handleSubmit(e);
+    // navigate to next step if not final step
+    setCurrentStep((prev) => prev! + 1);
+  };
+
   return (
-    <form ref={formRef} className="py-6 px-8" onSubmit={handleSubmit}>
+    <form ref={formRef} className="py-6 px-8" onSubmit={onSubmit}>
       <h2 className="text-base font-semibold leading-7 text-gray-900">
         {title}
       </h2>
@@ -58,18 +61,20 @@ const MultiStepProposalForm = forwardRef<
       </p>
 
       <div className="mt-12">
-        <Stepper tabs={tabs} onChange={handleStepChanged} />
+        <Stepper
+          tabs={tabs}
+          currentStep={currentStep}
+          onChange={setCurrentStep}
+        />
       </div>
       <div className="mt-6 flex items-center justify-end gap-x-32">
-        {isFinalStep ? (
-          <Button
-            type="submit"
-            Icon={null}
-            text="Sign & Submit"
-            theme="dark"
-            layoutStyle="flex w-1/4"
-          />
-        ) : null}
+        <Button
+          type="submit"
+          Icon={null}
+          text={isFinalStep ? "Sign & Submit" : "Continue"}
+          theme="dark"
+          layoutStyle="flex w-1/4"
+        />
       </div>
     </form>
   );
