@@ -13,7 +13,7 @@ export type ChainName = (typeof _chainNames)[number];
 
 const imageMap: Record<ChainName, string> = {
   agoric: "/assets/agoric.svg",
-  inter: "/assets/inter.png",
+  inter: "/assets/inter.svg",
 };
 
 export type ChainListItem = {
