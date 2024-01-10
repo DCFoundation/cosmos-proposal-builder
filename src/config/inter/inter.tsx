@@ -42,7 +42,7 @@ const Inter = () => {
       const keyword = formData.get("keyword") as string;
       const proposedName = formData.get("proposedName") as string;
 
-      if (!denom && !denom.startsWith("ibc/")) {
+      if (!denom || !denom.startsWith("ibc/")) {
         toast.error("Invalid IBC Denom.", { autoClose: 3000 });
         return;
       }
