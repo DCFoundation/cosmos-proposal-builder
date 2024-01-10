@@ -22,33 +22,35 @@ const Stepper = ({ tabs, onChange, initialIndex = 0 }: TabsProps) => {
   return (
     <Tab.Group selectedIndex={selectedIdx} onChange={handleChange}>
       <Tab.List className="space-y-4 md:flex md:space-x-8 md:space-y-0">
-        {tabs.map(({ title }, index) => (
-          <Tab
-            key={title}
-            className={() =>
-              classNames(
-                "flex flex-col py-2 pl-4 border-teal-600 border-l-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-4",
-                selectedIdx < index ? "hover:border-teal-800" : "",
-                selectedIdx > index
-                  ? "border-gray-200 hover:border-gray-300"
-                  : "",
-              )
-            }
-          >
-            <span
-              className={classNames(
-                "text-sm font-medium text-teal-600",
-                selectedIdx < index ? "group-hover:text-teal-800" : "",
-                selectedIdx > index
-                  ? "text-gray-500 group-hover:text-gray-700"
-                  : "",
-              )}
+        {tabs.map(({ title }, index) => {
+          const isPrev = index < selectedIdx;
+          const isNext = index > selectedIdx;
+          const isCurr = index === selectedIdx;
+          return (
+            <Tab
+              key={title}
+              className={() =>
+                classNames(
+                  "flex flex-col w-64 py-2 pl-4 border-teal-600 border-l-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-1",
+                  isPrev && "hover:border-teal-800",
+                  isNext && "border-gray-200 hover:border-gray-300",
+                )
+              }
             >
-              Step {index + 1}
-            </span>
-            <span className="text-sm font-medium">{title}</span>
-          </Tab>
-        ))}
+              <span
+                className={classNames(
+                  "text-sm font-medium",
+                  isCurr && "text-teal-600",
+                  isPrev && "text-gray-500 group-hover:text-teal-800",
+                  isNext && "text-gray-500 group-hover:text-gray-800",
+                )}
+              >
+                Step {index + 1}
+              </span>
+              <span className="text-sm mt-2 font-medium">{title}</span>
+            </Tab>
+          );
+        })}
       </Tab.List>
       <Tab.Panels className="mt-6">
         {tabs.map(({ content }, idx) => (

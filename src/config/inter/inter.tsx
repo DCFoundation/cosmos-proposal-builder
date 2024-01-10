@@ -216,7 +216,7 @@ const Inter = () => {
                   content: <PSMParameterInputs />,
                 },
                 {
-                  title: "Governance Proposal",
+                  title: "Proposal Details",
                   content: (
                     <GovDetails governanceForumLink="https://community.agoric.com/tags/c/inter-protocol/5/psm" />
                   ),
@@ -269,7 +269,7 @@ const Inter = () => {
                   content: <VaultParameterInputs />,
                 },
                 {
-                  title: "Governance Proposal",
+                  title: "Proposal Details",
                   content: (
                     <GovDetails governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30" />
                   ),

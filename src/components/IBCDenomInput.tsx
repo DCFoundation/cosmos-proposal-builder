@@ -52,10 +52,10 @@ const IBCDenomInput = () => {
     <div className="block">
       <Combobox value={selected} onChange={setSelected}>
         <div className="relative mt-1 sm:max-w-sm">
-          <div className="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm">
+          <div className="block w-full rounded-md bg-white sm:max-w-sm sm:text-sm">
             <Combobox.Input
               name="denomTrace"
-              className="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
+              className="w-full border-none rounded-md py-1.5 pl-3 pr-10  text-gray-900 placeholder:text-gray-400 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
               displayValue={(token: DenomTrace) => formatTrace(token)}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -83,7 +83,7 @@ const IBCDenomInput = () => {
                   <Combobox.Option
                     key={formatTrace(token)}
                     className={({ active }) =>
-                      `relative cursor-default select-none py-2 pl-10 pr-4 ${
+                      `relative cursor-default select-none py-2 pl-3 pr-4 ${
                         active ? "bg-teal-600 text-white" : "text-gray-900"
                       }`
                     }
