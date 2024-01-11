@@ -9,8 +9,7 @@ import { makeCoreEvalProposalMsg } from "../../lib/messageBuilder";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { PSMParameterInputs } from "../../config/inter/components/PSMParameterInputs";
 import { VaultParameterInputs } from "../../config/inter/components/VaultParameterInputs";
-import { DepositSection } from "../../components/DepositSection";
-import { TitleDescriptionInputs } from "../../components/TitleDescriptionInputs";
+import { GovDetails } from "../../components/GovDetails";
 import { capitalize, firstLetterIsUpperCase } from "../../utils/capitalize";
 import { psmJS, psmPermit } from "./addPSM";
 import {
@@ -176,17 +175,6 @@ const Inter = () => {
       }
     }
   };
-
-  const GovDetails = ({
-    governanceForumLink,
-  }: {
-    governanceForumLink: string;
-  }) => (
-    <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
-      <TitleDescriptionInputs communityForumLink={governanceForumLink} />
-      <DepositSection />
-    </div>
-  );
 
   return (
     <Tabs
