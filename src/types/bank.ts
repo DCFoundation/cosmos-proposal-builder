@@ -52,3 +52,14 @@ export type DenomTracesResponse = {
   };
   denom_traces: DenomTrace[];
 };
+
+export type DenomTraceResponse = {
+  denom_trace: DenomTrace;
+};
+
+export type DenomHash = string;
+
+export type DenomHashResponse = {
+  // hash is _not_ prefixed with `ibc/`
+  hash: DenomHash;
+};

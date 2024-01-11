@@ -1,0 +1,7 @@
+# Configure for SPA to handle routing internally
+# https://docs.netlify.com/configure-builds/file-based-configuration/
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

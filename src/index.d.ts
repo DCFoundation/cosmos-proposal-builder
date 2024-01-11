@@ -20,7 +20,9 @@ declare global {
       | "coreEvalProposal"
       | "textProposal"
       | "installBundle"
-      | "parameterChangeProposal";
+      | "parameterChangeProposal"
+      | "addPSM"
+      | "addVault";
     paramType: string;
   }
 

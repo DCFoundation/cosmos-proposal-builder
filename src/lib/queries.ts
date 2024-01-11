@@ -8,6 +8,9 @@ import type {
   BankAssetMetadataResponse,
   DenomTrace,
   DenomTracesResponse,
+  DenomTraceResponse,
+  DenomHashResponse,
+  DenomHash,
 } from "../types/bank";
 import type {
   GovParamsQueryResponse,
@@ -129,14 +132,43 @@ export const stakingParamsQuery = (
   enabled: !!api,
 });
 
-export const ibcDenomsQuery = (
+export const ibcDenomTracesQuery = (
   api: string | undefined,
 ): UseQueryOptions<DenomTrace[], unknown> => ({
-  queryKey: ["ibcDenoms", api],
+  queryKey: ["ibcDenomTraces", api],
   queryFn: async (): Promise<DenomTrace[]> => {
     const res = await fetch(`${api}/ibc/apps/transfer/v1/denom_traces`);
     const data: DenomTracesResponse = await res.json();
     return data?.denom_traces;
+  },
+  enabled: !!api,
+});
+
+export const ibcDenomTraceQuery = (
+  api: string | undefined,
+  hash: string, // can include or exclude `ibc/`
+): UseQueryOptions<DenomTrace, unknown> => ({
+  queryKey: ["ibcDenomTrace", api, hash],
+  queryFn: async (): Promise<DenomTrace> => {
+    const res = await fetch(`${api}/ibc/apps/transfer/v1/denom_traces/${hash}`);
+    const data: DenomTraceResponse = await res.json();
+    return data?.denom_trace;
+  },
+  enabled: !!api,
+});
+
+export const ibcDenomHashQuery = (
+  api: string | undefined,
+  path: string, // i.e., transfer/channel-1
+  baseDenom: string, // i.e., uatom
+): UseQueryOptions<DenomHash, unknown> => ({
+  queryKey: ["ibcDenomHash", api, path, baseDenom],
+  queryFn: async (): Promise<DenomHash> => {
+    const res = await fetch(
+      `${api}/ibc/apps/transfer/v1/denom_hashes/${path}/${baseDenom}`,
+    );
+    const data: DenomHashResponse = await res.json();
+    return data?.hash?.length ? `ibc/${data.hash}` : "Denom hash not found.";
   },
   enabled: !!api,
 });

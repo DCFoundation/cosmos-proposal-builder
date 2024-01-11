@@ -14,7 +14,8 @@ import {
   depositParamsQuery,
   distributionParamsQuery,
   stakingParamsQuery,
-  ibcDenomsQuery,
+  ibcDenomTracesQuery,
+  ibcDenomHashQuery,
 } from "./queries";
 import { renderHook } from "@testing-library/react-hooks";
 
@@ -237,18 +238,39 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("ibcDenomsQuery Query", () => {
+  describe("ibcDenomTracesQuery Query", () => {
     it("should return data", async ({ api, wrapper }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
-        () => useQuery(ibcDenomsQuery(api)),
+        () => useQuery(ibcDenomTracesQuery(api)),
         { wrapper },
       );
 
       await waitFor(() => result.current.isSuccess);
       expect(result.current.data).toBeDefined();
-      // XXX why does agoric-3-proposals not implement this endpoint?
+      // XXX not implemented in agoric-3-proposals
+      // see https://github.com/DCFoundation/cosmos-proposal-builder/pull/27#discussion_r1443527639
       // should be [{ "path": "transfer/channel-0", "base_denom": "uatom"}]
       expect(result.current.data).toMatchInlineSnapshot("[]");
+    });
+  });
+
+  describe("ibcDenomHashQuery Query", () => {
+    it("should return a hash for ATOM", async ({
+      api,
+      wrapper,
+    }: QueryTestContext) => {
+      const { result, waitFor } = renderHook(
+        () => useQuery(ibcDenomHashQuery(api, "transfer/channel-0", "uatom")),
+        { wrapper },
+      );
+
+      await waitFor(() => result.current.isSuccess);
+      expect(result.current.data).toBeDefined();
+      // XXX not implemented in agoric-3-proposals
+      // see https://github.com/DCFoundation/cosmos-proposal-builder/pull/27#discussion_r1443527639
+      expect(result.current.data).toMatchInlineSnapshot(
+        '"Denom hash not found."',
+      );
     });
   });
 });
