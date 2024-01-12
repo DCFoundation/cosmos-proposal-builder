@@ -43,13 +43,13 @@ export const makeSignAndBroadcast =
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
-      Promise.reject(e);
       toast.update(toastId, {
         render: parseError(e as Error),
         type: "error",
         isLoading: false,
         autoClose: 10000,
       });
+      throw e;
     }
     if (txResult && txResult.code === 0) {
       toast.update(toastId, {
@@ -64,6 +64,6 @@ export const makeSignAndBroadcast =
         type: "success",
         isLoading: false,
       });
-      Promise.resolve(txResult);
+      return txResult;
     }
   };
