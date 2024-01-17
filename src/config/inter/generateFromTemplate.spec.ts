@@ -1,6 +1,10 @@
 import { readFileSync } from "fs";
 import { createRequire } from "module";
 import { generateFromTemplate } from "./generateFromTemplate";
+import {
+  EMERYNET_ORACLE_OPERATORS,
+  MAINNET_ORACLE_OPERATORS,
+} from "./addVault/constants";
 
 const nodeRequire = createRequire(import.meta.url);
 
@@ -34,6 +38,7 @@ describe("proposal builders - generateFromTemplate", () => {
       issuerName: "stATOM",
       proposedName: "stATOM",
       oracleBrand: "stATOM",
+      oracleAddresses: MAINNET_ORACLE_OPERATORS,
     };
     const [vaultTemplate, oracleTemplate] = [
       readFileSync(nodeRequire.resolve("./addVault/add-vault.js"), "utf8"),
@@ -43,6 +48,36 @@ describe("proposal builders - generateFromTemplate", () => {
       readFileSync(nodeRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
       readFileSync(
         nodeRequire.resolve("./__fixtures__/add-stATOM-oracles.js"),
+        "utf8",
+      ),
+    ];
+    const [generatedVault, generatedOracle] = [
+      generateFromTemplate<AddVaultParams>(vaultTemplate, values),
+      generateFromTemplate<AddVaultParams>(oracleTemplate, values),
+    ];
+    expect(generatedVault).toEqual(expectedVault);
+    expect(generatedOracle).toEqual(expectedOracle);
+  });
+
+  it("should generate code from addVault emerynet template", () => {
+    const values: AddVaultParams = {
+      decimalPlaces: 6,
+      denom:
+        "ibc/B1E6288B5A0224565D915D1F66716486F16D8A44BF33A9EC323DD6BA30764C35",
+      keyword: "STATOM",
+      issuerName: "stATOM",
+      proposedName: "stATOM",
+      oracleBrand: "stATOM",
+      oracleAddresses: EMERYNET_ORACLE_OPERATORS,
+    };
+    const [vaultTemplate, oracleTemplate] = [
+      readFileSync(nodeRequire.resolve("./addVault/add-vault.js"), "utf8"),
+      readFileSync(nodeRequire.resolve("./addVault/add-oracle.js"), "utf8"),
+    ];
+    const [expectedVault, expectedOracle] = [
+      readFileSync(nodeRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
+      readFileSync(
+        nodeRequire.resolve("./__fixtures__/add-stATOM-oracles-emerynet.js"),
         "utf8",
       ),
     ];

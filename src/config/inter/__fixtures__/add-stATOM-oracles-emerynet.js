@@ -8,10 +8,10 @@ const manifestBundleRef = {
 const getManifestCall = harden([
   "getManifestForPriceFeed",
   {
-    AGORIC_INSTANCE_NAME: "%%UoracleBrandU%%-USD price feed",
-    IN_BRAND_DECIMALS: "%%NdecimalPlacesN%%",
-    IN_BRAND_LOOKUP: ["agoricNames", "oracleBrand", "%%oracleBrand%%"],
-    IN_BRAND_NAME: "%%oracleBrand%%",
+    AGORIC_INSTANCE_NAME: "stATOM-USD price feed",
+    IN_BRAND_DECIMALS: 6,
+    IN_BRAND_LOOKUP: ["agoricNames", "oracleBrand", "stATOM"],
+    IN_BRAND_NAME: "stATOM",
     OUT_BRAND_DECIMALS: 4,
     OUT_BRAND_LOOKUP: ["agoricNames", "oracleBrand", "USD"],
     OUT_BRAND_NAME: "USD",
@@ -28,7 +28,11 @@ const getManifestCall = harden([
       timeout: 10,
     },
     oracleAddresses: [
-      "%%NoracleAddressesN%%"
+      "agoric10vjkvkmpp9e356xeh6qqlhrny2htyzp8hf88fk",
+      "agoric1lw4e4aas9q84tq0q92j85rwjjjapf8dmnllnft",
+      "agoric1qj07c7vfk3knqdral0sej7fa6eavkdn8vd8etf",
+      "agoric1ra0g6crtsy6r3qnpu7ruvm7qd4wjnznyzg5nu4",
+      "agoric1zj6vrrrjq4gsyr9lw7dplv4vyejg3p8j2urm82",
     ],
   },
 ]);
