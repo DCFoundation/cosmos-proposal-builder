@@ -10,4 +10,5 @@ type AddVaultParams = {
   issuerName: string;
   oracleBrand: string;
   proposedName: string;
+  oracleAddresses: string[];
 };

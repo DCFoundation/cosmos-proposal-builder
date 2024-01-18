@@ -20,6 +20,10 @@ import {
 } from "./addVault";
 import { generateFromTemplate } from "./generateFromTemplate";
 import { InterLearnMore } from "./components/InterLearnMore";
+import {
+  EMERYNET_ORACLE_OPERATORS,
+  MAINNET_ORACLE_OPERATORS,
+} from "./addVault/constants";
 
 const Inter = () => {
   const { netName } = useNetwork();
@@ -139,6 +143,10 @@ const Inter = () => {
         keyword: capitalize(issuerName),
         oracleBrand: issuerName,
         proposedName: issuerName,
+        oracleAddresses:
+          netName === "main"
+            ? MAINNET_ORACLE_OPERATORS
+            : EMERYNET_ORACLE_OPERATORS,
       };
       const generatedAddVaultJs = generateFromTemplate<AddVaultParams>(
         addVaultJs,
