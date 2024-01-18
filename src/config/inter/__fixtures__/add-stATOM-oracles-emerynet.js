@@ -33,6 +33,9 @@ const getManifestCall = harden([
       "agoric1qj07c7vfk3knqdral0sej7fa6eavkdn8vd8etf",
       "agoric1ra0g6crtsy6r3qnpu7ruvm7qd4wjnznyzg5nu4",
       "agoric1zj6vrrrjq4gsyr9lw7dplv4vyejg3p8j2urm82",
+      "agoric1ldmtatp24qlllgxmrsjzcpe20fvlkp448zcuce",
+      "agoric140dmkrz2e42ergjj7gyvejhzmjzurvqeq82ang",
+      "agoric1w8wktaur4zf8qmmtn3n7x3r0jhsjkjntcm3u6h",
     ],
   },
 ]);
