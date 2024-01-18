@@ -7,6 +7,8 @@ import {
 } from "./addVault/constants";
 
 const nodeRequire = createRequire(import.meta.url);
+const resolveAsString = (path: string) =>
+  readFileSync(nodeRequire.resolve(path), "utf8");
 
 describe("proposal builders - generateFromTemplate", () => {
   it("should generate code from addPsm template", () => {
@@ -17,13 +19,9 @@ describe("proposal builders - generateFromTemplate", () => {
       denom:
         "ibc/FE98AAD68F02F03565E9FA39A5E627946699B2B07115889ED812D8BA639576A9",
     };
-    const template = readFileSync(
-      nodeRequire.resolve("./addPSM/gov-start-psm.js"),
-      "utf8",
-    );
-    const expectedCode = readFileSync(
-      nodeRequire.resolve("./__fixtures__/gov-start-usdc-psm.js"),
-      "utf8",
+    const template = resolveAsString("./addPSM/gov-start-psm.js");
+    const expectedCode = resolveAsString(
+      "./__fixtures__/gov-start-usdc-psm.js",
     );
     const generatedCode = generateFromTemplate<AddPSMParams>(template, values);
     expect(generatedCode).toEqual(expectedCode);
@@ -41,15 +39,12 @@ describe("proposal builders - generateFromTemplate", () => {
       oracleAddresses: MAINNET_ORACLE_OPERATORS,
     };
     const [vaultTemplate, oracleTemplate] = [
-      readFileSync(nodeRequire.resolve("./addVault/add-vault.js"), "utf8"),
-      readFileSync(nodeRequire.resolve("./addVault/add-oracle.js"), "utf8"),
+      resolveAsString("./addVault/add-vault.js"),
+      resolveAsString("./addVault/add-oracle.js"),
     ];
     const [expectedVault, expectedOracle] = [
-      readFileSync(nodeRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
-      readFileSync(
-        nodeRequire.resolve("./__fixtures__/add-stATOM-oracles.js"),
-        "utf8",
-      ),
+      resolveAsString("./__fixtures__/add-stATOM.js"),
+      resolveAsString("./__fixtures__/add-stATOM-oracles.js"),
     ];
     const [generatedVault, generatedOracle] = [
       generateFromTemplate<AddVaultParams>(vaultTemplate, values),
@@ -71,15 +66,12 @@ describe("proposal builders - generateFromTemplate", () => {
       oracleAddresses: EMERYNET_ORACLE_OPERATORS,
     };
     const [vaultTemplate, oracleTemplate] = [
-      readFileSync(nodeRequire.resolve("./addVault/add-vault.js"), "utf8"),
-      readFileSync(nodeRequire.resolve("./addVault/add-oracle.js"), "utf8"),
+      resolveAsString("./addVault/add-vault.js"),
+      resolveAsString("./addVault/add-oracle.js"),
     ];
     const [expectedVault, expectedOracle] = [
-      readFileSync(nodeRequire.resolve("./__fixtures__/add-stATOM.js"), "utf8"),
-      readFileSync(
-        nodeRequire.resolve("./__fixtures__/add-stATOM-oracles-emerynet.js"),
-        "utf8",
-      ),
+      resolveAsString("./__fixtures__/add-stATOM.js"),
+      resolveAsString("./__fixtures__/add-stATOM-oracles-emerynet.js"),
     ];
     const [generatedVault, generatedOracle] = [
       generateFromTemplate<AddVaultParams>(vaultTemplate, values),
