@@ -72,5 +72,11 @@
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vitest": "^0.34.6"
+  },
+  "resolutions": {
+    "@cosmjs/encoding": "0.31.1",
+    "@cosmjs/proto-signing": "0.31.1",
+    "@cosmjs/stargate": "0.31.1",
+    "@cosmjs/tendermint-rpc": "0.31.1"
   }
 }
