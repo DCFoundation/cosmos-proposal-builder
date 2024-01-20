@@ -15,6 +15,7 @@ import {
 } from "../../lib/messageBuilder";
 import { isValidBundle } from "../../utils/validate";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
+import { useWatchBundle } from "../../hooks/useWatchBundle";
 
 const Agoric = () => {
   const { netName } = useNetwork();
@@ -22,6 +23,7 @@ const Agoric = () => {
   const proposalFormRef = useRef<HTMLFormElement>(null);
   const corEvalFormRef = useRef<HTMLFormElement>(null);
   const bundleFormRef = useRef<HTMLFormElement>(null);
+  const watchBundle = useWatchBundle();
 
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
@@ -46,8 +48,12 @@ const Agoric = () => {
       submitter: walletAddress,
     });
     try {
-      await signAndBroadcast(proposalMsg, "bundle");
-      bundleFormRef.current?.reset();
+      const txResponse = await signAndBroadcast(proposalMsg, "bundle");
+      if (txResponse) {
+        const endoZipBase64Sha512 = JSON.parse(vals.bundle).endoZipBase64Sha512;
+        await watchBundle(endoZipBase64Sha512, txResponse);
+        bundleFormRef.current?.reset();
+      }
     } catch (e) {
       console.error(e);
     }
