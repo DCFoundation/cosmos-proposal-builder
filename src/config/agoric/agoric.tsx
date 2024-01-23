@@ -50,7 +50,7 @@ const Agoric = () => {
     try {
       const txResponse = await signAndBroadcast(proposalMsg, "bundle");
       if (txResponse) {
-        const endoZipBase64Sha512 = JSON.parse(vals.bundle).endoZipBase64Sha512;
+        const { endoZipBase64Sha512 } = JSON.parse(vals.bundle);
         await watchBundle(endoZipBase64Sha512, txResponse);
         bundleFormRef.current?.reset();
       }
