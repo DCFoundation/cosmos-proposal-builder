@@ -18,12 +18,14 @@ import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { useWatchBundle } from "../../hooks/useWatchBundle";
 
 const Agoric = () => {
-  const { netName } = useNetwork();
+  const { netName, networkConfig } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
   const proposalFormRef = useRef<HTMLFormElement>(null);
   const corEvalFormRef = useRef<HTMLFormElement>(null);
   const bundleFormRef = useRef<HTMLFormElement>(null);
-  const watchBundle = useWatchBundle();
+  const watchBundle = useWatchBundle(networkConfig?.rpc, {
+    clipboard: window.navigator.clipboard,
+  });
 
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),

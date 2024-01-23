@@ -5,7 +5,6 @@ import {
   makeLeader,
 } from "@agoric/casting";
 import { toast } from "react-toastify";
-import { useNetwork } from "./useNetwork";
 import { BundleFollowerToastMessage } from "../components/BundleFollowerToastMessage";
 
 type IteratorEnvelope = {
@@ -17,9 +16,12 @@ type IteratorEnvelope = {
   error?: { message: string; stack: string };
 };
 
-export const useWatchBundle = () => {
-  const { networkConfig } = useNetwork();
-  const leader = networkConfig ? makeLeader(networkConfig.rpc) : undefined;
+
+export const useWatchBundle = (
+  rpcUrl: string | undefined,
+  { clipboard }: { clipboard: Navigator["clipboard"] },
+) => {
+  const leader = rpcUrl ? makeLeader(rpcUrl) : undefined;
 
   const watchBundle = async (
     expectedEndoZipBase64Sha512: string,
@@ -48,6 +50,7 @@ export const useWatchBundle = () => {
               <BundleFollowerToastMessage
                 endoZipBase64Sha512={endoZipBase64Sha512}
                 closeToast={closeToast as () => void}
+                clipboard={clipboard}
               />
             ));
             return;

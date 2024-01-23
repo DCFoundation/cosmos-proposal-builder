@@ -5,31 +5,35 @@ import { XMarkIcon } from "@heroicons/react/20/solid";
 export const BundleFollowerToastMessage = ({
   endoZipBase64Sha512,
   closeToast = () => {},
+  clipboard,
 }: {
   endoZipBase64Sha512: string;
   closeToast: () => void;
+  clipboard?: Navigator["clipboard"];
 }) => (
   <div className="flex items-start pointer-events-auto">
     <div className="ml-3 w-0 flex-1 pt-0.5">
       <p className="text-sm font-medium text-gray-900">
         Bundle Successfully Installed!
       </p>
-      <span className="mt-1 text-sm text-gray-500">
-        <span
-          className="text-sm text-blue-500 hover:text-blue-700 underline cursor-pointer"
-          onClick={async () => {
-            await window.navigator.clipboard.writeText(endoZipBase64Sha512);
-            toast.info("Copied to clipboard!", {
-              position: "bottom-center",
-              autoClose: 3000,
-              hideProgressBar: true,
-            });
-          }}
-        >
-          EndoZipBase64Sha512{" "}
-          <ClipboardDocumentIcon className="inline-block w-4 h-4" />
+      {clipboard && (
+        <span className="mt-1 text-sm text-gray-500">
+          <span
+            className="text-sm text-blue-500 hover:text-blue-700 underline cursor-pointer"
+            onClick={async () => {
+              await clipboard.writeText(endoZipBase64Sha512);
+              toast.info("Copied to clipboard!", {
+                position: "bottom-center",
+                autoClose: 3000,
+                hideProgressBar: true,
+              });
+            }}
+          >
+            EndoZipBase64Sha512{" "}
+            <ClipboardDocumentIcon className="inline-block w-4 h-4" />
+          </span>
         </span>
-      </span>
+      )}
     </div>
     <div className="ml-4 flex flex-shrink-0">
       <button
