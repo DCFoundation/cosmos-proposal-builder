@@ -16,7 +16,6 @@ type IteratorEnvelope = {
   error?: { message: string; stack: string };
 };
 
-
 export const useWatchBundle = (
   rpcUrl: string | undefined,
   { clipboard }: { clipboard: Navigator["clipboard"] },
