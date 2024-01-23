@@ -18,7 +18,7 @@ type IteratorEnvelope = {
 
 export const useWatchBundle = (
   rpcUrl: string | undefined,
-  { clipboard }: { clipboard: Navigator["clipboard"] },
+  { clipboard }: { clipboard?: Navigator["clipboard"] },
 ) => {
   const leader = rpcUrl ? makeLeader(rpcUrl) : undefined;
 
