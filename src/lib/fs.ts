@@ -1,20 +1,28 @@
+import * as fsT from 'fs';
+import * as fspT from 'fs/promises';
+import * as pathT from 'path';
+
+const { freeze } = Object;
+
 let mutex = Promise.resolve(undefined);
 
-/**
- * @param {string} fileName
- * @param {{
- *   fs: {
- *     promises: Pick<import('fs/promises'),'readFile' | 'stat'>
- *   },
- *   path: Pick<import('path'), 'resolve' | 'relative' | 'normalize'>,
- * }} powers
- */
-export const makeFileReader = (fileName, { fs, path }) => {
-  const make = there => makeFileReader(there, { fs, path });
+export const makeFileReader = (
+  fileName: string,
+  {
+    fs,
+    path,
+  }: {
+    fs: {
+      promises: Pick<typeof fspT, 'readFile' | 'stat'>;
+    };
+    path: Pick<typeof pathT, 'resolve' | 'relative' | 'normalize'>;
+  }
+) => {
+  const make = (there: string) => makeFileReader(there, { fs, path });
 
   // fs.promises.exists isn't implemented in Node.js apparently because it's pure
   // sugar.
-  const exists = fn =>
+  const exists = (fn: string) =>
     fs.promises.stat(fn).then(
       () => true,
       e => {
@@ -22,7 +30,7 @@ export const makeFileReader = (fileName, { fs, path }) => {
           return false;
         }
         throw e;
-      },
+      }
     );
 
   const readText = async () => {
@@ -50,37 +58,35 @@ export const makeFileReader = (fileName, { fs, path }) => {
       throw error;
     });
 
-  return harden({
+  return freeze({
     toString: () => fileName,
     readText,
     maybeReadText,
-    neighbor: ref => make(path.resolve(fileName, ref)),
+    neighbor: (ref: string) => make(path.resolve(fileName, ref)),
     stat: () => fs.promises.stat(fileName),
     absolute: () => path.normalize(fileName),
-    relative: there => path.relative(fileName, there),
+    relative: (there: string) => path.relative(fileName, there),
     exists: () => exists(fileName),
   });
 };
 
-/**
- * @param {string} fileName
- * @param {{
- *   fs: Pick<import('fs'), 'existsSync'> &
- *     { promises: Pick<
- *         import('fs/promises'),
- *         'readFile' | 'stat' | 'writeFile' | 'mkdir' | 'rm'
- *       >,
- *     },
- *   path: Pick<import('path'), 'resolve' | 'relative' | 'normalize'>,
- * }} io
- * @param {(there: string) => ReturnType<makeFileWriter>} make
- */
 export const makeFileWriter = (
-  fileName,
-  { fs, path },
-  make = there => makeFileWriter(there, { fs, path }, make),
+  fileName: string,
+  {
+    fs,
+    path,
+  }: {
+    fs: Pick<typeof fsT, 'existsSync'> & {
+      promises: Pick<
+        typeof fspT,
+        'readFile' | 'stat' | 'writeFile' | 'mkdir' | 'rm' | 'rename'
+      >;
+    };
+    path: Pick<typeof pathT, 'resolve' | 'relative' | 'normalize' | 'dirname'>;
+  },
+  make = (there: string) => makeFileWriter(there, { fs, path }, make)
 ) => {
-  const writeText = async (txt, opts) => {
+  const writeText = async (txt: string, opts: object) => {
     const promise = mutex;
     let release = Function.prototype;
     mutex = new Promise(resolve => {
@@ -94,47 +100,44 @@ export const makeFileWriter = (
     }
   };
 
-  return harden({
+  return freeze({
     toString: () => fileName,
     writeText,
     readOnly: () => makeFileReader(fileName, { fs, path }),
-    neighbor: ref => make(path.resolve(fileName, ref)),
-    mkdir: opts => fs.promises.mkdir(fileName, opts),
-    rm: opts => fs.promises.rm(fileName, opts),
-    rename: newName =>
+    neighbor: (ref: string) => make(path.resolve(fileName, ref)),
+    mkdir: (opts: object) => fs.promises.mkdir(fileName, opts),
+    rm: (opts: object) => fs.promises.rm(fileName, opts),
+    rename: (newName: string) =>
       fs.promises.rename(
         fileName,
-        path.resolve(path.dirname(fileName), newName),
+        path.resolve(path.dirname(fileName), newName)
       ),
   });
 };
 
-/**
- * @param {string} fileName
- * @param {{
- *   fs: Pick<import('fs'), 'existsSync'> &
- *     { promises: Pick<
- *         import('fs/promises'),
- *         'readFile' | 'stat' | 'writeFile' | 'mkdir' | 'rm'
- *       >,
- *     },
- *   path: Pick<import('path'), 'resolve' | 'relative' | 'normalize'>,
- * }} io
- * @param {number} pid
- * @param {number} nonce
- * @param {(there: string) => ReturnType<makeAtomicFileWriter>} make
- */
 export const makeAtomicFileWriter = (
-  fileName,
-  { fs, path },
-  pid = undefined,
-  nonce = undefined,
-  make = there => makeAtomicFileWriter(there, { fs, path }, pid, nonce, make),
+  fileName: string,
+  {
+    fs,
+    path,
+  }: {
+    fs: Pick<typeof fsT, 'existsSync'> & {
+      promises: Pick<
+        typeof fspT,
+        'readFile' | 'stat' | 'writeFile' | 'mkdir' | 'rm' | 'rename'
+      >;
+    };
+    path: Pick<typeof pathT, 'resolve' | 'relative' | 'normalize' | 'dirname'>;
+  },
+  pid: number | undefined = undefined,
+  nonce: number | undefined = undefined,
+  make = (there: string) =>
+    makeAtomicFileWriter(there, { fs, path }, pid, nonce, make)
 ) => {
   const writer = makeFileWriter(fileName, { fs, path }, make);
-  return harden({
+  return freeze({
     ...writer,
-    atomicWriteText: async (txt, opts) => {
+    atomicWriteText: async (txt: string, opts: object) => {
       const scratchName = `${fileName}.${nonce || 'no-nonce'}.${
         pid || 'no-pid'
       }.scratch`;
