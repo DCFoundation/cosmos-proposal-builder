@@ -13,7 +13,7 @@ export const makeFileReader = (
     path,
   }: {
     fs: {
-      promises: Pick<typeof fspT, 'readFile' | 'stat'>;
+      promises: Pick<typeof fspT, 'readFile' | 'stat' | 'readdir'>;
     };
     path: Pick<typeof pathT, 'resolve' | 'relative' | 'normalize'>;
   }
@@ -58,15 +58,18 @@ export const makeFileReader = (
       throw error;
     });
 
+  const neighbor = (ref: string) => make(path.resolve(fileName, ref));
   return freeze({
     toString: () => fileName,
     readText,
     maybeReadText,
-    neighbor: (ref: string) => make(path.resolve(fileName, ref)),
+    neighbor,
     stat: () => fs.promises.stat(fileName),
     absolute: () => path.normalize(fileName),
     relative: (there: string) => path.relative(fileName, there),
     exists: () => exists(fileName),
+    children: () =>
+      fs.promises.readdir(fileName).then(refs => refs.map(neighbor)),
   });
 };
 
