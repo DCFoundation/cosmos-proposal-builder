@@ -6,13 +6,13 @@ import {
   ReactNode,
   useCallback,
 } from "react";
+import { getSigningAgoricClientOptions } from "@agoric/cosmic-proto";
 import { Decimal } from "@cosmjs/math";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { AccountData } from "@keplr-wallet/types";
 import { useNetwork, NetName } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
 import { getNetConfigUrl } from "../lib/getNetworkConfig";
-import { registry } from "../lib/messageBuilder";
 
 interface WalletContext {
   walletAddress: string | null;
@@ -57,7 +57,7 @@ export const WalletContextProvider = ({
   const connectWallet = useCallback(async () => {
     setIsLoading(true);
     const { chainId, rpc } = await suggestChain(
-      getNetConfigUrl(netName as NetName),
+      getNetConfigUrl(netName as NetName)
     );
     setRpc(rpc);
     if (chainId) {
@@ -72,12 +72,12 @@ export const WalletContextProvider = ({
           rpc,
           offlineSigner,
           {
-            registry,
+            ...getSigningAgoricClientOptions(),
             gasPrice: {
               denom: "uist",
               amount: Decimal.fromUserInput("50000000", 0),
             },
-          },
+          }
         );
       } catch (e) {
         console.error("error stargateClient setup", e);

@@ -1,18 +1,12 @@
-import { CoreEvalProposal } from "@agoric/cosmic-proto/swingset/swingset.js";
-import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
+import { agoric, cosmos } from "@agoric/cosmic-proto";
 import { StdFee } from "@cosmjs/amino";
 import { fromBech32 } from "@cosmjs/encoding";
-import { coins, Registry } from "@cosmjs/proto-signing";
-import { defaultRegistryTypes } from "@cosmjs/stargate";
+import { coins } from "@cosmjs/proto-signing";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
+import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
-import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
-
-export const registry = new Registry([
-  ...defaultRegistryTypes,
-  ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
-]);
+import type { CoreEvalProposal } from "@agoric/cosmic-proto/dist/codegen/agoric/swingset/swingset";
 
 interface MakeTextProposalArgs {
   title: string;
@@ -36,8 +30,8 @@ export const makeTextProposalMsg = ({
           TextProposal.fromPartial({
             title,
             description,
-          }),
-        ).finish(),
+          })
+        ).finish()
       ),
     }),
     proposer,
@@ -52,26 +46,19 @@ export const makeCoreEvalProposalMsg = ({
   evals,
   proposer,
   deposit,
-}: CoreEvalProposal & { proposer: string; deposit?: string | number }) => ({
-  typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-  value: {
-    content: Any.fromPartial({
-      typeUrl: "/agoric.swingset.CoreEvalProposal",
-      value: Uint8Array.from(
-        CoreEvalProposal.encode(
-          CoreEvalProposal.fromPartial({
-            title,
-            description,
-            evals,
-          }),
-        ).finish(),
-      ),
+}: CoreEvalProposal & { proposer: string; deposit?: string | number }) => {
+  return cosmos.gov.v1beta1.MsgSubmitProposal.fromPartial({
+    // @ts-expect-error FIXME generate union instead of intersection types
+    content: agoric.swingset.CoreEvalProposal.fromPartial({
+      title,
+      description,
+      evals,
     }),
     proposer,
     ...(deposit &&
       Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
-  },
-});
+  });
+};
 
 export interface ParamChangeArgs {
   title: string;
@@ -98,8 +85,8 @@ export const makeParamChangeProposalMsg = ({
             title,
             description,
             changes,
-          }),
-        ).finish(),
+          })
+        ).finish()
       ),
     }),
     proposer,
