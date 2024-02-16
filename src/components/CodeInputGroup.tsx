@@ -1,7 +1,7 @@
-import { useState, useRef, forwardRef, useImperativeHandle } from "react";
-import { CodeInput } from "./CodeInput";
-import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
+import type { CoreEval } from "@agoric/cosmic-proto/dist/codegen/agoric/swingset/swingset";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import { Button } from "./Button";
+import { CodeInput } from "./CodeInput";
 
 interface CodeInputGroupProps {
   onPairsChange: (pairs: CoreEval[]) => void;
@@ -76,7 +76,7 @@ const CodeInputGroup = forwardRef<CodeInputGroupMethods, CodeInputGroupProps>(
         />
       </div>
     );
-  },
+  }
 );
 
 export { CodeInputGroup };

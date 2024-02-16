@@ -7,7 +7,7 @@ import {
   useMemo,
   ReactNode,
 } from "react";
-import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
+import type { MsgInstallBundle } from "@agoric/cosmic-proto/dist/codegen/agoric/swingset/msgs";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { CodeInput, CodeInputMethods } from "./CodeInput";
@@ -40,12 +40,12 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
     const swingsetParams = useQuery(swingSetParamsQuery(api));
     const costPerByte = useMemo(
       () => selectStorageCost(swingsetParams),
-      [swingsetParams],
+      [swingsetParams]
     );
     const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
     const istBalance = useMemo(
       () => selectIstBalance(accountBalances),
-      [accountBalances],
+      [accountBalances]
     );
 
     useImperativeHandle(ref, () => ({
@@ -116,7 +116,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
         </div>
       </form>
     );
-  },
+  }
 );
 
 export { BundleForm };

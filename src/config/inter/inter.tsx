@@ -1,6 +1,6 @@
 import { useMemo, useRef, FormEvent } from "react";
 import { toast } from "react-toastify";
-import type { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
+import type { CoreEval } from "@agoric/cosmic-proto/dist/codegen/agoric/swingset/swingset";
 import { MultiStepProposalForm } from "../../components/MultiStepProposalForm";
 import { Tabs } from "../../components/Tabs";
 import { useNetwork } from "../../hooks/useNetwork";
@@ -33,7 +33,7 @@ const Inter = () => {
 
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
-    [stargateClient, walletAddress, netName],
+    [stargateClient, walletAddress, netName]
   );
 
   const handlePsmSubmit = async (e: FormEvent) => {
@@ -150,11 +150,11 @@ const Inter = () => {
       };
       const generatedAddVaultJs = generateFromTemplate<AddVaultParams>(
         addVaultJs,
-        templateParams,
+        templateParams
       );
       const generatedAddOracleJs = generateFromTemplate<AddVaultParams>(
         addOracleJs,
-        templateParams,
+        templateParams
       );
 
       const evals: CoreEval[] = [

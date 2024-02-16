@@ -6,8 +6,8 @@ import {
   FormEvent,
   ReactNode,
 } from "react";
+import type { CoreEval } from "@agoric/cosmic-proto/dist/codegen/agoric/swingset/swingset";
 import { CodeInputGroup } from "./CodeInputGroup";
-import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
 import { Button } from "./Button";
 import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { ParameterChangeFormSection } from "./ParameterChangeForm";
@@ -150,7 +150,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
         </div>
       </form>
     );
-  },
+  }
 );
 
 export { ProposalForm };
