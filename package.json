@@ -21,6 +21,7 @@
     "ts:check": "tsc --noEmit"
   },
   "dependencies": {
+    "@agoric/casting": "^0.4.3-u13.0",
     "@agoric/cosmic-proto": "dev",
     "@agoric/eventual-send": "^0.14.1",
     "@agoric/notifier": "^0.6.2",
@@ -71,5 +72,11 @@
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
     "vitest": "^0.34.6"
+  },
+  "resolutions": {
+    "@cosmjs/encoding": "0.31.1",
+    "@cosmjs/proto-signing": "0.31.1",
+    "@cosmjs/stargate": "0.31.1",
+    "@cosmjs/tendermint-rpc": "0.31.1"
   }
 }
