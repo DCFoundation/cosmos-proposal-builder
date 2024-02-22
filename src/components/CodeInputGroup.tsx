@@ -46,32 +46,36 @@ const CodeInputGroup = forwardRef<CodeInputGroupMethods, CodeInputGroupProps>(
     }));
 
     return (
-      <div className="flex flex-col items-start min-w-full">
+      <div className="flex flex-col items-start">
         {pairs.map((_, index) => (
-          <div key={index} className="flex mb-5 mx-15">
-            <CodeInput
-              ref={jsonRef}
-              label="JSON Permit"
-              accept="application/json"
-              prismTag="lang-json"
-              onContentChange={(content) => handlePermitChange(index, content)}
-              subtitle=".json files accepted"
-            />
-            <CodeInput
-              ref={jsRef}
-              label="JS Script"
-              accept="text/javascript"
-              prismTag="lang-javascript"
-              onContentChange={(content) => handleCodeChange(index, content)}
-              subtitle=".js files accepted"
-            />
+          <div key={index} className="grid grid-cols-2 gap-[10px] mb-5">
+            <div className={``}>
+              <CodeInput
+                ref={jsonRef}
+                label="JSON Permit"
+                accept="application/json"
+                prismTag="lang-json"
+                onContentChange={(content) => handlePermitChange(index, content)}
+                subtitle=".json files accepted"
+              />
+            </div>
+            <div className={``}>
+              <CodeInput
+                ref={jsRef}
+                label="JS Script"
+                accept="text/javascript"
+                prismTag="lang-javascript"
+                onContentChange={(content) => handleCodeChange(index, content)}
+                subtitle=".js files accepted"
+              />
+            </div>
           </div>
         ))}
         <Button
           onClick={addMore}
           Icon={null}
           text="Add more files"
-          theme="dark"
+          theme="grey"
           layoutStyle="flex w-1/3"
         />
       </div>

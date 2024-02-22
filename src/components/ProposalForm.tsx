@@ -119,14 +119,14 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
               />
 
               {msgType === "coreEvalProposal" ? (
-                <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+                <div className="grid grid-cols-2 gap-[10px] pt-[20px]">
                   <label
                     htmlFor="description"
-                    className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+                    className="text-sm font-medium text-[#0F3941]"
                   >
                     Core Eval Files
                   </label>
-                  <div className="mt-2 sm:col-span-3 sm:mt-0">
+                  <div className="col-span-2 mt-0">
                     <CodeInputGroup
                       ref={codeInputRef}
                       onPairsChange={setEvals}

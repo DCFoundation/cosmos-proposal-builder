@@ -14,7 +14,8 @@ export interface ButtonProps {
 const butttonThemeStyles = {
   dark: "text-white bg-teal-600 focus-visible:outline-teal-600 hover:opacity-80",
   black: "text-white bg-black focus-visible:outline-teal-600 hover:opacity-80",
-  red: "text-white rounded-lg py-[20px] text-base font-bold w-full bg-[#D3482C] focus-visible:outline-none hover:opacity-80",
+  red: "text-white rounded-lg py-[16px] text-base font-bold w-full bg-[#D3482C] focus-visible:outline-none hover:opacity-80",
+  grey: "text-[#0F3941] rounded-lg py-[14px] text-sm font-bold bg-[#0F39411A] focus-visible:outline-none hover:opacity-80",
   light:
     "text-black bg-teal-200 focus-visible:outline-teal-200 hover:bg-teal-300",
   white:
