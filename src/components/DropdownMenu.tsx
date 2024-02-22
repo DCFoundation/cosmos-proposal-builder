@@ -16,7 +16,7 @@ interface DropdownMenuProps {
 }
 
 const statusColors = {
-  active: "bg-green-500",
+  active: "bg-[#1BCC6C]",
   loading: "bg-yellow-500",
   error: "bg-red-500",
   default: "bg-gray-500",
@@ -37,7 +37,7 @@ const DropdownMenu = ({
       <div>
         <Menu.Button
           className={classNames(
-            "inline-flex w-48 justify-between gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50",
+            "inline-flex justify-between rounded-md bg-white px-3 py-3 text-sm font-semibold text-black ring-1 ring-inset ring-[#CED7E8] shadow-sm hover:bg-gray-50",
             buttonStyle ? buttonStyle : "",
           )}
         >
@@ -45,22 +45,22 @@ const DropdownMenu = ({
             <img
               src={labelImage}
               alt={label}
-              className="w-5 h-5 rounded-full inline-block mr-2 self-center"
+              className="w-4 h-4 rounded-full inline-block mr-2.5 self-center"
             />
           )}
           {status && (
             <div
               className={classNames(
-                "w-3 h-3 rounded-full inline-block mr-2 self-center",
+                "w-1.5 h-1.5 rounded-full inline-block mr-2.5 self-center",
                 statusColors[status],
               )}
             />
           )}
-          <span className={classNames("w-100", !status ? "mx-auto" : "")}>
+          <span className={classNames("", !status ? "mx-auto" : "")}>
             {title}
           </span>
           <ChevronDownIcon
-            className="-mr-1 h-5 w-5 text-gray-400"
+            className="-mr-1 ml-2.5 h-5 w-5 text-black"
             aria-hidden="true"
           />
         </Menu.Button>

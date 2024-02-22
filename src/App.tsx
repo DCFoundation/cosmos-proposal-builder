@@ -16,16 +16,16 @@ const App = () => {
     <div className="flex flex-col min-h-screen">
       <Nav
         title="Cosmos Proposal Builder"
-        showLogo={true}
+        showLogo={false}
         rightContent={
           <>
-            <div className="mr-6 relative">
+            <div className="mr-[5px] relative">
               <ChainMenu />
             </div>
-            <div className="mr-6 relative">
+            <div className="mr-[5px] relative">
               <NetworkDropdown />
             </div>
-            <WalletConnectButton theme="white" />
+            <WalletConnectButton theme="black" />
           </>
         }
       />
@@ -48,7 +48,6 @@ const App = () => {
           })}
         </Switch>
       </main>
-      <Footer />
       <ToastContainer
         autoClose={false}
         position="bottom-right"

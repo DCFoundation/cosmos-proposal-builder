@@ -7,7 +7,7 @@ const selectChainDescription =
 
 const ChainTiles = ({ chains }: { chains: ChainList }) => {
   return (
-    <div className="w-full max-w-5xl px-2 py-2 sm:px-0 m-auto">
+    <div className="w-full max-w-4xl px-2 py-2 sm:px-0 m-auto">
       <div className="flex flex-col min-w-full rounded-xl bg-white p-3">
         <div className="py-6 px-8">
           <div>

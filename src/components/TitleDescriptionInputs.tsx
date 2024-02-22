@@ -7,52 +7,55 @@ export const TitleDescriptionInputs = ({
   communityForumLink: string;
 }) => (
   <>
-    <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+    <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:pt-3">
       <label
         htmlFor="title"
-        className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+        className="block text-sm font-medium text-[#0F3941]"
       >
         Title
       </label>
-      <div className="mt-2 sm:col-span-3 sm:mt-0">
+      <div>
         <input
           type="text"
           name="title"
           id="title"
-          placeholder="Title"
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-sm sm:text-sm sm:leading-6"
+          placeholder=""
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-300"
         />
       </div>
     </div>
 
-    <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+    <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:pt-3">
       <label
         htmlFor="description"
-        className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+        className="text-sm font-medium text-[#0F3941]"
       >
         Description
       </label>
-      <div className="mt-2 sm:col-span-3 sm:mt-0">
+
+      <p className="mt-1.5 text-sm text-[#5E5E5E] font-normal">
+        Write a few sentences about the proposal and include any relevant
+        links. Before proposing to Mainnet, please ensure you've started a
+        discussion on the{" "}
+        <a
+            className="cursor-pointer text-[#2CB7D3] hover:text-gray-900 underline"
+            href={communityForumLink}
+        >
+          Community Forum
+        </a>
+        .
+      </p>
+
+      <div className="mt-1">
         <textarea
           id="description"
           name="description"
           rows={3}
-          className="block w-full max-w-2xl rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-300"
           defaultValue={""}
           placeholder="Description"
         />
-        <p className="mt-3 text-sm leading-6 text-gray-600">
-          Write a few sentences about the proposal and include any relevant
-          links. Before proposing to Mainnet, please ensure you've started a
-          discussion on the{" "}
-          <a
-            className="cursor-pointer hover:text-gray-900 underline"
-            href={communityForumLink}
-          >
-            Community Forum
-          </a>
-          .
-        </p>
+
       </div>
     </div>
   </>

@@ -39,14 +39,14 @@ export const DepositSection: React.FC<unknown> = () => {
   );
 
   return (
-    <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+    <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:py-3">
       <label
         htmlFor="description"
-        className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+        className="text-sm font-medium text-[#0F3941]"
       >
         Deposit
       </label>
-      <div className="mt-2 sm:col-span-3 sm:mt-0">
+      <div className="">
         <input
           type="number"
           min="0"
@@ -55,8 +55,9 @@ export const DepositSection: React.FC<unknown> = () => {
           id="deposit"
           ref={depositRef}
           defaultValue={minDeposit ? coinsUnit(minDeposit) : ""}
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-sm sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-300 max-w-[250px]"
         />
+
         <p className="mt-3 text-sm leading-6 text-gray-600">
           <span>
             A proposal requires{" "}
