@@ -2,13 +2,13 @@ import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import { Switch, Route } from "wouter";
 import { Nav } from "./components/Nav";
-import { Footer } from "./components/Footer";
 import { ChainMenu } from "./components/ChainMenu";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { ChainTiles } from "./components/ChainTiles";
 import { useChain } from "./hooks/useChain";
 import { chainConfigMap } from "./config";
+import { LayoutFooter } from "./components/LayoutFooter.tsx";
 
 const App = () => {
   const { chains } = useChain();
@@ -47,6 +47,7 @@ const App = () => {
             );
           })}
         </Switch>
+        <LayoutFooter />
       </main>
       <ToastContainer
         autoClose={false}
