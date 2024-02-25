@@ -12,7 +12,7 @@ interface NavProps {
 const Nav = ({ title, showLogo, rightContent }: NavProps) => (
   <nav className="">
     <div className="mx-auto max-w-4xl">
-      <div className="flex h-16 items-center justify-between px-2">
+      <div className="flex h-16 items-center justify-between px-2 pt-6">
         <div className="flex items-center space-x-1">
           {showLogo ? (
             <div className="flex-shrink-0">

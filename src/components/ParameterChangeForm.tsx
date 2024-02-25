@@ -146,7 +146,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         </div>
       </div>
       {api && (
-        <div className="sm:grid sm:grid-cols-2 sm:items-start sm:gap-4 sm:py-6">
+        <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-4 sm:py-6">
           <label
             htmlFor="title"
             className="block text-sm font-medium text-gray-900 sm:pt-1.5"

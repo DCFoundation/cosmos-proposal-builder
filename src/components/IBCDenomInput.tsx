@@ -52,11 +52,11 @@ const IBCDenomInput = () => {
   return (
     <div className="block">
       <Combobox value={selected} onChange={setSelected}>
-        <div className="relative mt-1 sm:max-w-sm">
-          <div className="block w-full rounded-md bg-white sm:max-w-sm sm:text-sm">
+        <div className="relative mt-1">
+          <div className="block w-full rounded-md bg-white sm:text-sm">
             <Combobox.Input
               name="denomTrace"
-              className="w-full border-none rounded-md py-1.5 pl-3 pr-10  text-gray-900 placeholder:text-gray-400 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-[#D3482C] sm:text-sm sm:leading-6"
+              className="w-full border-none rounded-md py-1.5 pl-3 pr-10  text-gray-900 placeholder:text-gray-400 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-[#D3482C] sm:text-sm sm:leading-6 py-3"
               displayValue={(token: DenomTrace) => formatTraceOrCoin(token)}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -125,7 +125,7 @@ const IBCDenomInput = () => {
           </Transition>
         </div>
       </Combobox>
-      <p className="ml-1 mt-3 text-xs leading-6 text-gray-600">
+      <p className="ml-1 mt-3 text-xs text-gray-600">
         {(selected as DenomTrace)?.base_denom ? (
           <TraceToHash
             baseDenom={(selected as DenomTrace).base_denom}

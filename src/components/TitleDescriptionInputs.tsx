@@ -20,7 +20,7 @@ export const TitleDescriptionInputs = ({
           name="title"
           id="title"
           placeholder=""
-          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-300"
+          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#D3482C]"
         />
       </div>
     </div>
@@ -51,7 +51,7 @@ export const TitleDescriptionInputs = ({
           id="description"
           name="description"
           rows={3}
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-300"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#D3482C]"
           defaultValue={""}
           placeholder="Description"
         />

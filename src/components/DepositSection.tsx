@@ -55,7 +55,7 @@ export const DepositSection: React.FC<unknown> = () => {
           id="deposit"
           ref={depositRef}
           defaultValue={minDeposit ? coinsUnit(minDeposit) : ""}
-          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-teal-300 max-w-[250px]"
+          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#D3482C] max-w-[250px]"
         />
 
         <p className="mt-[10px] text-sm text-[#0F3941] bg-[#F5F7FC] p-[20px] rounded-md">
@@ -68,8 +68,14 @@ export const DepositSection: React.FC<unknown> = () => {
                 viewBox="0 0 18 12"
                 fill="none"
               >
-                <path d="M18 11.398V0.599915H7.25653V11.398H18ZM10.8414 4.20305H14.4207V7.80053H10.8358L10.8414 4.20305Z" fill="#0F3941"/>
-                <path d="M0 4.19745H3.57926V7.79492H0V4.19745Z" fill="#0F3941"/>
+                <path
+                  d="M18 11.398V0.599915H7.25653V11.398H18ZM10.8414 4.20305H14.4207V7.80053H10.8358L10.8414 4.20305Z"
+                  fill="#0F3941"
+                />
+                <path
+                  d="M0 4.19745H3.57926V7.79492H0V4.19745Z"
+                  fill="#0F3941"
+                />
               </svg>
             </div>
             <div className={`basis-auto grow`}>
@@ -83,14 +89,26 @@ export const DepositSection: React.FC<unknown> = () => {
 
           <div className={`flex items-center border-b pb-3 mb-3`}>
             <div className={`basis-auto pr-3`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M10.7564 10.7564C13.1522 10.4357 15 8.38361 15 5.9C15 3.1938 12.8062 1 10.1 1C7.61639 1 5.56434 2.84777 5.24359 5.24359M10.8 10.1C10.8 12.8062 8.6062 15 5.9 15C3.1938 15 1 12.8062 1 10.1C1 7.3938 3.1938 5.2 5.9 5.2C8.6062 5.2 10.8 7.3938 10.8 10.1Z" stroke="#0F3941" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 16 16"
+                fill="none"
+              >
+                <path
+                  d="M10.7564 10.7564C13.1522 10.4357 15 8.38361 15 5.9C15 3.1938 12.8062 1 10.1 1C7.61639 1 5.56434 2.84777 5.24359 5.24359M10.8 10.1C10.8 12.8062 8.6062 15 5.9 15C3.1938 15 1 12.8062 1 10.1C1 7.3938 3.1938 5.2 5.9 5.2C8.6062 5.2 10.8 7.3938 10.8 10.1Z"
+                  stroke="#0F3941"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
             <div className={`basis-auto grow`}>
               <span>
                 Current balance:{" "}
-                  <span className="font-semibold">
+                <span className="font-semibold">
                   {bldCoins ? renderCoins(bldCoins) : "Unavailable"}
                 </span>
               </span>
@@ -99,8 +117,20 @@ export const DepositSection: React.FC<unknown> = () => {
 
           <div className={`flex items-center`}>
             <div className={`basis-auto pr-3`}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 15 15" fill="none">
-                <path d="M7.5 3.6V7.5L10.1 8.8M14 7.5C14 11.0899 11.0899 14 7.5 14C3.91015 14 1 11.0899 1 7.5C1 3.91015 3.91015 1 7.5 1C11.0899 1 14 3.91015 14 7.5Z" stroke="#0F3941" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="15"
+                height="15"
+                viewBox="0 0 15 15"
+                fill="none"
+              >
+                <path
+                  d="M7.5 3.6V7.5L10.1 8.8M14 7.5C14 11.0899 11.0899 14 7.5 14C3.91015 14 1 11.0899 1 7.5C1 3.91015 3.91015 1 7.5 1C11.0899 1 14 3.91015 14 7.5Z"
+                  stroke="#0F3941"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </div>
             <div className={`basis-auto grow`}>

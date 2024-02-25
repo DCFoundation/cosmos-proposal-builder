@@ -6,7 +6,7 @@ export const GovDetails = ({
 }: {
   governanceForumLink: string;
 }) => (
-  <div className="mt-10 space-y-8 border-b border-gray-900/10 pb-12 sm:space-y-0 sm:divide-y sm:divide-gray-900/10 sm:border-t sm:pb-0">
+  <div className="mt-10 space-y-8 pb-12 sm:space-y-0 sm:border-t sm:pb-0">
     <TitleDescriptionInputs communityForumLink={governanceForumLink} />
     <DepositSection />
   </div>

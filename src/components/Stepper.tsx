@@ -23,7 +23,7 @@ const Stepper = ({ tabs, onChange, currentStep }: TabsProps) => {
     <Tab.Group selectedIndex={currentStep} onChange={handleChange}>
       <div className={"flex flex-wrap"}>
         <div className={"basis-full"}>
-          <div className={''}>
+          <div>
             <Tab.List className="grid md:grid-cols-2 md:gap-[20px]">
               {tabs.map(({ title }, index) => {
                 const isPrev = index < currentStep;
