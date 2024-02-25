@@ -33,11 +33,11 @@ const DropdownMenu = ({
   showImage,
 }: DropdownMenuProps) => {
   return (
-    <Menu as="div" className="relative inline-block text-left">
+    <Menu as="div" className="relative text-left">
       <div>
         <Menu.Button
           className={classNames(
-            "inline-flex justify-between rounded-md bg-white px-3 py-3 text-sm font-semibold text-black ring-1 ring-inset ring-[#CED7E8] shadow-sm hover:bg-gray-50",
+            "flex w-full justify-between rounded-md bg-white px-3 py-3 text-sm font-semibold text-black ring-1 ring-inset ring-[#CED7E8] shadow-sm hover:bg-gray-50",
             buttonStyle ? buttonStyle : "",
           )}
         >

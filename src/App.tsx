@@ -19,17 +19,19 @@ const App = () => {
         showLogo={false}
         rightContent={
           <>
-            <div className="mr-[5px] relative">
+            <div className="mr-[5px] relative hidden sm:flex">
               <ChainMenu />
             </div>
-            <div className="mr-[5px] relative">
+            <div className="mr-[5px] relative hidden sm:flex">
               <NetworkDropdown />
             </div>
-            <WalletConnectButton theme="black" />
+            <div>
+              <WalletConnectButton theme="black" />
+            </div>
           </>
         }
       />
-      <main className="flex-grow mx-auto max-w-7xl min-w-full py-6 sm:px-6 lg:px-8">
+      <main className="flex-grow mx-auto max-w-7xl min-w-full py-3 sm:py-6 sm:px-6 lg:px-8">
         <Switch>
           <Route path="/" component={() => <ChainTiles chains={chains} />} />
           {chains.map(({ href, value }) => {

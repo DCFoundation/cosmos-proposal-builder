@@ -71,7 +71,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
     };
 
     return (
-      <form ref={formRef} className="py-6 px-8" onSubmit={onSubmit}>
+      <form ref={formRef} className="" onSubmit={onSubmit}>
         <div className="space-y-12 sm:space-y-16">
           <div>
             <h2 className="text-[28px] font-semibold text-[#0F3941]">

@@ -9,16 +9,16 @@ const ChainTiles = ({ chains }: { chains: ChainList }) => {
   return (
     <div className="w-full max-w-4xl px-2 py-2 sm:px-0 m-auto">
       <div className="flex flex-col min-w-full rounded-xl bg-white p-3">
-        <div className="py-6 px-8">
+        <div className="py-2 px-2">
           <div>
-            <h2 className="text-base font-semibold leading-7 text-gray-900">
+            <h2 className="text-[28px] font-semibold text-[#0F3941]">
               {selectChainTitle}
             </h2>
-            <p className="mt-2 max-w-4xl text-sm leading-6 text-gray-600">
+            <p className="mt-4 text-sm text-[#455659]">
               {selectChainDescription}
             </p>
           </div>
-          <div className="mt-6 py-10 sm:divide-y sm:divide-gray-900/10 sm:border-t-2">
+          <div className="mt-[30px] space-y-3 border-t border-dotted border-[#A3AAB9] py-[30px] sm:border-t sm:pb-0">
             <ul
               role="list"
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"

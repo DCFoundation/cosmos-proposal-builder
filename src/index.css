@@ -39,3 +39,8 @@
   background:url('assets/menu-item-selected.svg') no-repeat scroll center left transparent;
   background-size:contain;
 }
+@media screen and (max-width: 767px) {
+  .menu-item-selected{
+    background:none;
+  }
+}

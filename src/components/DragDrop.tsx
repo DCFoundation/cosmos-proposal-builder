@@ -5,7 +5,6 @@ import {
   InputHTMLAttributes,
   ReactNode,
 } from "react";
-import { CodeBracketSquareIcon } from "@heroicons/react/24/solid";
 import { classNames } from "../utils/classNames";
 
 export interface DragDropProps {

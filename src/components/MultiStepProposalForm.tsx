@@ -52,15 +52,15 @@ const MultiStepProposalForm = forwardRef<
   };
 
   return (
-    <form ref={formRef} className="py-6 px-8" onSubmit={onSubmit}>
-      <h2 className="text-base font-semibold leading-7 text-gray-900">
+    <form ref={formRef} className="" onSubmit={onSubmit}>
+      <h2 className="text-[28px] font-semibold text-[#0F3941]">
         {title}
       </h2>
-      <p className="mt-2 max-w-4xl text-sm leading-6 text-gray-600">
+      <p className="text-sm font-medium text-[#0F3941]">
         {description}
       </p>
 
-      <div className="mt-12">
+      <div className="mt-6">
         <Stepper
           tabs={tabs}
           currentStep={currentStep}
@@ -72,7 +72,7 @@ const MultiStepProposalForm = forwardRef<
           type="submit"
           Icon={null}
           text={isFinalStep ? "Sign & Submit" : "Continue"}
-          theme="dark"
+          theme="red"
           layoutStyle="flex w-1/4"
         />
       </div>
