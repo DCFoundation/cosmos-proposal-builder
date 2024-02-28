@@ -58,7 +58,7 @@ const Tabs = ({ tabs }: TabsProps) => {
                 <div className={"flex items-center justify-between"}>
                   <div
                     className={
-                      "basis-auto px-[25px] text-[#0F3941] text-[20px] font-semibold"
+                      "basis-auto px-[25px] text-blue text-[20px] font-semibold"
                     }
                   >
                     {selectedMenu || (
@@ -137,8 +137,8 @@ const Tabs = ({ tabs }: TabsProps) => {
                           "text-black text-[20px] md:w-full md:text-sm font-medium w-full",
                           "text-left py-5 md:py-2.5 px-4 outline-none md:rounded-md",
                           selected
-                            ? "md:text-[#D3482C] font-semibold menu-item-selected flex"
-                            : "md:text-[#BCC5D6]",
+                            ? "md:text-red font-semibold menu-item-selected flex"
+                            : "md:text-light2",
                         )
                       }
                     >

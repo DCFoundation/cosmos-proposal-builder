@@ -66,12 +66,12 @@ const EditableTable = ({
       : row[valueKey];
 
     return (
-      <tr key={row.key} className={"divide-x divide-[#E7ECF5]"}>
+      <tr key={row.key} className={"divide-x divide-light3"}>
         <td
           scope="col"
           className={classNames(
             "whitespace-nowrap px-3 py-2.5 text-sm text-gray-500",
-            "text-[#6B7280]",
+            "text-darkgrey",
           )}
         >
           {row.key}
@@ -116,7 +116,7 @@ const EditableTable = ({
         </td>
         <td className="relative whitespace-nowrap py-2.5 pl-3 pr-4 text-right text-sm font-medium">
           <button
-            className="text-[#D3482C] hover:text-black w-10"
+            className="text-red hover:text-black w-10"
             onClick={(e) => {
               e.preventDefault();
               if (editingKey === row.key) {
@@ -147,17 +147,17 @@ const EditableTable = ({
           <div className="inline-block overflow-auto py-2 align-middle w-[80vw] md:w-auto">
             <table
               ref={tableRef}
-              className="divide-y divide-[#CED7E8] border border-[#CED7E8]"
+              className="divide-y divide-light border border-light"
             >
-              <thead className={`bg-[#F0F2F7] rounded-md`}>
-                <tr className={"divide-x divide-[#E7ECF5]"}>
+              <thead className={`bg-light3 rounded-md`}>
+                <tr className={"divide-x divide-light3"}>
                   {headers?.map(renderThead)}
                   <th scope="col" className="relative py-2.5 pr-3">
                     <span className="sr-only">Edit</span>
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#E7ECF5]">
+              <tbody className="divide-y divide-light3">
                 {rows?.map(renderRow)}
               </tbody>
             </table>

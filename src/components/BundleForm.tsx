@@ -74,16 +74,16 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       <form ref={formRef} className="" onSubmit={onSubmit}>
         <div className="space-y-12 sm:space-y-16">
           <div>
-            <h2 className="text-[28px] font-semibold text-[#0F3941]">
+            <h2 className="text-[28px] font-semibold text-blue">
               {title}
             </h2>
-            <p className="mt-4 text-sm text-[#455659]">{description}</p>
+            <p className="mt-4 text-sm text-grey">{description}</p>
 
-            <div className="mt-[30px] space-y-3 border-t border-dotted border-[#A3AAB9] py-[30px] sm:border-t sm:pb-0">
+            <div className="mt-[30px] space-y-3 border-t border-dotted border-lightgrey py-[30px] sm:border-t sm:pb-0">
               <div className="sm:grid sm:grid-cols-1 sm:items-start">
                 <label
                   htmlFor="description"
-                  className="text-sm font-medium text-[#0F3941]"
+                  className="text-sm font-medium text-blue"
                 >
                   Bundle JSON
                 </label>

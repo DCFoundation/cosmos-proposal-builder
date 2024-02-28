@@ -35,8 +35,8 @@ const Stepper = ({ tabs, onChange, currentStep }: TabsProps) => {
                     className={() =>
                       classNames(
                         "flex flex-col mb-4 py-2 pl-4 border-l-4 md:border-l-0 md:border-t-4 md:pb-0 md:pl-0 md:pt-1 rounded focus:outline-1 focus:outline-dashed focus:outline-offset-4 focus:outline-gray-300",
-                        isCurr && "border-[#D3482C]",
-                        isPrev && "hover:border-[#D3482C]",
+                        isCurr && "border-red",
+                        isPrev && "hover:border-red",
                         isNext && "border-gray-200 hover:border-gray-300",
                       )
                     }
@@ -44,7 +44,7 @@ const Stepper = ({ tabs, onChange, currentStep }: TabsProps) => {
                     <span
                       className={classNames(
                         "text-sm font-medium",
-                        isCurr && "text-[#D3482C]",
+                        isCurr && "text-red",
                         isPrev && "text-gray-500 group-hover:text-teal-800",
                         isNext && "text-gray-500 group-hover:text-gray-800",
                       )}

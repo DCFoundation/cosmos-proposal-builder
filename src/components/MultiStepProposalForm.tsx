@@ -53,8 +53,8 @@ const MultiStepProposalForm = forwardRef<
 
   return (
     <form ref={formRef} className="" onSubmit={onSubmit}>
-      <h2 className="text-[28px] font-semibold text-[#0F3941]">{title}</h2>
-      <p className="text-sm font-medium text-[#0F3941]">{description}</p>
+      <h2 className="text-[28px] font-semibold text-blue">{title}</h2>
+      <p className="text-sm font-medium text-blue">{description}</p>
 
       <div className="mt-6">
         <Stepper

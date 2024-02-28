@@ -11,14 +11,12 @@ const ChainTiles = ({ chains }: { chains: ChainList }) => {
       <div className="flex flex-col min-w-full rounded-xl bg-white p-3">
         <div className="py-2 px-2">
           <div>
-            <h2 className="text-[28px] font-semibold text-[#0F3941]">
+            <h2 className="text-[28px] font-semibold text-blue">
               {selectChainTitle}
             </h2>
-            <p className="mt-4 text-sm text-[#455659]">
-              {selectChainDescription}
-            </p>
+            <p className="mt-4 text-sm text-grey">{selectChainDescription}</p>
           </div>
-          <div className="mt-[30px] space-y-3 border-t border-dotted border-[#A3AAB9] py-[30px] sm:border-t sm:pb-0">
+          <div className="mt-[30px] space-y-3 border-t border-dotted border-lightgrey py-[30px] sm:border-t sm:pb-0">
             <ul
               role="list"
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"

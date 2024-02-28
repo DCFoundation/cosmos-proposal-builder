@@ -11,7 +11,7 @@ const LayoutFooter = () => {
           <div className={`flex justify-end items-center`}>
             <div
               className={
-                "basis-auto text-[#7B818D] text-[12px] font-medium pe-4"
+                "basis-auto text-midGray2 text-[12px] font-medium pe-4"
               }
             >
               Sponsored by

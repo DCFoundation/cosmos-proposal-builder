@@ -70,7 +70,7 @@ const DragDrop: React.FC<DragDropProps> = ({
       onDrop={handleDrop}
       onClick={handleClick}
       className={classNames(
-        "flex justify-center rounded-lg border border-dashed border-[#ADB7CA] p-5",
+        "flex justify-center rounded-lg border border-dashed border-semigray p-5",
         isDragging ? "border-teal-600 bg-gray-300/10" : "",
       )}
     >
@@ -100,7 +100,7 @@ const DragDrop: React.FC<DragDropProps> = ({
             >
               <div className={`flex flex-wrap`}>
                 <div className={`basis-full`}>
-                  <span className={`text-[#D3482C] text-base`}>{label}</span>
+                  <span className={`text-red text-base`}>{label}</span>
                 </div>
                 <div className={`basis-full`}>
                   <input
@@ -117,11 +117,11 @@ const DragDrop: React.FC<DragDropProps> = ({
             </label>
           </div>
           <div className={`basis-full`}>
-            <p className="text-[#5E5E5E]">or drag and drop</p>
+            <p className="text-semiDarkGray">or drag and drop</p>
           </div>
         </div>
         {subtitle ? (
-          <p className="text-xs text-[#A2A2A2] mt-[10px]">{subtitle}</p>
+          <p className="text-xs text-midGray mt-[10px]">{subtitle}</p>
         ) : null}
         {afterEl}
       </div>

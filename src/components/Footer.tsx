@@ -15,7 +15,7 @@ const Footer = ({ text, links }: FooterProps) => {
             <div key={item.name} className="pb-1">
               <a
                 href={item.href}
-                className="text-sm text-[#455659] hover:text-gray-900"
+                className="text-sm text-grey hover:text-gray-900"
               >
                 {item.name}
               </a>

@@ -31,12 +31,12 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
       {({ open }) => (
         <>
           <div className="relative">
-            <div className="inline-flex divide-x divide-[#D3482C] rounded-md shadow-sm">
-              <div className="inline-flex items-center gap-x-1.5 rounded-l-md bg-[#D3482C] px-4 py-4 text-white shadow-sm">
+            <div className="inline-flex divide-x divide-red rounded-md shadow-sm">
+              <div className="inline-flex items-center gap-x-1.5 rounded-l-md bg-red px-4 py-4 text-white shadow-sm">
                 <CheckIcon className="-ml-0.5 h-4 w-4" aria-hidden="true" />
                 <p className="text-sm font-semibold">{selected.title}</p>
               </div>
-              <Listbox.Button className="inline-flex items-center rounded-l-none rounded-r-md bg-[#D3482C] p-2 hover:teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-gray-50">
+              <Listbox.Button className="inline-flex items-center rounded-l-none rounded-r-md bg-red p-2 hover:teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-gray-50">
                 <ChevronDownIcon
                   className="h-5 w-5 text-white"
                   aria-hidden="true"
@@ -57,7 +57,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                     key={option.key}
                     className={({ active }) =>
                       classNames(
-                        active ? "bg-[#D3482C] text-white" : "text-gray-900",
+                        active ? "bg-red text-white" : "text-gray-900",
                         "cursor-default select-none p-4 text-sm",
                       )
                     }
@@ -83,7 +83,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                           {selected ? (
                             <span
                               className={
-                                active ? "text-white" : "text-[#D3482C]"
+                                active ? "text-white" : "text-red"
                               }
                             >
                               <CheckIcon

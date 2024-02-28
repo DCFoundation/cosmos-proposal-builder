@@ -10,7 +10,7 @@ export const TitleDescriptionInputs = ({
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:pt-3">
       <label
         htmlFor="title"
-        className="block text-sm font-medium text-[#0F3941]"
+        className="block text-sm font-medium text-blue"
       >
         Title
       </label>
@@ -20,7 +20,7 @@ export const TitleDescriptionInputs = ({
           name="title"
           id="title"
           placeholder=""
-          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#D3482C]"
+          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-light placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-red"
         />
       </div>
     </div>
@@ -28,17 +28,17 @@ export const TitleDescriptionInputs = ({
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:pt-3">
       <label
         htmlFor="description"
-        className="text-sm font-medium text-[#0F3941]"
+        className="text-sm font-medium text-blue"
       >
         Description
       </label>
 
-      <p className="mt-1.5 text-sm text-[#5E5E5E] font-normal">
+      <p className="mt-1.5 text-sm text-semiDarkGray font-normal">
         Write a few sentences about the proposal and include any relevant links.
         Before proposing to Mainnet, please ensure you've started a discussion
         on the{" "}
         <a
-          className="cursor-pointer text-[#2CB7D3] hover:text-gray-900 underline"
+          className="cursor-pointer text-lightblue hover:text-gray-900 underline"
           href={communityForumLink}
         >
           Community Forum
@@ -51,7 +51,7 @@ export const TitleDescriptionInputs = ({
           id="description"
           name="description"
           rows={3}
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#D3482C]"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-light placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-red"
           defaultValue={""}
           placeholder="Description"
         />

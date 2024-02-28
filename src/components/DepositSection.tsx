@@ -42,7 +42,7 @@ export const DepositSection: React.FC<unknown> = () => {
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:py-3">
       <label
         htmlFor="description"
-        className="text-sm font-medium text-[#0F3941]"
+        className="text-sm font-medium text-blue"
       >
         Deposit
       </label>
@@ -55,10 +55,10 @@ export const DepositSection: React.FC<unknown> = () => {
           id="deposit"
           ref={depositRef}
           defaultValue={minDeposit ? coinsUnit(minDeposit) : ""}
-          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-[#CED7E8] placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-[#D3482C] max-w-[250px]"
+          className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-light placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-red max-w-[250px]"
         />
 
-        <p className="mt-[10px] text-sm text-[#0F3941] bg-[#F5F7FC] p-[20px] rounded-md">
+        <p className="mt-[10px] text-sm text-blue bg-white p-[20px] rounded-md">
           <div className={`flex items-center border-b pb-3 mb-3`}>
             <div className={`basis-auto pr-3`}>
               <svg

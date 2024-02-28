@@ -16,7 +16,7 @@ interface DropdownMenuProps {
 }
 
 const statusColors = {
-  active: "bg-[#1BCC6C]",
+  active: "bg-green",
   loading: "bg-yellow-500",
   error: "bg-red-500",
   default: "bg-gray-500",
@@ -37,7 +37,7 @@ const DropdownMenu = ({
       <div>
         <Menu.Button
           className={classNames(
-            "flex w-full justify-between rounded-md bg-white px-3 py-3 text-sm font-semibold text-black ring-1 ring-inset ring-[#CED7E8] shadow-sm hover:bg-gray-50",
+            "flex w-full justify-between rounded-md bg-white px-3 py-3 text-sm font-semibold text-black ring-1 ring-inset ring-light shadow-sm hover:bg-gray-50",
             buttonStyle ? buttonStyle : "",
           )}
         >
