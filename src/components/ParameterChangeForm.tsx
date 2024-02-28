@@ -146,7 +146,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-4 sm:py-6">
           <label
             htmlFor="title"
-            className="block text-sm font-medium text-gray-900 sm:pt-1.5"
+            className="block text-sm font-medium text-[#0F3941]"
           >
             {match.title}
           </label>
