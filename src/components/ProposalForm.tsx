@@ -99,7 +99,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             </h2>
             <p className="mt-4 text-sm text-[#455659]">{description}</p>
 
-            <div className="mt-[30px] space-y-3 border-t border-dotted border-[#A3AAB9] py-[20px] sm:border-t sm:pb-0">
+            <div className="mt-[30px] border-t border-dotted border-[#A3AAB9] py-[20px] sm:border-t sm:pb-0">
               {msgType === "parameterChangeProposal" ? (
                 <ParameterChangeFormSection<QueryType, SelectorReturnType>
                   ref={paramChangeRef}

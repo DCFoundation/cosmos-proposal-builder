@@ -141,10 +141,10 @@ const EditableTable = ({
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block py-2 align-middle">
+    <div className="">
+      <div className="flex flex-wrap">
+        <div className="basis-full">
+          <div className="inline-block overflow-auto py-2 align-middle w-[80vw] md:w-auto">
             <table
               ref={tableRef}
               className="divide-y divide-[#CED7E8] border border-[#CED7E8]"
