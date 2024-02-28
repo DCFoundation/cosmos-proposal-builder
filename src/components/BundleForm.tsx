@@ -77,9 +77,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
             <h2 className="text-[28px] font-semibold text-[#0F3941]">
               {title}
             </h2>
-            <p className="mt-4 text-sm text-[#455659]">
-              {description}
-            </p>
+            <p className="mt-4 text-sm text-[#455659]">{description}</p>
 
             <div className="mt-[30px] space-y-3 border-t border-dotted border-[#A3AAB9] py-[30px] sm:border-t sm:pb-0">
               <div className="sm:grid sm:grid-cols-1 sm:items-start">

@@ -55,7 +55,9 @@ const CodeInputGroup = forwardRef<CodeInputGroupMethods, CodeInputGroupProps>(
                 label="JSON Permit"
                 accept="application/json"
                 prismTag="lang-json"
-                onContentChange={(content) => handlePermitChange(index, content)}
+                onContentChange={(content) =>
+                  handlePermitChange(index, content)
+                }
                 subtitle=".json files accepted"
               />
             </div>

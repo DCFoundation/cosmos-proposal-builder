@@ -34,12 +34,12 @@ export const TitleDescriptionInputs = ({
       </label>
 
       <p className="mt-1.5 text-sm text-[#5E5E5E] font-normal">
-        Write a few sentences about the proposal and include any relevant
-        links. Before proposing to Mainnet, please ensure you've started a
-        discussion on the{" "}
+        Write a few sentences about the proposal and include any relevant links.
+        Before proposing to Mainnet, please ensure you've started a discussion
+        on the{" "}
         <a
-            className="cursor-pointer text-[#2CB7D3] hover:text-gray-900 underline"
-            href={communityForumLink}
+          className="cursor-pointer text-[#2CB7D3] hover:text-gray-900 underline"
+          href={communityForumLink}
         >
           Community Forum
         </a>
@@ -55,7 +55,6 @@ export const TitleDescriptionInputs = ({
           defaultValue={""}
           placeholder="Description"
         />
-
       </div>
     </div>
   </>

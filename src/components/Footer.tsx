@@ -8,12 +8,9 @@ interface FooterProps {
 
 const Footer = ({ text, links }: FooterProps) => {
   return (
-    <div className={''}>
+    <div>
       <div className="">
-        <nav
-          className=""
-          aria-label="Footer"
-        >
+        <nav className="" aria-label="Footer">
           {links.map((item) => (
             <div key={item.name} className="pb-1">
               <a

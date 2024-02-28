@@ -75,8 +75,21 @@ const DragDrop: React.FC<DragDropProps> = ({
       )}
     >
       <div className="text-center">
-        <svg className={`mx-auto`} xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
-          <path d="M24.0833 24.0833L31.1666 17L24.0833 9.91667M9.91665 9.91667L2.83331 17L9.91665 24.0833M19.8333 4.25L14.1666 29.75" stroke="#D3482C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <svg
+          className={`mx-auto`}
+          xmlns="http://www.w3.org/2000/svg"
+          width="34"
+          height="34"
+          viewBox="0 0 34 34"
+          fill="none"
+        >
+          <path
+            d="M24.0833 24.0833L31.1666 17L24.0833 9.91667M9.91665 9.91667L2.83331 17L9.91665 24.0833M19.8333 4.25L14.1666 29.75"
+            stroke="#D3482C"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
 
         <div className="mt-4 flex flex-wrap text-sm text-gray-600">
