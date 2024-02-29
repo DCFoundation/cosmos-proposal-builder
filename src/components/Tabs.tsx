@@ -45,7 +45,7 @@ const Tabs = ({ tabs }: TabsProps) => {
   };
 
   return (
-    <div className="w-full max-w-4xl px-2 py-2 sm:px-0 m-auto">
+    <div className="w-full max-w-7xl px-2 py-2 sm:px-0 m-auto">
       <Tab.Group selectedIndex={selectedIdx} onChange={handleChange}>
         <div className={"flex flex-wrap rounded-xl bg-white"}>
           <div className={"basis-full md:basis-5/12 md:p-[40px]"}>
