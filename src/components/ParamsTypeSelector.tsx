@@ -82,9 +82,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                           </p>
                           {selected ? (
                             <span
-                              className={
-                                active ? "text-white" : "text-red"
-                              }
+                              className={active ? "text-white" : "text-red"}
                             >
                               <CheckIcon
                                 className="h-5 w-5"

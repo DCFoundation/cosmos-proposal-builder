@@ -40,10 +40,7 @@ export const DepositSection: React.FC<unknown> = () => {
 
   return (
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:py-3">
-      <label
-        htmlFor="description"
-        className="text-sm font-medium text-blue"
-      >
+      <label htmlFor="description" className="text-sm font-medium text-blue">
         Deposit
       </label>
       <div className="">

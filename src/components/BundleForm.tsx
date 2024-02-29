@@ -74,9 +74,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       <form ref={formRef} className="" onSubmit={onSubmit}>
         <div className="space-y-12 sm:space-y-16">
           <div>
-            <h2 className="text-[28px] font-semibold text-blue">
-              {title}
-            </h2>
+            <h2 className="text-[28px] font-semibold text-blue">{title}</h2>
             <p className="mt-4 text-sm text-grey">{description}</p>
 
             <div className="mt-[30px] space-y-3 border-t border-dotted border-lightgrey py-[30px] sm:border-t sm:pb-0">

@@ -3,10 +3,7 @@ import { IBCDenomInput } from "../../../components/IBCDenomInput";
 const PSMParameterInputs = () => (
   <div className="mt-10 space-y-8  border-gray-900/10 pb-12 sm:space-y-0 sm:border-t border-dashed sm:pb-0">
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-2 sm:py-6">
-      <label
-        htmlFor="denomTrace"
-        className="text-sm font-medium text-blue"
-      >
+      <label htmlFor="denomTrace" className="text-sm font-medium text-blue">
         IBC Denom
       </label>
       <div className="">
@@ -15,10 +12,7 @@ const PSMParameterInputs = () => (
     </div>
 
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-2 sm:py-6">
-      <label
-        htmlFor="decimalPlaces"
-        className="text-sm font-medium text-blue"
-      >
+      <label htmlFor="decimalPlaces" className="text-sm font-medium text-blue">
         Decimal Places
       </label>
       <div className="">
@@ -38,10 +32,7 @@ const PSMParameterInputs = () => (
     </div>
 
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-2 sm:py-6">
-      <label
-        htmlFor="description"
-        className="text-sm font-medium text-blue"
-      >
+      <label htmlFor="description" className="text-sm font-medium text-blue">
         Issuer Keyword
       </label>
       <div className="">
@@ -59,10 +50,7 @@ const PSMParameterInputs = () => (
     </div>
 
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-2 sm:py-6">
-      <label
-        htmlFor="description"
-        className="text-sm font-medium text-blue"
-      >
+      <label htmlFor="description" className="text-sm font-medium text-blue">
         Proposed Name
       </label>
       <div className="">

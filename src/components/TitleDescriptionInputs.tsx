@@ -8,10 +8,7 @@ export const TitleDescriptionInputs = ({
 }) => (
   <>
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:pt-3">
-      <label
-        htmlFor="title"
-        className="block text-sm font-medium text-blue"
-      >
+      <label htmlFor="title" className="block text-sm font-medium text-blue">
         Title
       </label>
       <div>
@@ -26,10 +23,7 @@ export const TitleDescriptionInputs = ({
     </div>
 
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:pt-3">
-      <label
-        htmlFor="description"
-        className="text-sm font-medium text-blue"
-      >
+      <label htmlFor="description" className="text-sm font-medium text-blue">
         Description
       </label>
 
