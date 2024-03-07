@@ -1,5 +1,5 @@
 import "./installSesLockdown.js";
-import { render, screen, within } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import App from "./App";
 import { ContextProviders } from "./contexts/providers.tsx";
 
@@ -37,12 +37,10 @@ describe("App.tsx", () => {
       </ContextProviders>,
     );
 
-    const navElement = screen.getAllByRole("navigation")[0];
-    const selectElement = within(navElement).getByRole("button", {
-      name: "Select",
-      expanded: false,
+    const selectElements = screen.getAllByRole("button", {
+      name: "Select Chain",
     });
-    expect(selectElement).toBeTruthy();
+    expect(selectElements.length).toBeGreaterThan(0);
 
     describe.todo("selecting value puts chain in pathname");
     describe.todo("changing value resets the network dropdown value");
@@ -55,12 +53,10 @@ describe("App.tsx", () => {
       </ContextProviders>,
     );
 
-    const navElement = screen.getAllByRole("navigation")[0];
-    const selectElement = within(navElement).getByRole("button", {
+    const selectElements = screen.getAllByRole("button", {
       name: "Select Network",
-      expanded: false,
     });
-    expect(selectElement).toBeTruthy();
+    expect(selectElements.length).toBeGreaterThan(0);
   });
 
   it("renders list of chains as tiles", async () => {
@@ -87,5 +83,8 @@ describe("App.tsx", () => {
 
     const footerEl = await screen.findByRole("contentinfo");
     expect(footerEl.querySelectorAll("a").length).toBe(3);
+
+    const sponsoredText = await screen.findByText("Sponsored by");
+    expect(sponsoredText).toBeTruthy();
   });
 });
