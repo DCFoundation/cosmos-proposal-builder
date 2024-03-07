@@ -26,14 +26,11 @@ const Nav = ({ title, showLogo, rightContent }: NavProps) => (
             </div>
           ) : null}
           <h1 className="text-white pr-3 py-2 font-semibold text-md">
-            <Link href="/">
-              <div
-                className={
-                  "bg-teal-500 text-xs font-medium me-2 px-2.5 py-0.5 rounded text-white"
-                }
-              >
-                {title}
-              </div>
+            <Link
+              className="bg-teal-500 text-xs font-medium me-2 px-2.5 py-0.5 rounded text-white"
+              href="/"
+            >
+              {title}
             </Link>
           </h1>
         </div>
