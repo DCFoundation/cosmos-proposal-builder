@@ -126,15 +126,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 
   return (
     <>
-      <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
-        <label
-          htmlFor="title"
-          className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
-        >
-          Parameter Change Type
-        </label>
-        <div className="sm:col-span-3">
-          <div className="flex justify-end pr-6">
+      <div className="grid grid-cols-1">
+        <div>
+          <label htmlFor="title" className="text-sm font-medium text-blue">
+            Parameter Change Type
+          </label>
+        </div>
+        <div className="pt-[10px]">
+          <div className="flex">
             <ParamsTypeSelector
               paramOptions={options}
               onChange={handleFormTypeChange}
@@ -144,14 +143,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         </div>
       </div>
       {api && (
-        <div className="sm:grid sm:grid-cols-4 sm:items-start sm:gap-4 sm:py-6">
+        <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-4 sm:py-6 mt-6">
           <label
             htmlFor="title"
-            className="block text-sm font-medium leading-6 text-gray-900 sm:pt-1.5"
+            className="block text-sm font-medium text-blue"
           >
             {match.title}
           </label>
-          <div className="sm:col-span-3">
+          <div className={"w-full"}>
             <EditableTable
               headers={match.headers as string[]}
               rows={stagedParams as unknown as RowValue[]}

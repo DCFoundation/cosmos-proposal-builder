@@ -34,3 +34,13 @@
 .Toastify__toast-container.Toastify__toast-container--bottom-center {
   bottom: 5em;
 }
+
+.menu-item-selected{
+  background:url('assets/menu-item-selected.svg') no-repeat scroll center left transparent;
+  background-size:contain;
+}
+@media screen and (max-width: 767px) {
+  .menu-item-selected{
+    background:none;
+  }
+}

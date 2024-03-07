@@ -5,7 +5,6 @@ import {
   InputHTMLAttributes,
   ReactNode,
 } from "react";
-import { CodeBracketSquareIcon } from "@heroicons/react/24/solid";
 import { classNames } from "../utils/classNames";
 
 export interface DragDropProps {
@@ -71,35 +70,58 @@ const DragDrop: React.FC<DragDropProps> = ({
       onDrop={handleDrop}
       onClick={handleClick}
       className={classNames(
-        "flex max-w-2xl justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
+        "flex justify-center rounded-lg border border-dashed border-semigray p-5",
         isDragging ? "border-teal-600 bg-gray-300/10" : "",
       )}
     >
       <div className="text-center">
-        <CodeBracketSquareIcon
-          className="mx-auto h-12 w-12 text-gray-300"
-          aria-hidden="true"
-        />
-        <div className="mt-4 flex text-sm leading-6 text-gray-600">
-          <label
-            htmlFor={label}
-            className="relative cursor-pointer rounded-md bg-white font-semibold text-teal-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-600 focus-within:ring-offset-2 hover:text-teal-500"
-          >
-            <span>{label}</span>
-            <input
-              id={label}
-              ref={fileInputRef}
-              type="file"
-              multiple={!!multiple}
-              accept={accept}
-              className="sr-only"
-              onChange={handleFileChange}
-            />
-          </label>
-          <p className="pl-1">or drag and drop</p>
+        <svg
+          className={`mx-auto`}
+          xmlns="http://www.w3.org/2000/svg"
+          width="34"
+          height="34"
+          viewBox="0 0 34 34"
+          fill="none"
+        >
+          <path
+            d="M24.0833 24.0833L31.1666 17L24.0833 9.91667M9.91665 9.91667L2.83331 17L9.91665 24.0833M19.8333 4.25L14.1666 29.75"
+            stroke="#D3482C"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        <div className="mt-4 flex flex-wrap text-sm text-gray-600">
+          <div className={`basis-full`}>
+            <label
+              htmlFor={label}
+              className="relative cursor-pointer rounded-md bg-white font-semibold text-teal-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-600 focus-within:ring-offset-2 hover:text-teal-500"
+            >
+              <div className={`flex flex-wrap`}>
+                <div className={`basis-full`}>
+                  <span className={`text-red text-base`}>{label}</span>
+                </div>
+                <div className={`basis-full`}>
+                  <input
+                    id={label}
+                    ref={fileInputRef}
+                    type="file"
+                    multiple={!!multiple}
+                    accept={accept}
+                    className="sr-only"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              </div>
+            </label>
+          </div>
+          <div className={`basis-full`}>
+            <p className="text-semiDarkGray">or drag and drop</p>
+          </div>
         </div>
         {subtitle ? (
-          <p className="text-xs leading-5 text-gray-600">{subtitle}</p>
+          <p className="text-xs text-midGray mt-[10px]">{subtitle}</p>
         ) : null}
         {afterEl}
       </div>

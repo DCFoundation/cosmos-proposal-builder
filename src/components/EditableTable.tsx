@@ -36,13 +36,12 @@ const EditableTable = ({
     }
   });
 
-  const renderThead = (title: string, idx: number) => (
+  const renderThead = (title: string) => (
     <th
       key={title}
       scope="col"
       className={classNames(
-        "px-3 py-3.5 text-left text-sm font-semibold text-gray-900",
-        idx === 0 ? "sm:pl-0" : "",
+        "px-3 py-2.5 text-left text-sm font-semibold text-gray-900",
       )}
     >
       {title}
@@ -67,12 +66,12 @@ const EditableTable = ({
       : row[valueKey];
 
     return (
-      <tr key={row.key}>
+      <tr key={row.key} className={"divide-x divide-light3"}>
         <td
           scope="col"
           className={classNames(
-            "whitespace-nowrap px-3 py-4 text-sm text-gray-500",
-            "text-gray-900 sm:pl-0",
+            "whitespace-nowrap px-3 py-2.5 text-sm text-gray-500",
+            "text-darkgrey",
           )}
         >
           {row.key}
@@ -80,7 +79,7 @@ const EditableTable = ({
         {shouldTransform && (
           <td
             scope="col"
-            className={"whitespace-nowrap px-3 py-4 text-sm text-gray-500"}
+            className={"whitespace-nowrap px-3 py-2.5 text-sm text-gray-500"}
           >
             {row[valueKey]}
           </td>
@@ -89,7 +88,7 @@ const EditableTable = ({
           scope="col"
           className={classNames(
             "whitespace-nowrap text-sm text-gray-500 w-44",
-            editingKey !== row.key ? "px-3 py-4" : "",
+            editingKey !== row.key ? "px-3 py-2.5" : "",
           )}
         >
           <div style={{ width: "100%", height: "100%" }}>
@@ -115,9 +114,9 @@ const EditableTable = ({
             )}
           </div>
         </td>
-        <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+        <td className="relative whitespace-nowrap py-2.5 pl-3 pr-4 text-right text-sm font-medium">
           <button
-            className="text-teal-600 hover:text-teal-900 w-10"
+            className="text-red hover:text-black w-10"
             onClick={(e) => {
               e.preventDefault();
               if (editingKey === row.key) {
@@ -142,23 +141,23 @@ const EditableTable = ({
   };
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
-      <div className="flow-root">
-        <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-          <div className="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+    <div className="">
+      <div className="flex flex-wrap">
+        <div className="basis-full">
+          <div className="inline-block overflow-auto py-2 align-middle w-[80vw] md:w-auto">
             <table
               ref={tableRef}
-              className="min-w-full divide-y divide-gray-300"
+              className="divide-y divide-light border border-light"
             >
-              <thead>
-                <tr>
+              <thead className={`bg-light3 rounded-md`}>
+                <tr className={"divide-x divide-light3"}>
                   {headers?.map(renderThead)}
-                  <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                  <th scope="col" className="relative py-2.5 pr-3">
                     <span className="sr-only">Edit</span>
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-light3">
                 {rows?.map(renderRow)}
               </tbody>
             </table>

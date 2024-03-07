@@ -8,17 +8,14 @@ interface FooterProps {
 
 const Footer = ({ text, links }: FooterProps) => {
   return (
-    <footer className="bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-8 sm:py-8 lg:px-8">
-        <nav
-          className="-mb-6 columns-2 sm:flex sm:justify-center sm:space-x-12"
-          aria-label="Footer"
-        >
+    <div>
+      <div className="">
+        <nav className="" aria-label="Footer">
           {links.map((item) => (
-            <div key={item.name} className="pb-6">
+            <div key={item.name} className="pb-1">
               <a
                 href={item.href}
-                className="text-sm leading-6 text-gray-600 hover:text-gray-900"
+                className="text-sm text-grey hover:text-gray-900"
               >
                 {item.name}
               </a>
@@ -31,7 +28,7 @@ const Footer = ({ text, links }: FooterProps) => {
           </p>
         ) : null}
       </div>
-    </footer>
+    </div>
   );
 };
 

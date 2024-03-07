@@ -31,12 +31,12 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
       {({ open }) => (
         <>
           <div className="relative">
-            <div className="inline-flex divide-x divide-teal-700 rounded-md shadow-sm">
-              <div className="inline-flex items-center gap-x-1.5 rounded-l-md bg-teal-600 px-3 py-2 text-white shadow-sm">
-                <CheckIcon className="-ml-0.5 h-5 w-5" aria-hidden="true" />
+            <div className="inline-flex divide-x divide-red rounded-md shadow-sm">
+              <div className="inline-flex items-center gap-x-1.5 rounded-l-md bg-red px-4 py-4 text-white shadow-sm">
+                <CheckIcon className="-ml-0.5 h-4 w-4" aria-hidden="true" />
                 <p className="text-sm font-semibold">{selected.title}</p>
               </div>
-              <Listbox.Button className="inline-flex items-center rounded-l-none rounded-r-md bg-teal-600 p-2 hover:teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-gray-50">
+              <Listbox.Button className="inline-flex items-center rounded-l-none rounded-r-md bg-red p-2 hover:teal-700 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:ring-offset-2 focus:ring-offset-gray-50">
                 <ChevronDownIcon
                   className="h-5 w-5 text-white"
                   aria-hidden="true"
@@ -51,13 +51,13 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Listbox.Options className="absolute right-0 z-10 mt-2 w-72 origin-top-right divide-y divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <Listbox.Options className="absolute right-0 z-10 mt-2 w-72 origin-top-right divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 {paramOptions.map((option) => (
                   <Listbox.Option
                     key={option.key}
                     className={({ active }) =>
                       classNames(
-                        active ? "bg-teal-600 text-white" : "text-gray-900",
+                        active ? "bg-red text-white" : "text-gray-900",
                         "cursor-default select-none p-4 text-sm",
                       )
                     }
@@ -82,9 +82,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                           </p>
                           {selected ? (
                             <span
-                              className={
-                                active ? "text-white" : "text-teal-600"
-                              }
+                              className={active ? "text-white" : "text-red"}
                             >
                               <CheckIcon
                                 className="h-5 w-5"

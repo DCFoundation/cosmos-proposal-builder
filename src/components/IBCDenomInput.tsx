@@ -52,11 +52,11 @@ const IBCDenomInput = () => {
   return (
     <div className="block">
       <Combobox value={selected} onChange={setSelected}>
-        <div className="relative mt-1 sm:max-w-sm">
-          <div className="block w-full rounded-md bg-white sm:max-w-sm sm:text-sm">
+        <div className="relative mt-1">
+          <div className="block w-full rounded-md bg-white sm:text-sm">
             <Combobox.Input
               name="denomTrace"
-              className="w-full border-none rounded-md py-1.5 pl-3 pr-10  text-gray-900 placeholder:text-gray-400 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:text-sm sm:leading-6"
+              className="w-full border-none rounded-md py-1.5 pl-3 pr-10  text-gray-900 placeholder:text-gray-400 ring-1 ring-inset ring-gray-300 focus:ring-1 focus:ring-inset focus:ring-red sm:text-sm sm:leading-6 py-3"
               displayValue={(token: DenomTrace) => formatTraceOrCoin(token)}
               onChange={(event) => setQuery(event.target.value)}
             />
@@ -74,7 +74,7 @@ const IBCDenomInput = () => {
             leaveTo="opacity-0"
             afterLeave={() => setQuery("")}
           >
-            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm">
+            <Combobox.Options className="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-red focus:outline-none sm:text-sm">
               {query.length > 0 && filtered.length === 0 && (
                 <Combobox.Option
                   className="relative cursor-default select-none px-4 py-2 text-gray-700"
@@ -125,7 +125,7 @@ const IBCDenomInput = () => {
           </Transition>
         </div>
       </Combobox>
-      <p className="ml-1 mt-3 text-xs leading-6 text-gray-600">
+      <p className="ml-1 mt-3 text-xs text-gray-600">
         {(selected as DenomTrace)?.base_denom ? (
           <TraceToHash
             baseDenom={(selected as DenomTrace).base_denom}

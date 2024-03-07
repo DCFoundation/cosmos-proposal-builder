@@ -2,13 +2,13 @@ import { Suspense } from "react";
 import { ToastContainer } from "react-toastify";
 import { Switch, Route } from "wouter";
 import { Nav } from "./components/Nav";
-import { Footer } from "./components/Footer";
 import { ChainMenu } from "./components/ChainMenu";
 import { NetworkDropdown } from "./components/NetworkDropdown";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { ChainTiles } from "./components/ChainTiles";
 import { useChain } from "./hooks/useChain";
 import { chainConfigMap } from "./config";
+import { LayoutFooter } from "./components/LayoutFooter.tsx";
 
 const App = () => {
   const { chains } = useChain();
@@ -16,20 +16,22 @@ const App = () => {
     <div className="flex flex-col min-h-screen">
       <Nav
         title="Cosmos Proposal Builder"
-        showLogo={true}
+        showLogo={false}
         rightContent={
           <>
-            <div className="mr-6 relative">
+            <div className="mr-[5px] relative hidden sm:flex">
               <ChainMenu />
             </div>
-            <div className="mr-6 relative">
+            <div className="mr-[5px] relative hidden sm:flex">
               <NetworkDropdown />
             </div>
-            <WalletConnectButton theme="white" />
+            <div>
+              <WalletConnectButton theme="black" />
+            </div>
           </>
         }
       />
-      <main className="flex-grow mx-auto max-w-7xl min-w-full py-6 sm:px-6 lg:px-8">
+      <main className="flex-grow mx-auto max-w-7xl min-w-full py-3 sm:py-6 sm:px-6 lg:px-8">
         <Switch>
           <Route path="/" component={() => <ChainTiles chains={chains} />} />
           {chains.map(({ href, value }) => {
@@ -47,8 +49,8 @@ const App = () => {
             );
           })}
         </Switch>
+        <LayoutFooter />
       </main>
-      <Footer />
       <ToastContainer
         autoClose={false}
         position="bottom-right"

@@ -82,7 +82,7 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
     }, [bundleCost, istBalance]);
 
     return (
-      <div className="flex flex-col mr-8">
+      <div className="flex flex-col">
         {!content ? (
           <div className="mt-2 min-w-full">
             <DragDrop
