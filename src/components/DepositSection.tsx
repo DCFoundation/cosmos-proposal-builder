@@ -55,7 +55,7 @@ export const DepositSection: React.FC<unknown> = () => {
           className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-light placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-red max-w-[250px]"
         />
 
-        <p className="mt-[10px] text-sm text-blue bg-white p-[20px] rounded-md">
+        <div className="mt-[10px] text-sm text-blue bg-white p-[20px] rounded-md">
           <div className={`flex items-center border-b pb-3 mb-3`}>
             <div className={`basis-auto pr-3`}>
               <svg
@@ -139,7 +139,7 @@ export const DepositSection: React.FC<unknown> = () => {
               </span>
             </div>
           </div>
-        </p>
+        </div>
       </div>
     </div>
   );

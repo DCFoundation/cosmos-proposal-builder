@@ -2,7 +2,7 @@ import { Footer } from "./Footer.tsx";
 
 const LayoutFooter = () => {
   return (
-    <div className={`layout-footer px-4 py-5`}>
+    <footer className={`layout-footer px-4 py-5`}>
       <div className={"flex items-center justify-center"}>
         <div className={"basis-full md:basis-auto md:hidden"}>
           <Footer />
@@ -56,7 +56,7 @@ const LayoutFooter = () => {
           </div>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 
