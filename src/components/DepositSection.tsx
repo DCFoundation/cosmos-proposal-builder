@@ -10,6 +10,8 @@ import {
 import type { DepositParams, VotingParams } from "../types/gov";
 import { selectBldCoins } from "../lib/selectors";
 import { renderCoins, coinsUnit } from "../utils/coin";
+import moment from "moment";
+import { WalletConnectButton } from "./WalletConnectButton.tsx";
 
 export const DepositSection: React.FC<unknown> = () => {
   const { api } = useNetwork();
@@ -37,6 +39,22 @@ export const DepositSection: React.FC<unknown> = () => {
     () => selectBldCoins(accountBalances),
     [accountBalances],
   );
+  const renderTime = (time: string | undefined) => {
+    const onlyNumberTime = String(time).slice(0, -1);
+    const duration = moment.duration(onlyNumberTime, "seconds");
+    let formattedTime = "";
+    if (duration.asSeconds() < 86400) {
+      if (duration.asSeconds() <= 60) {
+        formattedTime = duration.asSeconds() + " seconds";
+      } else {
+        formattedTime = duration.asMinutes() + " minutes";
+      }
+    }
+    if (duration.asSeconds() >= 86400) {
+      formattedTime = duration.asDays() + " days";
+    }
+    return formattedTime;
+  };
 
   return (
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:py-3">
@@ -55,7 +73,7 @@ export const DepositSection: React.FC<unknown> = () => {
           className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-light placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-red max-w-[250px]"
         />
 
-        <div className="mt-[10px] text-sm text-blue bg-white p-[20px] rounded-md">
+        <div className="mt-[10px] text-sm text-blue bg-whiteMod p-[20px] rounded-md">
           <div className={`flex items-center border-b pb-3 mb-3`}>
             <div className={`basis-auto pr-3`}>
               <svg
@@ -76,6 +94,9 @@ export const DepositSection: React.FC<unknown> = () => {
               </svg>
             </div>
             <div className={`basis-auto grow`}>
+              <div className={"flex items-center justify-between"}>
+                <div className={"basis-auto"}></div>
+              </div>
               A proposal requires{" "}
               <span className="font-semibold">
                 {minDeposit ? renderCoins(minDeposit) : "Unavailable"}
@@ -103,12 +124,21 @@ export const DepositSection: React.FC<unknown> = () => {
               </svg>
             </div>
             <div className={`basis-auto grow`}>
-              <span>
-                Current balance:{" "}
-                <span className="font-semibold">
-                  {bldCoins ? renderCoins(bldCoins) : "Unavailable"}
-                </span>
-              </span>
+              <div className={"flex justify-between items-center"}>
+                <div className={"basis-auto"}>
+                  <span>
+                    Current balance:{" "}
+                    {bldCoins && (
+                      <span className="font-semibold">
+                        {renderCoins(bldCoins)}
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <div className={"basis-auto"}>
+                  {!bldCoins && <WalletConnectButton theme={"white"} />}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -134,7 +164,7 @@ export const DepositSection: React.FC<unknown> = () => {
               <span>
                 Voting Period:{" "}
                 <span className="font-semibold">
-                  {votingPeriod || "Unavailable"}
+                  {renderTime(votingPeriod) || "Unavailable"}
                 </span>
               </span>
             </div>

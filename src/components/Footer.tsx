@@ -15,6 +15,7 @@ const Footer = ({ text, links }: FooterProps) => {
             <div key={item.name} className="pb-1">
               <a
                 href={item.href}
+                target={"_blank"}
                 className="text-sm text-grey hover:text-gray-900"
               >
                 {item.name}
