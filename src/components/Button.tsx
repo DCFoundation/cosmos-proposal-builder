@@ -43,9 +43,7 @@ const Button = ({
   </button>
 );
 
-
 Button.defaultProps = {
-  //Icon: <WalletIcon className="mr-1.5 h-5 w-8" aria-hidden="true" />,
   Icon: (
     <svg
       className={"mr-[10px] walletConnectButton"}
