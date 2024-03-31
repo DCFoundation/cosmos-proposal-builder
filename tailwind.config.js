@@ -37,6 +37,7 @@ export default {
         semiDarkGray: "#5E5E5E",
         midGray: "#A2A2A2",
         lightblue: "#2CB7D3",
+        lightblue2: "#2cb7d31a",
         midGray2: "#7B818D",
         light2: "#BCC5D6",
         light3: "#E7ECF5",

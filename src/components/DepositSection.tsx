@@ -12,6 +12,7 @@ import { selectBldCoins } from "../lib/selectors";
 import { renderCoins, coinsUnit } from "../utils/coin";
 import moment from "moment";
 import { WalletConnectButton } from "./WalletConnectButton.tsx";
+import { NetworkDropdown } from "./NetworkDropdown.tsx";
 
 export const DepositSection: React.FC<unknown> = () => {
   const { api } = useNetwork();
@@ -94,14 +95,26 @@ export const DepositSection: React.FC<unknown> = () => {
               </svg>
             </div>
             <div className={`basis-auto grow`}>
-              <div className={"flex items-center justify-between"}>
-                <div className={"basis-auto"}></div>
+              <div className={"flex justify-between items-center"}>
+                <div className={"basis-auto"}>
+                  <span>
+                    A proposal requires{" "}
+                    {api ? (
+                      <span className="font-semibold">
+                        {minDeposit
+                          ? renderCoins(minDeposit) + " "
+                          : "Unavailable "}
+                      </span>
+                    ) : (
+                      <span>network </span>
+                    )}
+                    to enter voting period.
+                  </span>
+                </div>
+                <div className={"basis-auto"}>
+                  {!api && <NetworkDropdown />}
+                </div>
               </div>
-              A proposal requires{" "}
-              <span className="font-semibold">
-                {minDeposit ? renderCoins(minDeposit) : "Unavailable"}
-              </span>{" "}
-              to enter voting period.
             </div>
           </div>
 
@@ -136,7 +149,7 @@ export const DepositSection: React.FC<unknown> = () => {
                   </span>
                 </div>
                 <div className={"basis-auto"}>
-                  {!bldCoins && <WalletConnectButton theme={"white"} />}
+                  {!walletAddress && <WalletConnectButton theme={"white"} />}
                 </div>
               </div>
             </div>

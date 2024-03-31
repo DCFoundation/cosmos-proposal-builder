@@ -1,4 +1,4 @@
-import { useMemo, useRef, FormEvent } from "react";
+import { useMemo, useRef, FormEvent, useState } from "react";
 import { toast } from "react-toastify";
 import type { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
 import { MultiStepProposalForm } from "../../components/MultiStepProposalForm";
@@ -24,12 +24,23 @@ import {
   EMERYNET_ORACLE_OPERATORS,
   MAINNET_ORACLE_OPERATORS,
 } from "./addVault/constants";
+import { coinsUnit } from "../../utils/coin.ts";
+import { useQuery } from "@tanstack/react-query";
+import { accountBalancesQuery } from "../../lib/queries.ts";
+import { selectBldCoins } from "../../lib/selectors.ts";
 
 const Inter = () => {
   const { netName } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
+  const { api } = useNetwork();
   const psmFormRef = useRef<HTMLFormElement>(null);
   const vaultFormRef = useRef<HTMLFormElement>(null);
+
+  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
+  const bldCoins = useMemo(
+    () => selectBldCoins(accountBalances),
+    [accountBalances],
+  );
 
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
@@ -184,73 +195,118 @@ const Inter = () => {
     }
   };
 
+  const [alertBox, setAlertBox] = useState(true);
+
   return (
-    <Tabs
-      tabs={[
-        {
-          title: "Add PSM",
-          msgType: "addPSM",
-          content: (
-            <MultiStepProposalForm
-              ref={psmFormRef}
-              handleSubmit={handlePsmSubmit}
-              titleDescOnly={true}
-              title="Add PSM"
-              description={
-                <>
-                  The PSM (Parity Stability Module) is a smart contract that
-                  mints IST in exchange for approved stablecoins at a 1-to-1
-                  ratio. <InterLearnMore />
-                </>
+    <>
+      {(!bldCoins || coinsUnit(bldCoins) < 100) && alertBox && (
+        <div
+          className={
+            "flex justify-center w-full max-w-7xl px-2 py-2 m-auto bg-white rounded-lg -mb-5"
+          }
+        >
+          <div className={"basis-full"}>
+            <div
+              className={
+                "toast text-center bg-lightblue2 p-4 text-blue font-light rounded-lg flex justify-between items-center"
               }
-              tabs={[
-                {
-                  title: "Asset Details",
-                  content: <PSMParameterInputs />,
-                },
-                {
-                  title: "Proposal Details",
-                  content: (
-                    <GovDetails governanceForumLink="https://community.agoric.com/tags/c/inter-protocol/5/psm" />
-                  ),
-                },
-              ]}
-            />
-          ),
-        },
-        {
-          title: "Add Vault Collateral Type",
-          msgType: "addVault",
-          content: (
-            <MultiStepProposalForm
-              ref={vaultFormRef}
-              handleSubmit={handleVaultSubmit}
-              titleDescOnly={false}
-              title="Add Vault Collateral Type"
-              description={
-                <>
-                  Vaults allow users to mint IST by using their assets as
-                  collateral. The Add Vault proposal enables a new collateral
-                  type to be used for opening vaults. <InterLearnMore />
-                </>
-              }
-              tabs={[
-                {
-                  title: "Asset Details",
-                  content: <VaultParameterInputs />,
-                },
-                {
-                  title: "Proposal Details",
-                  content: (
-                    <GovDetails governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30" />
-                  ),
-                },
-              ]}
-            />
-          ),
-        },
-      ]}
-    />
+            >
+              <div className={"basis-auto grow pr-4"}>
+                You need to have{" "}
+                <span className={"text-red font-black"}>100 Token</span> in your
+                wallet to submit this action
+              </div>
+              <div className={"basis-auto"}>
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={"cursor-pointer"}
+                  onClick={() => setAlertBox(false)}
+                >
+                  <rect width="32" height="32" rx="6" fill="white" />
+                  <path
+                    d="M20.5 11.5L11.5 20.5M11.5 11.5L20.5 20.5"
+                    stroke="#0F3941"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      <Tabs
+        tabs={[
+          {
+            title: "Add PSM",
+            msgType: "addPSM",
+            content: (
+              <MultiStepProposalForm
+                ref={psmFormRef}
+                handleSubmit={handlePsmSubmit}
+                titleDescOnly={true}
+                title="Add PSM"
+                description={
+                  <>
+                    The PSM (Parity Stability Module) is a smart contract that
+                    mints IST in exchange for approved stablecoins at a 1-to-1
+                    ratio. <InterLearnMore />
+                  </>
+                }
+                tabs={[
+                  {
+                    title: "Asset Details",
+                    content: <PSMParameterInputs />,
+                  },
+                  {
+                    title: "Proposal Details",
+                    content: (
+                      <GovDetails governanceForumLink="https://community.agoric.com/tags/c/inter-protocol/5/psm" />
+                    ),
+                  },
+                ]}
+              />
+            ),
+          },
+          {
+            title: "Add Vault Collateral Type",
+            msgType: "addVault",
+            content: (
+              <MultiStepProposalForm
+                ref={vaultFormRef}
+                handleSubmit={handleVaultSubmit}
+                titleDescOnly={false}
+                title="Add Vault Collateral Type"
+                description={
+                  <>
+                    Vaults allow users to mint IST by using their assets as
+                    collateral. The Add Vault proposal enables a new collateral
+                    type to be used for opening vaults. <InterLearnMore />
+                  </>
+                }
+                tabs={[
+                  {
+                    title: "Asset Details",
+                    content: <VaultParameterInputs />,
+                  },
+                  {
+                    title: "Proposal Details",
+                    content: (
+                      <GovDetails governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30" />
+                    ),
+                  },
+                ]}
+              />
+            ),
+          },
+        ]}
+      />
+    </>
   );
 };
 
