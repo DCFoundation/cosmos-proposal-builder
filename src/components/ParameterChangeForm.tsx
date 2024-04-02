@@ -18,6 +18,7 @@ import { ParamsTypeSelector } from "./ParamsTypeSelector";
 import { BeansPerUnit } from "../types/swingset";
 import type { FormValue, ParameterChangeTypeOption } from "../types/form";
 import { toast } from "react-toastify";
+import { NetworkDropdown } from "./NetworkDropdown.tsx";
 
 type ParameterChangeFormMethods = {
   getChanges: () => ParamChange[];
@@ -134,11 +135,15 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         </div>
         <div className="pt-[10px]">
           <div className="flex">
-            <ParamsTypeSelector
-              paramOptions={options}
-              onChange={handleFormTypeChange}
-              initialSelected={match as ParameterChangeTypeOption<T, R>}
-            />
+            {api && (
+              <ParamsTypeSelector
+                paramOptions={options}
+                onChange={handleFormTypeChange}
+                initialSelected={match as ParameterChangeTypeOption<T, R>}
+              />
+            )}
+
+            {!api && <NetworkDropdown />}
           </div>
         </div>
       </div>

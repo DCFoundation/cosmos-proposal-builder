@@ -44,3 +44,19 @@
     background:none;
   }
 }
+
+button{
+  .walletConnectButton{
+    .stroke{
+      stroke: white;
+    }
+  }
+
+  &.bg-white{
+    .walletConnectButton{
+      .stroke{
+        stroke: black;
+      }
+    }
+  }
+}
