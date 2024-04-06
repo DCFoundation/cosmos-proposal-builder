@@ -22,7 +22,7 @@ const getManifestCall = harden([
       maxSubmissionCount: 1000,
       maxSubmissionValue:
         115792089237316195423570985008687907853269984665640564039457584007913129639936n,
-      minSubmissionCount: 2,
+      minSubmissionCount: 3,
       minSubmissionValue: 1n,
       restartDelay: 1,
       timeout: 10,
