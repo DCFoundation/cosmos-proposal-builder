@@ -41,11 +41,11 @@ Footer.defaultProps = {
     },
     {
       name: "Request a Feature",
-      href: "https://github.com/DCFoundation/cosmos-proposal-builder/issues/new",
+      href: "https://github.com/DCFoundation/cosmos-proposal-builder/issues/new?template=feature_request.md&labels=enhancement",
     },
     {
       name: "Report a Bug",
-      href: "https://github.com/DCFoundation/cosmos-proposal-builder/issues/new",
+      href: "https://github.com/DCFoundation/cosmos-proposal-builder/issues/new?template=bug_report.md&labels=bug",
     },
   ],
   text: undefined,
