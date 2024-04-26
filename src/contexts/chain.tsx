@@ -1,19 +1,20 @@
 import { ReactNode, createContext, useMemo } from "react";
 import { useLocation } from "wouter";
 import { capitalize } from "../utils/capitalize";
+import { _netNames } from "./network";
 
 /** "chains" can be apps or chains */
 const _chainNames = [
   "agoric",
   "inter",
-  // "cosmos",
-  // "osmosis",
+  "cosmos"
 ] as const;
 export type ChainName = (typeof _chainNames)[number];
 
 const imageMap: Record<ChainName, string> = {
   agoric: "/assets/agoric.svg",
   inter: "/assets/inter.svg",
+  cosmos: "/assets/cosmos-hub.svg",
 };
 
 export type ChainListItem = {
@@ -25,19 +26,18 @@ export type ChainListItem = {
 
 export type ChainList = ChainListItem[];
 
-interface ChainContext {
+export interface IChainContext {
   chain: ChainName | undefined;
   chains: ChainList;
 }
-
 const chainList = Array.from(_chainNames).map((chain) => ({
   label: capitalize(chain),
   value: chain,
   href: `/${chain}`,
   image: imageMap[chain],
-})) as ChainContext["chains"];
+})) as IChainContext["chains"];
 
-export const ChainContext = createContext<ChainContext>({
+export const ChainContext = createContext<IChainContext>({
   chain: "agoric",
   chains: chainList,
 });
@@ -49,6 +49,18 @@ const getChainName = (chainName: unknown): ChainName | undefined => {
     ? (pathname as ChainName)
     : undefined;
 };
+export function getNetworksForChain(chain: string): typeof _netNames[ChainName] {
+  const networkEntry = Object.entries(_netNames).find(([key]) => key === chain);
+
+  if (!networkEntry) {
+    console.error('No network entry found for chain', chain);
+    return [] as unknown as typeof _netNames[ChainName];
+  }
+
+  const [_, networkEntries] = networkEntry;
+  console.error('Yaaas networkEntries', networkEntries);
+  return networkEntries;
+}
 
 export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
   const [location] = useLocation();

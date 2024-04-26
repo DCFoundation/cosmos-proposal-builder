@@ -81,3 +81,12 @@ export const selectSinglePathDenomTraces = (
   }
   return query.data.filter(hasOnePath);
 };
+
+/** denom eg 'uatom' */
+export const selectCoins = (
+  denom: string,
+  query: UseQueryResult<BankBalances, unknown>,
+) => {
+  if (!query?.data) return undefined;
+  return (query.data as BankBalances).filter((x) => x.denom === denom);
+};

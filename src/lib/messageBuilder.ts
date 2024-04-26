@@ -2,16 +2,19 @@ import { CoreEvalProposal } from "@agoric/cosmic-proto/swingset/swingset.js";
 import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
 import { StdFee } from "@cosmjs/amino";
 import { fromBech32 } from "@cosmjs/encoding";
-import { coins, Registry } from "@cosmjs/proto-signing";
+import { coins, Registry,EncodeObject } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes } from "@cosmjs/stargate";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
+import { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
+  ["/cosmos.distribution.v1beta1.MsgCommunityPoolSpend", MsgCommunityPoolSpend],
+
 ]);
 
 interface MakeTextProposalArgs {
@@ -20,6 +23,28 @@ interface MakeTextProposalArgs {
   proposer: string;
   deposit?: string | number;
 }
+
+export const makeCommunityPoolSpendProposalMsg = ({
+  recipient,
+  amount,
+  denom,
+}: {
+  recipient: string;
+  amount: string;
+  denom: string;
+}): EncodeObject => ({
+  typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+  value: MsgCommunityPoolSpend.fromPartial({
+    recipient,
+    amount: [
+      {
+        denom,
+        amount,
+      },
+    ],
+  }),
+});
+
 
 export const makeTextProposalMsg = ({
   title,

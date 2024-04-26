@@ -32,7 +32,8 @@ export type SelectorReturnType = ReturnType<
 export type ProposalDetail =
   | { msgType: "textProposal" }
   | { msgType: "coreEvalProposal"; evals: CoreEval[] }
-  | { msgType: "parameterChangeProposal"; changes: ParamChange[] };
+  | { msgType: "parameterChangeProposal"; changes: ParamChange[] }
+  | {msgType: "communityPoolSpendProposal"; spend: { recipient: string; amount: string; denom: string }[] };
 
 interface ProposalFormProps {
   title: string;
