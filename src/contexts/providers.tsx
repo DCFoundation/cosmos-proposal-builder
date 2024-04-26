@@ -9,11 +9,13 @@ const queryClient = new QueryClient();
 
 const ContextProviders: FC<PropsWithChildren> = ({ children }) => (
   <QueryClientProvider client={queryClient}>
+    <ChainContextProvider>
     <NetworkContextProvider>
       <WalletContextProvider>
-        <ChainContextProvider>{children}</ChainContextProvider>
+        {children}
       </WalletContextProvider>
     </NetworkContextProvider>
+    </ChainContextProvider>
     <ReactQueryDevtools />
   </QueryClientProvider>
 );
