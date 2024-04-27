@@ -11,7 +11,7 @@ export const _netNames: NetNames = {
   agoric: ["local", "devnet", "ollinet", "xnet", "emerynet", "main"] as const,
   cosmos: [
     "cosmoshub-mainnet",
-    "cosmoshub-testnet",
+    "cosmoshub-devnet",
     "cosmoshub-local",
   ] as const,
   inter: [],

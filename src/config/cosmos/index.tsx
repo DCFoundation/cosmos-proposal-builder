@@ -1,1 +1,1 @@
-export { CommunitySpend as default } from "./communitySpend";
+export { CommunitySpend as default } from "../proposalTemplates/communitySpend";

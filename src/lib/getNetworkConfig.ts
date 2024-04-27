@@ -45,7 +45,7 @@ const getNetworkConfig = async (
       chainName: chainConfig.chainId,
       netName: chainConfig.netName,
       apiAddrs: [chainConfig.rest],
-      denom: chainConfig.stakeCurrency.coinMinimalDenom,
+      denom: chainConfig.stakeCurrency!.coinMinimalDenom!,
     };
   }
   console.error("we failed to get network config");

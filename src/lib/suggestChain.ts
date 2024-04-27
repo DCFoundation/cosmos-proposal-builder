@@ -102,7 +102,7 @@ const makeCosmosChainInfo = async (
     bip44: {
       coinType: COSMOS_COIN_TYPE,
     },
-    bech32Config: cosmosConfig.bech32Config,
+    bech32Config: cosmosConfig.bech32Config!,
     currencies: cosmosConfig.currencies,
     feeCurrencies: cosmosConfig.feeCurrencies,
     stakeCurrency: cosmosConfig.stakeCurrency,

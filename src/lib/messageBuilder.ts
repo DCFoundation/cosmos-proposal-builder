@@ -10,6 +10,8 @@ import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
 
+
+
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
@@ -22,6 +24,7 @@ interface MakeTextProposalArgs {
   deposit?: string | number;
 }
 
+//https://github.com/cosmos/gaia/blob/848f8f48cc2ba849ee2a9fcb4ff1ed2d617550a4/docs/docs/governance/proposal-types/community-pool-spend/proposal.json#L4
 export const makeCommunityPoolSpendProposalMsg = ({
   proposer,
   recipient,
