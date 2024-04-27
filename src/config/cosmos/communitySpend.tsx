@@ -62,27 +62,7 @@ const CommunitySpend = () => {
         console.error(e);
         toast.error("Error submitting proposal", { autoClose: 3000 });
       }
-      //TODO: handle multiple spend proposals
-      // const spendArray = spend.map(({ recipient, amount, denom }) => ({ recipient, amount, denom }));
-      // const spendMessages = spendArray.map(({ recipient, amount, denom }) => {
-      //   return makeCommunityPoolSpendProposalMsg({
-      //     recipient,
-      //     amount,
-      //     denom,
-      //   });
-      // });
-
-      // spendMessages.forEach(async (proposalMsg) => {
-      //   try {
-      //     await signAndBroadcast(proposalMsg, "proposal");
-      //     proposalFormRef.current?.reset();
-      //   } catch (e) {
-      //     console.error(e);
-
-      //     toast.error("Error submitting proposal", { autoClose: 3000 });
-      //   }
-      // });
-    }
+   
   };
 
   const [alertBox, setAlertBox] = useState(true);
