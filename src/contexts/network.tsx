@@ -15,11 +15,10 @@ export const _netNames: NetNames = {
     "cosmoshub-local",
   ] as const,
   inter: [],
-};
+}as const;
 
 _netNames.inter = [..._netNames.agoric] as const;
 
-// const chain = "agoric";
 export type NetName = (typeof _netNames)[keyof typeof _netNames][number];
 
 interface NetworkContext {

@@ -44,12 +44,13 @@ const CommunitySpend = () => {
         throw new Error("No community pool spend data provided");
       }
 
-      const { recipient, amount, denom } = spend[0];
+      //TODO: denom is possibly undefined. This should be handled
+      const { recipient, amount } = spend[0];
       const proposalMsg = makeCommunityPoolSpendProposalMsg({
         proposer: walletAddress,
         recipient,
         amount,
-        denom,
+        denom: networkConfig?.denom || "uatom",
         title: vals.title,
         description: vals.description,
         deposit: vals.deposit,
@@ -143,7 +144,7 @@ const CommunitySpend = () => {
                 titleDescOnly={true}
                 title="Community Spend Proposal"
                 msgType="communityPoolSpendProposal"
-                governanceForumLink="https://community.agoric.com/c/governance/community-spend-proposals/32"
+                governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
                 description={
                   <>
                     This is a governance proposal to spend funds from the

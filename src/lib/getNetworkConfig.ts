@@ -32,7 +32,7 @@ const getNetworkConfig = async (
   chainName: string,
   netName: string,
 ): Promise<NetworkConfig | undefined> => {
-  if (chainName === "agoric") {
+  if (chainName === "agoric" || chainName === "inter") {
     return await makeAgoricChainConfig(netName);
   } else if (chainName === "cosmos") {
     const chainConfig = CosmosHubChainInfo.find((c) => c.netName === netName);

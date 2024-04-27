@@ -36,6 +36,7 @@ export const WalletContextProvider = ({
 }) => {
   const stargateClient = useRef<SigningStargateClient | undefined>(undefined);
   const { netName, chain } = useNetwork();
+  if (!chain) throw new Error("Chain not found");
   const [currNetName, setCurrNetName] = useState(netName);
   const [rpc, setRpc] = useState<WalletContext["rpc"]>(() => {
     if (window.localStorage.getItem("rpc")) {
