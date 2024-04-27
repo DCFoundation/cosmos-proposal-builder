@@ -20,32 +20,39 @@ const CommunitySpend = () => {
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
 
   const coinwealth = useMemo(
-    () => networkConfig ? selectCoins(networkConfig.denom, accountBalances) : [coin(0, 'uatom').denom] as unknown as Coin[],
-    [networkConfig, accountBalances]);
+    () =>
+      networkConfig
+        ? selectCoins(networkConfig.denom, accountBalances)
+        : ([coin(0, "uatom").denom] as unknown as Coin[]),
+    [networkConfig, accountBalances],
+  );
 
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
     [stargateClient, walletAddress, netName],
   );
 
-  const handleProposal = async ( vals: ProposalArgs)=> {
+  const handleProposal = async (vals: ProposalArgs) => {
     if (!walletAddress) {
       toast.error("Wallet not connected.", { autoClose: 3000 });
       throw new Error("wallet not connected");
     }
-  
+
     if (vals.msgType === "communityPoolSpendProposal") {
       const { spend } = vals;
-      console.error(spend, "spend")
       if (!spend || spend.length === 0) {
         throw new Error("No community pool spend data provided");
       }
-  
+
       const { recipient, amount, denom } = spend[0];
       const proposalMsg = makeCommunityPoolSpendProposalMsg({
+        proposer: walletAddress,
         recipient,
         amount,
         denom,
+        title: vals.title,
+        description: vals.description,
+        deposit: vals.deposit,
       });
       try {
         await signAndBroadcast(proposalMsg, "proposal");
@@ -70,16 +77,14 @@ const CommunitySpend = () => {
       //     proposalFormRef.current?.reset();
       //   } catch (e) {
       //     console.error(e);
-        
-      //     toast.error("Error submitting proposal", { autoClose: 3000 });  
+
+      //     toast.error("Error submitting proposal", { autoClose: 3000 });
       //   }
       // });
-
     }
   };
-    
-  const [alertBox, setAlertBox] = useState(true);
 
+  const [alertBox, setAlertBox] = useState(true);
 
   return (
     <>
@@ -97,8 +102,10 @@ const CommunitySpend = () => {
             >
               <div className={"basis-auto grow pr-4"}>
                 You need to have{" "}
-                <span className={"text-red font-black"}>1020 Token</span> in your
-                wallet to submit this action
+                <span className={"text-red font-black"}>
+                  250 {networkConfig?.denom}
+                </span>{" "}
+                in your wallet to submit this action
               </div>
               <div className={"basis-auto"}>
                 <svg
@@ -144,6 +151,7 @@ const CommunitySpend = () => {
                     and the amount to be spent.
                   </>
                 }
+                denom={networkConfig?.denom}
               />
             ),
           },
@@ -154,5 +162,3 @@ const CommunitySpend = () => {
 };
 
 export { CommunitySpend };
-
-

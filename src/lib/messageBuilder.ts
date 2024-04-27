@@ -2,7 +2,7 @@ import { CoreEvalProposal } from "@agoric/cosmic-proto/swingset/swingset.js";
 import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
 import { StdFee } from "@cosmjs/amino";
 import { fromBech32 } from "@cosmjs/encoding";
-import { coins, Registry,EncodeObject } from "@cosmjs/proto-signing";
+import { coins, Registry } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes } from "@cosmjs/stargate";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
@@ -13,8 +13,6 @@ import { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
-  ["/cosmos.distribution.v1beta1.MsgCommunityPoolSpend", MsgCommunityPoolSpend],
-
 ]);
 
 interface MakeTextProposalArgs {
@@ -25,26 +23,46 @@ interface MakeTextProposalArgs {
 }
 
 export const makeCommunityPoolSpendProposalMsg = ({
+  proposer,
   recipient,
   amount,
   denom,
+  title,
+  description,
+  deposit,
 }: {
+  proposer: string;
   recipient: string;
   amount: string;
   denom: string;
-}): EncodeObject => ({
-  typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
-  value: MsgCommunityPoolSpend.fromPartial({
-    recipient,
-    amount: [
-      {
-        denom,
-        amount,
-      },
-    ],
-  }),
-});
+  title?: string;
+  description?: string;
+  deposit?: number | string;
+}) => {
+  const communityPoolSpendMsg = {
+    typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+    value: MsgCommunityPoolSpend.encode(
+      MsgCommunityPoolSpend.fromPartial({
+        recipient,
+        amount: coins(amount, denom),
+      }),
+    ).finish(),
+  };
 
+  const proposalMsg = {
+    typeUrl: "/cosmos.gov.v1.MsgSubmitProposal",
+    value: {
+      typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+      value: Uint8Array.from(communityPoolSpendMsg.value),
+      proposer,
+      deposit: deposit ? coins(Number(deposit), denom) : undefined,
+      metadata: description,
+      title,
+      summary: description,
+    },
+  };
+  return proposalMsg;
+};
 
 export const makeTextProposalMsg = ({
   title,

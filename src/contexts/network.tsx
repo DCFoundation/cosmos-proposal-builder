@@ -9,14 +9,18 @@ import { useChain } from "../hooks/useChain";
 export type NetNames = Record<string, string[]>;
 export const _netNames: NetNames = {
   agoric: ["local", "devnet", "ollinet", "xnet", "emerynet", "main"] as const,
-  cosmos: ["cosmoshub-mainnet", "cosmoshub-testnet", "cosmoshub-local"] as const,
+  cosmos: [
+    "cosmoshub-mainnet",
+    "cosmoshub-testnet",
+    "cosmoshub-local",
+  ] as const,
   inter: [],
-} as const;
+};
 
 _netNames.inter = [..._netNames.agoric] as const;
 
 // const chain = "agoric";
-export type NetName = typeof _netNames[keyof typeof _netNames][number];
+export type NetName = (typeof _netNames)[keyof typeof _netNames][number];
 
 interface NetworkContext {
   chain: ChainName | undefined;
@@ -28,16 +32,21 @@ interface NetworkContext {
 }
 
 export const NetworkContext = createContext<NetworkContext>({
-  chain: "agoric",
-  netName: "local",
+  chain: undefined,
+  netName: undefined,
   netNames: Object.entries(_netNames).flatMap(([_, netNames]) => netNames),
   networkConfig: null,
   error: null,
   api: undefined,
 });
 
-const getNameName = (chainName: ChainName, netName: string): NetName | undefined =>
-  _netNames[chainName].includes(netName as NetName) ? (netName as NetName) : undefined;
+const getNameName = (
+  chainName: string,
+  netName: string,
+): NetName | undefined =>
+  _netNames[chainName].includes(netName as NetName)
+    ? (netName as NetName)
+    : undefined;
 
 export const NetworkContextProvider = ({
   children,
@@ -58,8 +67,8 @@ export const NetworkContextProvider = ({
   useEffect(() => {
     if (netName && chain) {
       getNetworkConfig(chain, netName)
-      .then((value) => setNetworkConfig(value || null))
-      .catch(() => {
+        .then((value) => setNetworkConfig(value || null))
+        .catch(() => {
           setNetworkConfig(null);
           setError("Failed to fetch network configuration.");
           toast.error("Failed to fetch network configuration.", {
@@ -68,16 +77,17 @@ export const NetworkContextProvider = ({
           });
         });
     }
-  }, [netName, chain]);
+  }, [chain, netName]);
 
-   useEffect(() => {
-    const newNetName = getNameName(chain as ChainName, network as string);
-    if (newNetName !== netName)
-      setNameName(newNetName);
+  useEffect(() => {
+    const newNetName = getNameName(chain as string, network as string);
+    if (newNetName !== netName) setNameName(newNetName);
   }, [network, chain]);
-  
 
-  const netNames = useMemo(() => getNetworksForChain(chain as string), [chain]);
+  const netNames = useMemo(
+    () => getNetworksForChain(chain as ChainName),
+    [chain],
+  );
 
   const api = useMemo(() => {
     if (netName === "local") return "http://localhost:1317";
@@ -87,8 +97,8 @@ export const NetworkContextProvider = ({
   return (
     <NetworkContext.Provider
       value={{
-        chain,
-        netName,
+        chain: chain as ChainName,
+        netName: network as NetName,
         netNames,
         networkConfig,
         api,

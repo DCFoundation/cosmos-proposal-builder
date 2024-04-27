@@ -7,17 +7,16 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 const queryClient = new QueryClient();
 
-const ContextProviders: FC<PropsWithChildren> = ({ children }) => (
-  <QueryClientProvider client={queryClient}>
-    <ChainContextProvider>
-    <NetworkContextProvider>
-      <WalletContextProvider>
-        {children}
-      </WalletContextProvider>
-    </NetworkContextProvider>
-    </ChainContextProvider>
-    <ReactQueryDevtools />
-  </QueryClientProvider>
-);
-
+const ContextProviders: FC<PropsWithChildren> = ({ children }) => {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ChainContextProvider>
+        <NetworkContextProvider>
+          <WalletContextProvider>{children}</WalletContextProvider>
+        </NetworkContextProvider>
+      </ChainContextProvider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  );
+};
 export { ContextProviders };

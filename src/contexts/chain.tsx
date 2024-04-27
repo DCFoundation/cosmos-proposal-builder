@@ -4,11 +4,7 @@ import { capitalize } from "../utils/capitalize";
 import { _netNames } from "./network";
 
 /** "chains" can be apps or chains */
-const _chainNames = [
-  "agoric",
-  "inter",
-  "cosmos"
-] as const;
+const _chainNames = ["agoric", "inter", "cosmos"] as const;
 export type ChainName = (typeof _chainNames)[number];
 
 const imageMap: Record<ChainName, string> = {
@@ -38,27 +34,28 @@ const chainList = Array.from(_chainNames).map((chain) => ({
 })) as IChainContext["chains"];
 
 export const ChainContext = createContext<IChainContext>({
-  chain: "agoric",
+  chain: undefined,
   chains: chainList,
 });
 
-const getChainName = (chainName: unknown): ChainName | undefined => {
-  if (!chainName || typeof chainName !== "string") return undefined;
+const getChainName = (chainName: string): ChainName | undefined => {
+  if (!chainName) return undefined;
   const pathname = chainName.slice(1);
   return _chainNames.includes(pathname as ChainName)
     ? (pathname as ChainName)
-    : undefined;
+    : _chainNames[0];
 };
-export function getNetworksForChain(chain: string): typeof _netNames[ChainName] {
+export function getNetworksForChain(
+  chain: ChainName,
+): (typeof _netNames)[ChainName] {
   const networkEntry = Object.entries(_netNames).find(([key]) => key === chain);
 
   if (!networkEntry) {
-    console.error('No network entry found for chain', chain);
-    return [] as unknown as typeof _netNames[ChainName];
+    console.error(`No network entries found for chain: ${chain}`);
+    return [] as unknown as (typeof _netNames)[ChainName];
   }
-
   const [_, networkEntries] = networkEntry;
-  console.error('Yaaas networkEntries', networkEntries);
+
   return networkEntries;
 }
 

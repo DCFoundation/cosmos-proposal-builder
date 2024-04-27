@@ -1,14 +1,14 @@
-
-export const CosmosHubChainInfo = [{
+export const CosmosHubChainInfo = [
+  {
     chainId: "cosmoshub-4",
     chainName: "cosmos",
     netName: "cosmoshub-mainnet",
     // RPC endpoint of the chain.
     rpc: "https://cosmos-rpc.publicnode.com:443",
-  
+
     // REST endpoint of the chain.
     rest: "https://cosmos-api.w3coins.io:443",
-  
+
     // Staking coin information
     stakeCurrency: {
       // Coin denomination to be displayed to the user.
@@ -21,14 +21,13 @@ export const CosmosHubChainInfo = [{
       // You can get id from https://api.coingecko.com/api/v3/coins/list if it is listed.
       coinGeckoId: "cosmos",
     },
-  
+
     walletUrlForStaking: "https://wallet.keplr.app/#/cosmoshub/stake",
-  
+
     bip44: {
- 
       coinType: 118,
     },
-  
+
     // Bech32 configuration to show the address to user.
     bech32Config: {
       bech32PrefixAccAddr: "cosmos",
@@ -38,7 +37,7 @@ export const CosmosHubChainInfo = [{
       bech32PrefixConsAddr: "cosmosvalcons",
       bech32PrefixConsPub: "cosmosvalconspub",
     },
-  
+
     // List of all coin/tokens used in this chain.
     currencies: [
       {
@@ -53,7 +52,7 @@ export const CosmosHubChainInfo = [{
         coinGeckoId: "cosmos",
       },
     ],
-  
+
     // List of coin/tokens used as a fee token in this chain.
     feeCurrencies: [
       {
@@ -77,4 +76,5 @@ export const CosmosHubChainInfo = [{
         },
       },
     ],
-  },];
+  },
+];

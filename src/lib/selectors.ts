@@ -35,12 +35,12 @@ export const selectIstBalance = (
   return itm ? BigInt(itm.amount) : undefined;
 };
 
-export const selectBldCoins = (
-  query: UseQueryResult<BankBalances, unknown>,
-) => {
-  if (!query?.data) return undefined;
-  return (query.data as BankBalances).filter((x) => x.denom === "ubld");
-};
+// export const selectBldCoins = (
+//   query: UseQueryResult<BankBalances, unknown>,
+// ) => {
+//   if (!query?.data) return undefined;
+//   return (query.data as BankBalances).filter((x) => x.denom === "ubld");
+// };
 
 export const selectVotingParams = (
   query: UseQueryResult<VotingParams, unknown>,
@@ -90,3 +90,5 @@ export const selectCoins = (
   if (!query?.data) return undefined;
   return (query.data as BankBalances).filter((x) => x.denom === denom);
 };
+
+export const selectBldCoins = selectCoins.bind(null, "ubld");

@@ -5,26 +5,33 @@ import { updateSearchString } from "../utils/updateSearchString";
 import { DropdownMenu } from "../components/DropdownMenu";
 import { useSearch } from "wouter/use-location";
 import { useWallet } from "../hooks/useWallet";
-import { useChain } from "../hooks/useChain";
+import { ChainName, useChain } from "../hooks/useChain";
+import { getNetworksForChain } from "../contexts/chain";
 
 const placeholderText = "Select Network";
 
 const NetworkDropdown = () => {
   const searchString = useSearch();
-  const { netName, netNames } = useNetwork();
   const { chain } = useChain();
+  const { netName } = useNetwork();
+  // const networkEntries =  useMemo(() => chain? getNetworksForChain(chain as ChainName): []), [chain]);
+  const networkEntries = useMemo(
+    () => (chain ? getNetworksForChain(chain as ChainName) : []),
+    [chain],
+  );
   const { isLoading, stargateClient, walletAddress } = useWallet();
   const title = netName ? capitalize(netName) : placeholderText;
 
   const items = useMemo(
     () =>
-      netNames.map((network) => ({
+      networkEntries.map((network) => ({
         label: capitalize(network),
-        href: updateSearchString({ network }),
+        value: network,
+        href: updateSearchString({ network: network }),
       })),
     // incl searchString and chain (pathname) to regenerate links if query params change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [netNames, searchString, chain],
+    [searchString, chain],
   );
 
   const status = useMemo(() => {

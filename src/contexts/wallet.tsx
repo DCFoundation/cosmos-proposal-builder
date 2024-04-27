@@ -9,9 +9,8 @@ import {
 import { Decimal } from "@cosmjs/math";
 import { SigningStargateClient } from "@cosmjs/stargate";
 import { AccountData } from "@keplr-wallet/types";
-import { useNetwork, NetName } from "../hooks/useNetwork";
+import { useNetwork } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
-import { getNetConfigUrl } from "../lib/getNetworkConfig";
 import { registry } from "../lib/messageBuilder";
 
 interface WalletContext {
@@ -36,9 +35,15 @@ export const WalletContextProvider = ({
   children: ReactNode;
 }) => {
   const stargateClient = useRef<SigningStargateClient | undefined>(undefined);
-  const { netName } = useNetwork();
+  const { netName, chain } = useNetwork();
   const [currNetName, setCurrNetName] = useState(netName);
-  const [rpc, setRpc] = useState<WalletContext["rpc"]>(null);
+  const [rpc, setRpc] = useState<WalletContext["rpc"]>(() => {
+    if (window.localStorage.getItem("rpc")) {
+      return window.localStorage.getItem("rpc") || null;
+    }
+    return null;
+  });
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [walletAddress, setWalletAddress] = useState<
     WalletContext["walletAddress"]
   >(() => {
@@ -47,51 +52,54 @@ export const WalletContextProvider = ({
     }
     return null;
   });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const saveAddress = ({ address }: AccountData) => {
+  const saveAddress = useCallback(({ address }: AccountData) => {
     window.localStorage.setItem("walletAddress", address);
     setWalletAddress(address);
-  };
+  }, []);
 
   const connectWallet = useCallback(async () => {
     setIsLoading(true);
-    const { chainId, rpc } = await suggestChain(
-      getNetConfigUrl(netName as NetName),
-    );
-    setRpc(rpc);
-    if (chainId) {
-      await window.keplr.enable(chainId);
-      const offlineSigner = window.keplr.getOfflineSigner(chainId);
-      const accounts = await offlineSigner.getAccounts();
-      if (accounts?.[0].address !== walletAddress) {
-        saveAddress(accounts[0]);
+    try {
+      const { chainId, rpc, feeCurrencies } = await suggestChain(
+        chain as string,
+        netName as string,
+      );
+      setRpc(rpc);
+      if (chainId) {
+        await window.keplr.enable(chainId);
+        const offlineSigner = window.keplr.getOfflineSigner(chainId);
+        const accounts = await offlineSigner.getAccounts();
+        if (accounts?.[0].address !== walletAddress) {
+          saveAddress(accounts[0]);
+        }
+        try {
+          stargateClient.current =
+            await SigningStargateClient.connectWithSigner(rpc, offlineSigner, {
+              registry,
+              gasPrice: {
+                denom: feeCurrencies[0].coinMinimalDenom,
+                amount: Decimal.fromUserInput("500000", 0),
+              },
+            });
+        } catch (e) {
+          console.error("error stargateClient setup", e);
+          window.localStorage.removeItem("walletAddress");
+        }
       }
-      try {
-        stargateClient.current = await SigningStargateClient.connectWithSigner(
-          rpc,
-          offlineSigner,
-          {
-            registry,
-            gasPrice: {
-              denom: "uist",
-              amount: Decimal.fromUserInput("50000000", 0),
-            },
-          },
-        );
-      } catch (e) {
-        console.error("error stargateClient setup", e);
-        window.localStorage.removeItem("walletAddress");
-      } finally {
-        setIsLoading(false);
-      }
+    } catch (error) {
+      console.error("Failed to suggest chain:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [netName, walletAddress]);
+  }, [chain, netName, walletAddress, saveAddress]);
 
-  if (netName && currNetName !== netName) {
-    if (walletAddress) connectWallet();
-    setCurrNetName(netName);
-  }
+  useEffect(() => {
+    if (netName && currNetName !== netName) {
+      if (walletAddress) connectWallet();
+      setCurrNetName(netName);
+    }
+  }, [netName, currNetName, walletAddress, connectWallet]);
 
   useEffect(() => {
     if (!netName && stargateClient.current) {
