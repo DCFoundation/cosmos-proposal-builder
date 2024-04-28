@@ -11,8 +11,9 @@ export const renderCoin = ({ denom, amount }: Coin) => {
   return `${amount} ${denom}`;
 };
 
-export const renderCoins = (coins: Coin[]) =>
-  coins.length > 0 ? coins.map(renderCoin).join(",") : "empty";
-
+export const renderCoins = (coins: Coin[]) =>  {
+  console.error("coins", coins);
+  return coins.length > 0 ? coins.map(renderCoin).join(",") : "empty";
+};
 export const coinsUnit = (coins: Coin[] | undefined) =>
   coins && coins.length === 1 ? Number(coins[0].amount) / Unit6 : NaN;

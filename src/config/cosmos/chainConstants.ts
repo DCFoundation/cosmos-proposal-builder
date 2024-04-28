@@ -1,4 +1,4 @@
-export const bech32Config =  {
+const bech32Config =  {
   bech32PrefixAccAddr: "cosmos",
   bech32PrefixAccPub: "cosmospub",
   bech32PrefixValAddr: "cosmosvaloper",
@@ -6,13 +6,13 @@ export const bech32Config =  {
   bech32PrefixConsAddr: "cosmosvalcons",
   bech32PrefixConsPub: "cosmosvalconspub",
 }
-export const stakeCurrency = {
+const stakeCurrency = {
   coinDenom: "ATOM",
   coinMinimalDenom: "uatom",
   coinDecimals: 6,
   coinGeckoId: "cosmos",
 }
-export const feeCurrencies = [
+const feeCurrencies = [
   {
     coinDenom: "ATOM",
     coinMinimalDenom: "uatom",
@@ -26,7 +26,7 @@ export const feeCurrencies = [
   },
 ]
 
-export const currencies = [
+const currencies = [
   {
     coinDenom: "ATOM",
     coinMinimalDenom: "uatom",
