@@ -1,17 +1,17 @@
-const bech32Config =  {
+const bech32Config = {
   bech32PrefixAccAddr: "cosmos",
   bech32PrefixAccPub: "cosmospub",
   bech32PrefixValAddr: "cosmosvaloper",
   bech32PrefixValPub: "cosmosvaloperpub",
   bech32PrefixConsAddr: "cosmosvalcons",
   bech32PrefixConsPub: "cosmosvalconspub",
-}
+};
 const stakeCurrency = {
   coinDenom: "ATOM",
   coinMinimalDenom: "uatom",
   coinDecimals: 6,
   coinGeckoId: "cosmos",
-}
+};
 const feeCurrencies = [
   {
     coinDenom: "ATOM",
@@ -24,7 +24,7 @@ const feeCurrencies = [
       high: 0.04,
     },
   },
-]
+];
 
 const currencies = [
   {
@@ -33,11 +33,11 @@ const currencies = [
     coinDecimals: 6,
     coinGeckoId: "cosmos",
   },
-]
+];
 
 const bip44 = {
   coinType: 118,
-}
+};
 
 export const CosmosHubChainInfo = [
   {
@@ -47,7 +47,7 @@ export const CosmosHubChainInfo = [
     rpc: "https://cosmos-rpc.publicnode.com:443",
     rest: "https://cosmos-api.w3coins.io:443",
     walletUrlForStaking: "https://wallet.keplr.app/#/cosmoshub/stake",
-    bip44,  
+    bip44,
     currencies,
     feeCurrencies,
   },

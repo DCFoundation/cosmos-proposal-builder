@@ -3,15 +3,16 @@ import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
 import { StdFee } from "@cosmjs/amino";
 import { fromBech32 } from "@cosmjs/encoding";
 import { coins, Registry } from "@cosmjs/proto-signing";
-import { defaultRegistryTypes } from "@cosmjs/stargate";
+import {
+  defaultRegistryTypes,
+  MsgSubmitProposalEncodeObject,
+} from "@cosmjs/stargate";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
-import { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
-
-
-
+// import  { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
+import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
@@ -25,6 +26,100 @@ interface MakeTextProposalArgs {
 }
 
 //https://github.com/cosmos/gaia/blob/848f8f48cc2ba849ee2a9fcb4ff1ed2d617550a4/docs/docs/governance/proposal-types/community-pool-spend/proposal.json#L4
+// export const makeCommunityPoolSpendProposalMsg = ({
+//   proposer,
+//   recipient,
+//   amount,
+//   denom,
+//   title,
+//   description,
+//   deposit,
+// }: {
+//   proposer: string;
+//   recipient: string;
+//   amount: string;
+//   denom: string;
+//   title?: string;
+//   description?: string;
+//   deposit?: number | string;
+// }) => {
+//   console.error('denom', denom);
+
+//   // Create the MsgCommunityPoolSpend message
+//   const msgCommunityPoolSpend: Partial<MsgCommunityPoolSpend> = {
+//       amount: coins(amount, denom),
+//       recipient: recipient,
+//     };
+
+//   const msg= ({
+//     typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+//     value: Uint8Array.from(MsgCommunityPoolSpend.encode(MsgCommunityPoolSpend.fromPartial(msgCommunityPoolSpend)).finish()),
+//     // description: description,
+//     // title: title,
+//   });
+//   const msgSubmitProposal: MsgSubmitProposalEncodeObject = {
+//     typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+//     value: {
+//       content: msg,
+//       proposer,
+//       ...(deposit &&
+//         Number(deposit) && { initialDeposit: coins(deposit, denom) }),
+//       },
+//   };
+//   return msgSubmitProposal;
+// };
+// export const makeCommunityPoolSpendProposalMsg = ({
+//   proposer,
+//   recipient,
+//   amount,
+//   denom,
+//   title,
+//   description,
+//   deposit,
+// }: {
+//   proposer: string;
+//   recipient: string;
+//   amount: string;
+//   denom: string;
+//   title?: string;
+//   description?: string;
+//   deposit?: number | string;
+// }) => {
+//   const communityPoolSpendMsg = {
+//     amount: coins(amount, denom),
+//     recipient: recipient,
+//   };
+
+//   console.error('we are sending this denom ', denom);
+
+//   const proposalMsg = ({
+//     typeUrl: "/cosmos.distribution.v1.MsgCommunityPoolSpend",
+//         value: Uint8Array.from(MsgCommunityPoolSpend.encode(
+//           MsgCommunityPoolSpend.fromPartial({
+//             recipient,
+//             amount: coins(amount, denom),
+//           })
+//         ).finish()),
+//         // proposer,
+//         // ...(deposit &&
+//         //   Number(deposit) && { initialDeposit: coins(deposit, denom) }),
+//         //   description,
+//         //   title,
+//     // metadadeta: description,
+//     // title,
+//     // summary: description,
+//     });
+
+//   return {
+//     typeUrl: "/cosmos.gov.v1.MsgSubmitProposal",
+//     value: {...proposalMsg, proposer,
+//       ...(deposit &&
+//         Number(deposit) && { initialDeposit: coins(deposit, denom) }),
+//         description,
+//         title,
+//       },
+//   };
+// };
 export const makeCommunityPoolSpendProposalMsg = ({
   proposer,
   recipient,
@@ -38,36 +133,31 @@ export const makeCommunityPoolSpendProposalMsg = ({
   recipient: string;
   amount: string;
   denom: string;
-  title?: string;
-  description?: string;
+  title: string;
+  description: string;
   deposit?: number | string;
 }) => {
-  console.error('denom', denom);
-  const communityPoolSpendMsg = {
-    typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
-    value: MsgCommunityPoolSpend.encode(
-      MsgCommunityPoolSpend.fromPartial({
-        recipient,
-        amount: coins(amount, denom),
-      })
-    ).finish(),
+  const communityPoolSpendProposal: CommunityPoolSpendProposal = {
+    title,
+    description,
+    recipient,
+    amount: coins(amount, denom),
   };
-
-  const proposalMsg = {
-    typeUrl: "/cosmos.gov.v1.MsgSubmitProposal",
+  const msgSubmitProposal = {
+    typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
     value: {
-      typeUrl: "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
-      msg: Uint8Array.from(communityPoolSpendMsg.value),
-      proposer,
+      content: {
+        typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
+        value: CommunityPoolSpendProposal.encode(
+          communityPoolSpendProposal,
+        ).finish(),
+      },
+      proposer: proposer,
       ...(deposit &&
-        Number(deposit) && { initialDeposit: coins(deposit, denom)}),
-      metadata: description,
-      title,
-      summary: description,
+        Number(deposit) && { initialDeposit: coins(deposit, denom) }),
     },
   };
-
-  return proposalMsg;
+  return msgSubmitProposal;
 };
 
 export const makeTextProposalMsg = ({
@@ -85,8 +175,8 @@ export const makeTextProposalMsg = ({
           TextProposal.fromPartial({
             title,
             description,
-          })
-        ).finish()
+          }),
+        ).finish(),
       ),
     }),
     proposer,
@@ -112,8 +202,8 @@ export const makeCoreEvalProposalMsg = ({
             title,
             description,
             evals,
-          })
-        ).finish()
+          }),
+        ).finish(),
       ),
     }),
     proposer,
@@ -147,8 +237,8 @@ export const makeParamChangeProposalMsg = ({
             title,
             description,
             changes,
-          })
-        ).finish()
+          }),
+        ).finish(),
       ),
     }),
     proposer,

@@ -12,7 +12,6 @@ import {
   makeTextProposalMsg,
   makeInstallBundleMsg,
   makeParamChangeProposalMsg,
-  makeCommunityPoolSpendProposalMsg,
 } from "../../lib/messageBuilder";
 import { isValidBundle } from "../../utils/validate";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
@@ -22,6 +21,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { accountBalancesQuery } from "../../lib/queries.ts";
 import { selectBldCoins } from "../../lib/selectors.ts";
+import { CommunitySpend } from "../proposalTemplates/communitySpend.tsx";
 
 const Agoric = () => {
   const { netName, networkConfig } = useNetwork();
@@ -39,7 +39,7 @@ const Agoric = () => {
     () => selectBldCoins(accountBalances),
     [accountBalances],
   );
-
+  console.error("bldCoins", bldCoins);
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
     [stargateClient, walletAddress, netName],
@@ -99,17 +99,6 @@ const Agoric = () => {
         proposalMsg = makeParamChangeProposalMsg({
           ...vals,
           proposer: walletAddress,
-        });
-      }
-      if (msgType === "communityPoolSpendProposal") {
-        proposalMsg = makeCommunityPoolSpendProposalMsg({
-          proposer: walletAddress,
-          recipient,
-          amount,
-          denom: networkConfig?.denom || "uatom",
-          title: vals.title,
-          description: vals.description,
-          deposit: vals.deposit,
         });
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
@@ -270,25 +259,8 @@ const Agoric = () => {
           {
             title: "Community Spend Proposal",
             msgType: "communityPoolSpendProposal",
-            content: (
-              <ProposalForm
-                ref={proposalFormRef}
-                handleSubmit={handleProposal("communityPoolSpendProposal")}
-                titleDescOnly={true}
-                title="Community Spend Proposal"
-                msgType="communityPoolSpendProposal"
-                governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
-                description={
-                  <>
-                    This is a governance proposal to spend funds from the
-                    community pool. The proposal specifies the recipient address
-                    and the amount to be spent.
-                  </>
-                }
-                denom={networkConfig?.denom}
-              />
-            ),
-          }
+            content: <CommunitySpend />,
+          },
         ]}
       />
     </>
