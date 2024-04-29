@@ -38,7 +38,7 @@ export const DepositSection: React.FC<unknown> = () => {
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const coins = useMemo(
     () => selectCoins(denom, accountBalances),
-    [accountBalances],
+    [accountBalances, denom],
   );
   const renderTime = (time: string | undefined) => {
     const onlyNumberTime = String(time).slice(0, -1);

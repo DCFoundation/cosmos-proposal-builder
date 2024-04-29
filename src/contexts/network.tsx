@@ -1,25 +1,20 @@
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
 import { getNetworkConfig } from "../lib/getNetworkConfig";
 import { useSearch } from "wouter/use-location";
-import qs from "query-string";
 import { toast } from "react-toastify";
 import { ChainName, getNetworksForChain } from "./chain";
 import { useChain } from "../hooks/useChain";
 
 export type NetNames = Record<string, string[]>;
-export const _netNames: NetNames = {
+export const NETNAMES: NetNames = {
   agoric: ["local", "devnet", "ollinet", "xnet", "emerynet", "main"] as const,
-  cosmos: [
-    "cosmoshub-mainnet",
-    "cosmoshub-devnet",
-    "cosmoshub-local",
-  ] as const,
+  cosmos: ["cosmoshub-mainnet", "cosmoshub-devnet", "cosmoshub-local"] as const,
   inter: [],
-}as const;
+};
 
-_netNames.inter = [..._netNames.agoric] as const;
+NETNAMES.inter = [...NETNAMES.agoric] as const;
 
-export type NetName = (typeof _netNames)[keyof typeof _netNames][number];
+export type NetName = (typeof NETNAMES)[keyof typeof NETNAMES][number];
 
 interface NetworkContext {
   chain: ChainName | undefined;
@@ -33,7 +28,7 @@ interface NetworkContext {
 export const NetworkContext = createContext<NetworkContext>({
   chain: undefined,
   netName: undefined,
-  netNames: Object.entries(_netNames).flatMap(([_, netNames]) => netNames),
+  netNames: Object.entries(NETNAMES).flatMap(([_, names]) => names),
   networkConfig: null,
   error: null,
   api: undefined,
@@ -43,7 +38,7 @@ const getNameName = (
   chainName: string,
   netName: string,
 ): NetName | undefined =>
-  _netNames[chainName].includes(netName as NetName)
+  NETNAMES[chainName].includes(netName as NetName)
     ? (netName as NetName)
     : undefined;
 
@@ -53,8 +48,11 @@ export const NetworkContextProvider = ({
   children: ReactNode;
 }) => {
   const { chain } = useChain();
-
-  const { network } = qs.parse(useSearch());
+  const search = useSearch();
+  const network = useMemo(
+    () => new URLSearchParams(search).get("network") ?? null,
+    [search],
+  );
   const [netName, setNameName] = useState<NetName | undefined>(
     network ? getNameName(chain as ChainName, network as string) : undefined,
   );
@@ -81,7 +79,7 @@ export const NetworkContextProvider = ({
   useEffect(() => {
     const newNetName = getNameName(chain as string, network as string);
     if (newNetName !== netName) setNameName(newNetName);
-  }, [network, chain]);
+  }, [network, chain, netName]);
 
   const netNames = useMemo(
     () => getNetworksForChain(chain as ChainName),

@@ -132,7 +132,7 @@ export async function suggestChain(
   if (!networkConfig) {
     throw new Error("failed to fetch network configuration");
   }
-  if (chainName === "agoric"  || chainName === "inter") {
+  if (chainName === "agoric" || chainName === "inter") {
     chainInfo = await makeAgoricChainInfo(networkConfig);
   } else if (chainName === "cosmos") {
     chainInfo = await makeCosmosChainInfo(networkConfig);

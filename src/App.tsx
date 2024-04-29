@@ -11,7 +11,8 @@ import { chainConfigMap } from "./config";
 import { LayoutFooter } from "./components/LayoutFooter.tsx";
 
 const App = () => {
-  const { chains } = useChain();
+  const { chains, chain } = useChain();
+  console.error("chains", chain);
   return (
     <div className="flex flex-col min-h-screen">
       <Nav

@@ -44,16 +44,15 @@ export const makeCommunityPoolSpendProposalMsg = ({
     recipient,
     amount: coins(amount, denom),
   };
-  const messageArray = Uint8Array.from(CommunityPoolSpendProposal.encode(
-    communityPoolSpendProposal,
-  ).finish()
+  const messageArray = Uint8Array.from(
+    CommunityPoolSpendProposal.encode(communityPoolSpendProposal).finish(),
   );
   const msgSubmitProposal = {
     typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
     value: {
       content: Any.fromPartial({
         typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
-        value:messageArray,
+        value: messageArray,
       }),
       proposer: proposer,
       ...(deposit &&
@@ -96,7 +95,11 @@ export const makeCoreEvalProposalMsg = ({
   proposer,
   deposit,
   denom,
-}: CoreEvalProposal & { proposer: string; deposit?: string | number; denom: string }) => ({
+}: CoreEvalProposal & {
+  proposer: string;
+  deposit?: string | number;
+  denom: string;
+}) => ({
   typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
   value: {
     content: Any.fromPartial({
@@ -132,7 +135,7 @@ export const makeParamChangeProposalMsg = ({
   proposer,
   deposit = 1000000,
   denom,
-}: ParamChangeArgs & {denom: string}) => ({
+}: ParamChangeArgs & { denom: string }) => ({
   typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
   value: {
     content: Any.fromPartial({

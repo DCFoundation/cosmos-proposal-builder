@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import { Code } from "../../components/inline";
 import { BundleForm, BundleFormArgs } from "../../components/BundleForm";
@@ -16,15 +16,16 @@ import {
 import { isValidBundle } from "../../utils/validate";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { useWatchBundle } from "../../hooks/useWatchBundle";
-import { coinsUnit } from "../../utils/coin.ts";
 import { useQuery } from "@tanstack/react-query";
 
 import { accountBalancesQuery } from "../../lib/queries.ts";
 import { selectBldCoins } from "../../lib/selectors.ts";
 import { CommunitySpend } from "../proposalTemplates/communitySpend.tsx";
+import { AlertBox } from "../../components/AlertBox.tsx";
 
 const Agoric = () => {
   const { netName, networkConfig } = useNetwork();
+  const denom = networkConfig?.denom || "ubld";
   const { api } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
   const proposalFormRef = useRef<HTMLFormElement>(null);
@@ -39,7 +40,6 @@ const Agoric = () => {
     () => selectBldCoins(accountBalances),
     [accountBalances],
   );
-  console.error("bldCoins", bldCoins);
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
     [stargateClient, walletAddress, netName],
@@ -86,12 +86,14 @@ const Agoric = () => {
         proposalMsg = makeCoreEvalProposalMsg({
           ...vals,
           proposer: walletAddress,
+          denom,
         });
       }
       if (msgType === "textProposal") {
         proposalMsg = makeTextProposalMsg({
           ...vals,
           proposer: walletAddress,
+          denom,
         });
       }
       if (msgType === "parameterChangeProposal") {
@@ -99,6 +101,7 @@ const Agoric = () => {
         proposalMsg = makeParamChangeProposalMsg({
           ...vals,
           proposer: walletAddress,
+          denom,
         });
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
@@ -112,51 +115,10 @@ const Agoric = () => {
       }
     };
   }
-  const [alertBox, setAlertBox] = useState(true);
 
   return (
     <>
-      {(!bldCoins || coinsUnit(bldCoins) < 100) && alertBox && (
-        <div
-          className={
-            "flex justify-center w-full max-w-7xl px-2 py-2 m-auto bg-white rounded-lg -mb-5"
-          }
-        >
-          <div className={"basis-full"}>
-            <div
-              className={
-                "toast text-center bg-lightblue2 p-4 text-blue font-light rounded-lg flex justify-between items-center"
-              }
-            >
-              <div className={"basis-auto grow pr-4"}>
-                You need to have{" "}
-                <span className={"text-red font-black"}>100 Token</span> in your
-                wallet to submit this action
-              </div>
-              <div className={"basis-auto"}>
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={"cursor-pointer"}
-                  onClick={() => setAlertBox(false)}
-                >
-                  <rect width="32" height="32" rx="6" fill="white" />
-                  <path
-                    d="M20.5 11.5L11.5 20.5M11.5 11.5L20.5 20.5"
-                    stroke="#0F3941"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <AlertBox coins={bldCoins} />
       <Tabs
         tabs={[
           {

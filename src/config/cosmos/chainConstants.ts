@@ -39,10 +39,12 @@ const bip44 = {
   coinType: 118,
 };
 
+const chainName = "cosmos";
+
 export const CosmosHubChainInfo = [
   {
+    chainName,
     chainId: "cosmoshub-4",
-    chainName: "cosmos",
     netName: "cosmoshub-mainnet",
     rpc: "https://cosmos-rpc.publicnode.com:443",
     rest: "https://cosmos-api.w3coins.io:443",
@@ -50,13 +52,15 @@ export const CosmosHubChainInfo = [
     bip44,
     currencies,
     feeCurrencies,
+    stakeCurrency,
+    bech32Config,
   },
   {
+    chainName,
     chainId: "cosmoshub-devnet",
-    chainName: "cosmos",
     netName: "cosmoshub-devnet",
-    rpc: "https://cosmos-devnet-rpc.todo.com:443",
-    rest: "https://cosmos-devnet-api.todo.com:443",
+    rest: "https://testnet-croeseid-4.crypto.org:1317",
+    rpc: "https://testnet-croeseid-4.crypto.org:26657",
     stakeCurrency,
     walletUrlForStaking: "https://wallet.keplr.app/#/cosmoshub-devnet/stake",
     bip44,
@@ -65,8 +69,8 @@ export const CosmosHubChainInfo = [
     feeCurrencies,
   },
   {
+    chainName,
     chainId: "cosmoshub-local",
-    chainName: "cosmos",
     netName: "cosmoshub-local",
     rpc: "http://localhost:26657",
     rest: "http://localhost:1317",

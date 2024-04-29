@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useMemo } from "react";
 import { useLocation } from "wouter";
 import { capitalize } from "../utils/capitalize";
-import { _netNames } from "./network";
+import { NETNAMES } from "./network";
 
 /** "chains" can be apps or chains */
 const _chainNames = ["agoric", "inter", "cosmos"] as const;
@@ -47,12 +47,12 @@ const getChainName = (chainName: string): ChainName | undefined => {
 };
 export function getNetworksForChain(
   chain: ChainName,
-): (typeof _netNames)[ChainName] {
-  const networkEntry = Object.entries(_netNames).find(([key]) => key === chain);
+): (typeof NETNAMES)[ChainName] {
+  const networkEntry = Object.entries(NETNAMES).find(([key]) => key === chain);
 
   if (!networkEntry) {
     console.error(`No network entries found for chain: ${chain}`);
-    return [] as unknown as (typeof _netNames)[ChainName];
+    return [] as unknown as (typeof NETNAMES)[ChainName];
   }
   const [_, networkEntries] = networkEntry;
 

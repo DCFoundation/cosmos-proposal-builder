@@ -1,32 +1,17 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 import { ProposalForm, ProposalArgs } from "../../components/ProposalForm.tsx";
-import { Tabs } from "../../components/Tabs.tsx";
 import { useNetwork } from "../../hooks/useNetwork.ts";
 import { useWallet } from "../../hooks/useWallet.ts";
 import { makeCommunityPoolSpendProposalMsg } from "../../lib/messageBuilder.ts";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast.tsx";
-import { coinsUnit } from "../../utils/coin.ts";
-import { useQuery } from "@tanstack/react-query";
-import { accountBalancesQuery } from "../../lib/queries.ts";
-import { selectCoins } from "../../lib/selectors.ts";
-import { Coin, coin } from "@cosmjs/stargate";
+import { renderDenom } from "../../utils/coin.ts";
 
 const CommunitySpend = () => {
-  const { netName, api, networkConfig } = useNetwork();
+  const { netName, networkConfig } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
+  const denom = networkConfig?.denom;
   const proposalFormRef = useRef<HTMLFormElement>(null);
-
-  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
-
-  const coinwealth = useMemo(
-    () =>
-      networkConfig
-        ? selectCoins(networkConfig.denom, accountBalances)
-        : ([coin(0, "uatom").denom] as unknown as Coin[]),
-    [networkConfig, accountBalances],
-  );
-
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
     [stargateClient, walletAddress, netName],
@@ -65,79 +50,23 @@ const CommunitySpend = () => {
     }
   };
 
-  const [alertBox, setAlertBox] = useState(true);
-
   //TODO - Query for the minimum amount required to submit a proposal
   return (
     <>
-      {(!coinwealth || coinsUnit(coinwealth) < 100) && alertBox && (
-        <div
-          className={
-            "flex justify-center w-full max-w-7xl px-2 py-2 m-auto bg-white rounded-lg -mb-5"
-          }
-        >
-          <div className={"basis-full"}>
-            <div
-              className={
-                "toast text-center bg-lightblue2 p-4 text-blue font-light rounded-lg flex justify-between items-center"
-              }
-            >
-              <div className={"basis-auto grow pr-4"}>
-                You need to have{" "}
-                <span className={"text-red font-black"}>
-                  250 {networkConfig?.denom}
-                </span>{" "}
-                in your wallet to submit this action
-              </div>
-              <div className={"basis-auto"}>
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={"cursor-pointer"}
-                  onClick={() => setAlertBox(false)}
-                >
-                  <rect width="32" height="32" rx="6" fill="white" />
-                  <path
-                    d="M20.5 11.5L11.5 20.5M11.5 11.5L20.5 20.5"
-                    stroke="#0F3941"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      <Tabs
-        tabs={[
-          {
-            title: "Community Spend Proposal",
-            msgType: "communityPoolSpendProposal",
-            content: (
-              <ProposalForm
-                ref={proposalFormRef}
-                handleSubmit={handleProposal}
-                titleDescOnly={true}
-                title="Community Spend Proposal"
-                msgType="communityPoolSpendProposal"
-                governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
-                description={
-                  <>
-                    This is a governance proposal to spend funds from the
-                    community pool. The proposal specifies the recipient address
-                    and the amount to be spent.
-                  </>
-                }
-                denom={networkConfig?.denom}
-              />
-            ),
-          },
-        ]}
+      <ProposalForm
+        ref={proposalFormRef}
+        handleSubmit={handleProposal}
+        titleDescOnly={true}
+        title="Community Spend Proposal"
+        msgType="communityPoolSpendProposal"
+        governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
+        description={
+          <>
+            This governance proposal to spend funds from the community pool. The
+            proposal specifies the recipient address and the amount to be spent.
+          </>
+        }
+        denom={denom ? renderDenom(denom) : "...loading"}
       />
     </>
   );

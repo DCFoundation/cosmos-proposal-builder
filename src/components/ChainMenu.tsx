@@ -15,6 +15,7 @@ const ChainMenu = () => {
     () => (chain ? chains.find((c) => c.value === chain)?.image : undefined),
     [chain, chains],
   );
+
   return (
     <DropdownMenu
       title={title}
