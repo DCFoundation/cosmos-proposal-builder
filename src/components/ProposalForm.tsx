@@ -35,7 +35,7 @@ export type ProposalDetail =
   | { msgType: "parameterChangeProposal"; changes: ParamChange[] }
   | {
       msgType: "communityPoolSpendProposal";
-      spend: { recipient: string; amount: string; denom: string }[];
+      spend: { recipient: string; amount: number; denom: string }[];
     };
 
 interface ProposalFormProps {
@@ -93,13 +93,13 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             return handleSubmit({ ...args, msgType, changes });
           } else if (msgType === "communityPoolSpendProposal") {
             const recipient = (formData.get("recipient") as string) || "";
-            const amount = (formData.get("amount") as string) || "";
+            const requestedAmount = (formData.get("amount") as string) || "";
             const denom = (formData.get("denom") as string) || "";
 
             return handleSubmit({
               ...args,
               msgType,
-              spend: [{ recipient, amount, denom }],
+              spend: [{ recipient, amount:Number(requestedAmount) * 1_000_000 , denom }],
             });
           }
         }
