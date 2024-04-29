@@ -28,7 +28,7 @@ const NetworkDropdown = () => {
       })),
     // incl searchString and chain (pathname) to regenerate links if query params change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [searchString, chain],
+    [searchString, chain, networkEntries],
   );
 
   const status = useMemo(() => {

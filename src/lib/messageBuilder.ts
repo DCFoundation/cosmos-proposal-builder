@@ -50,10 +50,10 @@ export const makeCommunityPoolSpendProposalMsg = ({
   const msgSubmitProposal = {
     typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
     value: {
-      content: Any.fromPartial({
+      content: {
         typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
         value: messageArray,
-      }),
+      },
       proposer: proposer,
       ...(deposit &&
         Number(deposit) && { initialDeposit: coins(deposit, denom) }),
