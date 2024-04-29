@@ -11,7 +11,6 @@ const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
       .catch(console.error)
       .finally(() => console.log("connect wallet finished"));
   };
-  console.log("walletAddress", walletAddress);
 
   const buttonText = useMemo(() => {
     if (!walletAddress) return "Connect Wallet";

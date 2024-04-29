@@ -35,14 +35,7 @@ const getNetworkConfig = async (
   if (chainName === "agoric" || chainName === "inter") {
     return await makeAgoricChainConfig(netName);
   } else if (chainName === "cosmos") {
-    console.error(
-      "we have chain name as ",
-      chainName,
-      " and netName as ",
-      netName,
-    );
     const chainConfig = CosmosHubChainInfo.find((c) => c.netName === netName);
-    console.error("we have chainConfig as ", chainConfig);
     if (!chainConfig) {
       throw new Error("CosmosHub chain not found");
     }

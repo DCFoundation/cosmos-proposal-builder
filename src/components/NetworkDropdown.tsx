@@ -37,7 +37,6 @@ const NetworkDropdown = () => {
     if (!walletAddress || !netName) return "default";
     return "error";
   }, [isLoading, stargateClient, walletAddress, netName]);
-  console.error("chain is changed", chain);
   return (
     <DropdownMenu
       title={title}
