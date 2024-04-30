@@ -105,6 +105,7 @@ const Inter = () => {
         description,
         deposit,
         proposer: walletAddress as string,
+        denom,
       });
 
       try {
@@ -184,6 +185,7 @@ const Inter = () => {
         description,
         deposit,
         proposer: walletAddress as string,
+        denom,
       });
 
       try {

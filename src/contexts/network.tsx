@@ -7,12 +7,12 @@ import { useChain } from "../hooks/useChain";
 
 export type NetNames = Record<string, string[]>;
 export const NETNAMES: NetNames = {
-  agoric: ["local", "devnet", "ollinet", "xnet", "emerynet", "main"] as const,
-  cosmos: ["cosmoshub-mainnet", "cosmoshub-devnet", "cosmoshub-local"] as const,
+  agoric: ["local", "devnet", "ollinet", "xnet", "emerynet", "main"],
+  cosmos: ["cosmoshub-mainnet", "cosmoshub-devnet", "cosmoshub-local"],
   inter: [],
 };
 
-NETNAMES.inter = [...NETNAMES.agoric] as const;
+NETNAMES.inter = [...NETNAMES.agoric];
 
 export type NetName = (typeof NETNAMES)[keyof typeof NETNAMES][number];
 

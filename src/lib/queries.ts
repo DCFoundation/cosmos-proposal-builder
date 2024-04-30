@@ -1,5 +1,6 @@
 import type { UseQueryOptions } from "@tanstack/react-query";
 import type { SwingSetApiResponse, SwingSetParams } from "../types/swingset";
+
 import type {
   BankBalanceResponse,
   BankBalances,
@@ -20,6 +21,7 @@ import type {
   DistributionParams,
   StakingParams,
 } from "../types/gov";
+import { Pool } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
 export const swingSetParamsQuery = (
   api: string | undefined,
@@ -171,4 +173,30 @@ export const ibcDenomHashQuery = (
     return data?.hash?.length ? `ibc/${data.hash}` : "Denom hash not found.";
   },
   enabled: !!api,
+});
+
+export const poolsQuery = (
+  api: string | undefined,
+): UseQueryOptions<Pool[], unknown> => ({
+  queryKey: ["pools", api],
+  queryFn: async (): Promise<Pool[]> => {
+    const res = await fetch(`${api}/cosmos/liquidity/v1beta1/pools`);
+    const data = await res.json();
+    return data;
+  },
+  enabled: !!api,
+});
+
+export const poolBalanceQuery = (
+  api: string | undefined,
+  poolId: string | undefined,
+): UseQueryOptions<Coin[], unknown> => ({
+  queryKey: ["poolBalance", api, poolId],
+  queryFn: async (): Promise<Coin[]> => {
+    const res = await fetch(`${api}/cosmos/liquidity/v1beta1/pools/${poolId}/coins`);
+    const data = await res.json();
+    console.log('data is ', data);
+    return data;
+  },
+  enabled: !!api && !!poolId,
 });

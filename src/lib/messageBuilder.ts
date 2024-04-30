@@ -32,7 +32,7 @@ export const makeCommunityPoolSpendProposalMsg = ({
 }: {
   proposer: string;
   recipient: string;
-  amount: string;
+  amount: string | number;
   denom: string;
   title: string;
   description: string;

@@ -16,6 +16,9 @@ import { paramOptions } from "../config/agoric/params";
 import type { ParameterChangeTypeOption } from "../types/form";
 import { TitleDescriptionInputs } from "./TitleDescriptionInputs";
 
+
+const COIN_UNITS = 1_000_000;
+
 type BaseProposalArgs = {
   title: string;
   description: string;
@@ -81,7 +84,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
           const title = (formData.get("title") as string) || "";
           const description = (formData.get("description") as string) || "";
           const depositBld = (formData.get("deposit") as string) || "";
-          const deposit = Number(depositBld) * 1_000_000;
+          const deposit = Number(depositBld) * COIN_UNITS;
           const args: BaseProposalArgs = { title, description, deposit };
           if (msgType === "coreEvalProposal" && evals.length) {
             return handleSubmit({ ...args, msgType, evals });
@@ -99,7 +102,7 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             return handleSubmit({
               ...args,
               msgType,
-              spend: [{ recipient, amount:Number(requestedAmount) * 1_000_000 , denom }],
+              spend: [{ recipient, amount: Number(requestedAmount) * COIN_UNITS , denom }],
             });
           }
         }

@@ -16,6 +16,7 @@ import {
   stakingParamsQuery,
   ibcDenomTracesQuery,
   ibcDenomHashQuery,
+  poolsQuery,
 } from "./queries";
 import { renderHook } from "@testing-library/react-hooks";
 
@@ -273,4 +274,20 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       );
     });
   });
+
+  describe("poolsQuery Query", () => {
+    it("should return data", async ({ api, wrapper }: QueryTestContext) => {
+      const { result, waitFor } = renderHook(
+        () => useQuery(poolsQuery(api)),
+        { wrapper },
+      );
+      console.log('result is ', result.current);
+      await waitFor(() => result.current.isSuccess);
+      expect(result.current.data).toBeDefined();
+      
+      // XXX not implemented in agoric-3-proposals
+      // see
+    });
+  });
 });
+  
