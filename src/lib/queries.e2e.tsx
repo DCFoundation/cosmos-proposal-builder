@@ -16,7 +16,6 @@ import {
   stakingParamsQuery,
   ibcDenomTracesQuery,
   ibcDenomHashQuery,
-  poolsQuery,
 } from "./queries";
 import { renderHook } from "@testing-library/react-hooks";
 
