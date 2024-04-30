@@ -48,7 +48,6 @@ const getNetworkConfig = async (
       denom: chainConfig.stakeCurrency!.coinMinimalDenom!,
     };
   }
-  console.error("we failed to get network config");
 };
 
 export { getNetworkConfig, getNetConfigUrl };
