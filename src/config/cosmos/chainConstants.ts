@@ -1,3 +1,7 @@
+/**
+ * Note:  values for cosmos testnet are placeholders for now
+ */
+
 const bech32Config = {
   bech32PrefixAccAddr: "cosmos",
   bech32PrefixAccPub: "cosmospub",
