@@ -16,7 +16,6 @@ import { paramOptions } from "../config/agoric/params";
 import type { ParameterChangeTypeOption } from "../types/form";
 import { TitleDescriptionInputs } from "./TitleDescriptionInputs";
 
-
 const COIN_UNITS = 1_000_000;
 
 type BaseProposalArgs = {
@@ -102,7 +101,13 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             return handleSubmit({
               ...args,
               msgType,
-              spend: [{ recipient, amount: Number(requestedAmount) * COIN_UNITS , denom }],
+              spend: [
+                {
+                  recipient,
+                  amount: Number(requestedAmount) * COIN_UNITS,
+                  denom,
+                },
+              ],
             });
           }
         }

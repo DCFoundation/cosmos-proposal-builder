@@ -21,7 +21,6 @@ import type {
   DistributionParams,
   StakingParams,
 } from "../types/gov";
-import { Pool } from "cosmjs-types/cosmos/staking/v1beta1/staking";
 
 export const swingSetParamsQuery = (
   api: string | undefined,

@@ -35,8 +35,6 @@ export const DepositSection: React.FC<unknown> = () => {
     },
   });
 
-
-
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const coins = useMemo(
     () => selectCoins(denom, accountBalances),

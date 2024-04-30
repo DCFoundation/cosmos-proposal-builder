@@ -13,9 +13,12 @@ import { useNetwork } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
 import { registry } from "../lib/messageBuilder";
 
-console.error(' registry we have ', Object.entries(registry).map(([key, value]) => {
-  console.error(' key ', key, ' value ', value);
-}));
+console.error(
+  " registry we have ",
+  Object.entries(registry).map(([key, value]) => {
+    console.error(" key ", key, " value ", value);
+  }),
+);
 
 interface WalletContext {
   walletAddress: string | null;
