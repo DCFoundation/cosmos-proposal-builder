@@ -68,6 +68,36 @@ export const WalletContextProvider = ({
     setWalletAddress(address);
   }, []);
 
+  const handleWalletChange = async () => {
+    console.error("ssskkskss Key store in Keplr is changed. Refetching account info...");
+
+    try {
+      const { chainId } = await suggestChain(chain as string, netName as string);
+
+      if (chainId) {
+        await window.keplr.enable(chainId);
+        const offlineSigner = window.keplr.getOfflineSigner(chainId);
+        const accounts = await offlineSigner.getAccounts();
+
+        if (accounts?.[0].address !== walletAddress) {
+          saveAddress(accounts[0]);
+        }
+      }
+    } catch (error) {
+      console.error("Error handling wallet change:", error);
+    }
+
+
+  // Clean up the event listener on component unmount
+  return () => {
+    window.removeEventListener("keplr_keystorechange", handleWalletChange);
+  };
+  
+  };
+  window.addEventListener("keplr_keystorechange", handleWalletChange);
+
+    
+
   const connectWallet = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -124,7 +154,8 @@ export const WalletContextProvider = ({
     if (walletAddress && netName && !stargateClient.current) {
       connectWallet();
     }
-  }, [chain, walletAddress, netName, connectWallet]);
+
+  }, [chain, walletAddress, netName, connectWallet, saveAddress, handleWalletChange]);
 
   return (
     <WalletContext.Provider
