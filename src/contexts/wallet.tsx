@@ -53,6 +53,7 @@ export const WalletContextProvider = ({
     return null;
   });
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  
   const [walletAddress, setWalletAddress] = useState<
     WalletContext["walletAddress"]
   >(() => {
@@ -100,12 +101,12 @@ export const WalletContextProvider = ({
       console.error("Failed to suggest chain:", error);
       toast.error("Select network first.", {
         position: 'top-right',
-        autoClose: 3000,
+        autoClose: 30000,
       });
     } finally {
       setIsLoading(false);
     }
-  }, [chain, netName, walletAddress, saveAddress]);
+  }, [chain, netName, walletAddress]);
 
   useEffect(() => {
     if (netName && currNetName !== netName) {
@@ -117,6 +118,7 @@ export const WalletContextProvider = ({
   useEffect(() => {
     if (!netName && stargateClient.current) {
       stargateClient.current = undefined;
+      setWalletAddress(null);
       return;
     }
     if (walletAddress && netName && !stargateClient.current) {
