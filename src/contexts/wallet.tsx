@@ -12,6 +12,7 @@ import { AccountData } from "@keplr-wallet/types";
 import { useNetwork } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
 import { registry } from "../lib/messageBuilder";
+import { toast } from "react-toastify";
 
 console.error(
   " registry we have ",
@@ -97,6 +98,10 @@ export const WalletContextProvider = ({
       }
     } catch (error) {
       console.error("Failed to suggest chain:", error);
+      toast.error("Select network first.", {
+        position: 'top-right',
+        autoClose: 3000,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -107,7 +112,7 @@ export const WalletContextProvider = ({
       if (walletAddress) connectWallet();
       setCurrNetName(netName);
     }
-  }, [netName, currNetName, walletAddress, connectWallet]);
+  }, [netName, chain, currNetName, walletAddress, connectWallet]);
 
   useEffect(() => {
     if (!netName && stargateClient.current) {
@@ -117,7 +122,7 @@ export const WalletContextProvider = ({
     if (walletAddress && netName && !stargateClient.current) {
       connectWallet();
     }
-  }, [walletAddress, netName, connectWallet]);
+  }, [chain, walletAddress, netName, connectWallet]);
 
   return (
     <WalletContext.Provider
