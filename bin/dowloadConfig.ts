@@ -5,10 +5,7 @@ import path from 'path';
 /**
  * TODO: have a way to capture logo_urls by name(name suggested by the maintainer of chain
  * eg logo_name = 'agoric-main.png or agoric-main.svg' logos will be a pointer to already existing images
- *   - if the image does not exist, download it from the chain-registry repo
- * 
  */
-
 
 const GIT_REF = '350840e766f7574a120760a13eda4c466413308a';
 const RAW_FILE_REPO_URL = 'https://raw.githubusercontent.com/cosmos/chain-registry';
@@ -30,11 +27,11 @@ interface ChainConfig {
   network_type: string;
   apis: Apis;
   logo_URIs?: string[];
-  //TODO: Add other properties if necessary
+  //TODO: Add other properties as needed  
 }
 
 const cleanupObject = (obj: any): ChainConfig => {
-    // If type is right, do norhing
+    // If it's of the config type, do nothing
     if (isChainConfig(obj)) {
       return obj;
     }
@@ -160,12 +157,12 @@ const downloadApprovedChainConfigs = async (): Promise<void> => {
       try {
         const chainConfig = await fetchChainConfig(chainName);
   
-        const configDir = path.join('config', chainName);
+        const configDir = path.join('config', chainName, chainConfig.network_type);
         if (!fs.existsSync(configDir)) {
           fs.mkdirSync(configDir, { recursive: true });
         }
   
-        const configPath = path.join(configDir, 'chain.json');
+        const configPath = path.join(configDir, `/chain.json`);
         fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
   
         console.log(`Chain configuration for ${chainName} downloaded and saved successfully.`);
