@@ -107,25 +107,6 @@ const fetchChainConfig = async (chainName: string): Promise<ChainConfig> => {
     return config;
   };
   
-const downloadAsset = async (chainName: string, assetName: string): Promise<void> => {
-  const assetUrl = `${RAW_FILE_REPO_URL}/${GIT_REF}/${chainName}/images/${assetName}`;
-  const response = await axios.get(assetUrl, { responseType: 'stream' });
-
-  const assetDir = path.join('public', chainName);
-  if (!fs.existsSync(assetDir)) {
-    fs.mkdirSync(assetDir, { recursive: true });
-  }
-
-  const assetPath = path.join(assetDir, assetName);
-  const writer = fs.createWriteStream(assetPath);
-  response.data.pipe(writer);
-
-  return new Promise((resolve, reject) => {
-    writer.on('finish', resolve);
-    writer.on('error', reject);
-  });
-};
-
 const downloadImage = async (url: string, outputPath: string): Promise<void> => {
     const response = await axios.get(url, { responseType: 'stream' });
     const writer = fs.createWriteStream(outputPath);
