@@ -1,4 +1,4 @@
-import { useMemo, useRef } from "react";
+import { ReactNode, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
 
 import { useQuery } from "@tanstack/react-query";
@@ -19,7 +19,6 @@ import { Tabs } from "../components/Tabs";
 import { makeCoreEvalProposalMsg, makeInstallBundleMsg, makeParamChangeProposalMsg, makeTextProposalMsg } from "../lib/messageBuilder";
 import { isValidBundle } from "../utils/validate";
 import { compressBundle } from "../lib/compression";
-console.error('we are calling landing page', );
 const ProposalsLandingPage = () => {
     const {walletAddress, chainInfo, stargateClient } = useWallet()
   const { currentNetworkName } = useNetwork();
@@ -133,7 +132,11 @@ const ProposalsLandingPage = () => {
   }
 
   const proposalTabs = useMemo(() => {
-    const tabs = [
+    const tabs: {
+        title: string;
+        msgType: QueryParams["msgType"];
+        content: ReactNode;
+      }[] = [
       {
         title: "Text Proposal",
         msgType: "textProposal",
@@ -243,19 +246,8 @@ const ProposalsLandingPage = () => {
       },
     ];
 
-// assume all are anabled for now
-    // return tabs.filter((tab) => enabledProposals.includes(tab.msgType));
-    // return tabs.filter((tab) => enabledProposals.includes(tab.msgType));
-    const validEnabledProposals = enabledProposals.filter(
-        (proposal): proposal is QueryParams["msgType"] =>
-          ['textProposal', 'coreEvalProposal', 'installBundle', 'parameterChangeProposal', 'communityPoolSpendProposal', 'fundCommunityPool', 'addPSM', 'addVault'].includes(proposal as QueryParams["msgType"])
-      );
-      return tabs.filter((tab): tab is typeof tabs[number] & { msgType: QueryParams["msgType"] } =>
-        validEnabledProposals.includes(tab.msgType as QueryParams["msgType"])
-      );
+    return tabs.filter((tab) => enabledProposals.includes(tab.msgType as QueryParams["msgType"]));
   }, [enabledProposals, handleProposal, handleBundle]);
-// return tabs.map((tab) =>tab.msgType);
-//   }, [enabledProposals, handleProposal, handleBundle]);
 
   return (
     <>
