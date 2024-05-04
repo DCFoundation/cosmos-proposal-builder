@@ -20,16 +20,23 @@ export const NetworkContext = createContext<NetworkContextValue>({
   api: undefined,
 });
 
-
-export const NetworkContextProvider = ({ children }: { children: ReactNode }) => {
-  const [currentNetworkName, setCurrentNetworkName] = useState<string | null>(null);
+export const NetworkContextProvider = ({
+  children,
+}: {
+  children: ReactNode;
+}) => {
+  const [currentNetworkName, setCurrentNetworkName] = useState<string | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
-  const [networkConfig, setNetworkConfig] = useState<NetworkConfig | null>(null);
+  const [networkConfig, setNetworkConfig] = useState<NetworkConfig | null>(
+    null,
+  );
   const { currentChainName, networksForCurrentChain } = useChain();
   const search = useSearch();
   const selectedNetwork = useMemo(
     () => new URLSearchParams(search).get("network") ?? null,
-    [search]
+    [search],
   );
 
   useEffect(() => {
@@ -72,4 +79,3 @@ export const NetworkContextProvider = ({ children }: { children: ReactNode }) =>
     </NetworkContext.Provider>
   );
 };
-

@@ -8,7 +8,7 @@ import { makeSignAndBroadcast } from "../../lib/signAndBroadcast.tsx";
 import { renderDenom } from "../../utils/coin.ts";
 
 const CommunitySpend = () => {
-  const { currentNetworkName: netName, } = useNetwork();
+  const { currentNetworkName: netName } = useNetwork();
   const { walletAddress, stargateClient, chainInfo } = useWallet();
   const denom = chainInfo?.feeCurrencies[0].coinDenom;
   const proposalFormRef = useRef<HTMLFormElement>(null);

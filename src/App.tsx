@@ -9,7 +9,6 @@ import { LayoutFooter } from "./components/LayoutFooter";
 import { ProposalsLandingPage } from "./config/proposalLandingPage";
 
 const App: React.FC = () => {
-
   return (
     <div className="flex flex-col min-h-screen">
       <Nav

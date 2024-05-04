@@ -14,14 +14,19 @@ import { CommunitySpend } from "./proposalTemplates/communitySpend";
 import { FundCommunityPool } from "./proposalTemplates/fundCommunityPool";
 import { AlertBox } from "../components/AlertBox";
 import { Tabs } from "../components/Tabs";
-import { makeCoreEvalProposalMsg, makeInstallBundleMsg, makeParamChangeProposalMsg, makeTextProposalMsg } from "../lib/messageBuilder";
+import {
+  makeCoreEvalProposalMsg,
+  makeInstallBundleMsg,
+  makeParamChangeProposalMsg,
+  makeTextProposalMsg,
+} from "../lib/messageBuilder";
 import { isValidBundle } from "../utils/validate";
 import { compressBundle } from "../lib/compression";
 
 const ProposalsLandingPage = () => {
-    const { currentNetworkName } = useNetwork();
-    const {walletAddress, chainInfo, stargateClient } = useWallet()
-  const denom =  chainInfo?.feeCurrencies[0].coinDenom || 'ubld'; //Todo fix this maybe throw error
+  const { currentNetworkName } = useNetwork();
+  const { walletAddress, chainInfo, stargateClient } = useWallet();
+  const denom = chainInfo?.feeCurrencies[0].coinDenom || "ubld"; //Todo fix this maybe throw error
   const { api } = useNetwork();
   const proposalFormRef = useRef<HTMLFormElement>(null);
   const corEvalFormRef = useRef<HTMLFormElement>(null);
@@ -31,25 +36,31 @@ const ProposalsLandingPage = () => {
   });
 
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
-  const bldCoins = useMemo(
+  const coinwealth = useMemo(
     () => selectCoins(denom, accountBalances),
-    [accountBalances],
+    [accountBalances, denom],
   );
   const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, currentNetworkName!),
+    () =>
+      makeSignAndBroadcast(stargateClient, walletAddress, currentNetworkName!),
     [stargateClient, walletAddress, currentNetworkName],
   );
 
-//   const enabledProposals = useMemo(async () => {
-//     if (!currentChainName) return [];
-//     const enabledProposalsModule = await import(`../../chainConfig/${currentChainName}/enabled.json`);
-//     return enabledProposalsModule.default;
-//   }, [currentChainName]);
+  //   const enabledProposals = useMemo(async () => {
+  //     if (!currentChainName) return [];
+  //     const enabledProposalsModule = await import(`../../chainConfig/${currentChainName}/enabled.json`);
+  //     return enabledProposalsModule.default;
+  //   }, [currentChainName]);
 
-    // const enabledProposals = ['textProposal', 'parameterChangeProposal', 'fundCommunityPool', 'communityPoolSpendProposal'];
-    const enabledProposals = ['textProposal', 'parameterChangeProposal', 'fundCommunityPool', 'communityPoolSpendProposal'] as QueryParams["msgType"][];
-    
-    function handleProposal(msgType: QueryParams["msgType"]) {
+  // const enabledProposals = ['textProposal', 'parameterChangeProposal', 'fundCommunityPool', 'communityPoolSpendProposal'];
+  const enabledProposals = [
+    "textProposal",
+    "parameterChangeProposal",
+    "fundCommunityPool",
+    "communityPoolSpendProposal",
+  ] as QueryParams["msgType"][];
+
+  function handleProposal(msgType: QueryParams["msgType"]) {
     return async (vals: ProposalArgs) => {
       if (!walletAddress) {
         toast.error("Wallet not connected.", { autoClose: 3000 });
@@ -100,7 +111,6 @@ const ProposalsLandingPage = () => {
     };
   }
 
-    
   async function handleBundle(vals: BundleFormArgs) {
     if (!walletAddress) {
       toast.error("Wallet not connected.", { autoClose: 3000 });
@@ -132,10 +142,10 @@ const ProposalsLandingPage = () => {
 
   const proposalTabs = useMemo(() => {
     const tabs: {
-        title: string;
-        msgType: QueryParams["msgType"];
-        content: ReactNode;
-      }[] = [
+      title: string;
+      msgType: QueryParams["msgType"];
+      content: ReactNode;
+    }[] = [
       {
         title: "Text Proposal",
         msgType: "textProposal",
@@ -150,9 +160,9 @@ const ProposalsLandingPage = () => {
             description={
               <>
                 This is a governance proposal that can be used for signaling
-                support or agreement on a certain topic or idea. Text
-                proposals do not contain any code, and do not directly enact
-                changes after a passing vote.
+                support or agreement on a certain topic or idea. Text proposals
+                do not contain any code, and do not directly enact changes after
+                a passing vote.
               </>
             }
           />
@@ -171,17 +181,17 @@ const ProposalsLandingPage = () => {
             governanceForumLink="https://community.agoric.com/c/governance/core-eval/31"
             description={
               <>
-                This is a governance proposal that executes code after a
-                passing vote. The JSON Permit grants{" "}
+                This is a governance proposal that executes code after a passing
+                vote. The JSON Permit grants{" "}
                 <a
                   className="cursor-pointer hover:text-gray-900 underline"
                   href="https://docs.agoric.com/guides/coreeval/permissions.html"
                 >
                   capabilities
                 </a>{" "}
-                and the JS Script can start or update a contract. These
-                files can be generated with the <Code>agoric run</Code>{" "}
-                command. For more details, see the{" "}
+                and the JS Script can start or update a contract. These files
+                can be generated with the <Code>agoric run</Code> command. For
+                more details, see the{" "}
                 <a
                   className="cursor-pointer hover:text-gray-900 underline"
                   href="https://docs.agoric.com/guides/coreeval/"
@@ -205,8 +215,8 @@ const ProposalsLandingPage = () => {
             description={
               <>
                 The install bundle message deploys and installs an external
-                bundle generated during the <Code>agoric run</Code> process.
-                The resulting installation can be referenced in a{" "}
+                bundle generated during the <Code>agoric run</Code> process. The
+                resulting installation can be referenced in a{" "}
                 <a
                   className="cursor-pointer hover:text-gray-900 underline"
                   href="https://docs.agoric.com/guides/coreeval/"
@@ -245,16 +255,17 @@ const ProposalsLandingPage = () => {
       },
     ];
 
-    return tabs.filter((tab) => enabledProposals.includes(tab.msgType as QueryParams["msgType"]));
+    return tabs.filter((tab) =>
+      enabledProposals.includes(tab.msgType as QueryParams["msgType"]),
+    );
   }, [enabledProposals, handleProposal, handleBundle]);
 
   return (
     <>
-      <AlertBox coins={bldCoins} />
+      <AlertBox coins={coinwealth} />
       <Tabs tabs={proposalTabs} />
     </>
   );
-}
-
+};
 
 export { ProposalsLandingPage };

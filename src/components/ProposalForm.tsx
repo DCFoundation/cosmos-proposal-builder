@@ -39,8 +39,10 @@ export type ProposalDetail =
       msgType: "communityPoolSpendProposal";
       spend: { recipient: string; amount: number; denom: string }[];
     }
-  | { msgType: "fundCommunityPool"; fundAmount: {amount: number; denom: string}[]};
-
+  | {
+      msgType: "fundCommunityPool";
+      fundAmount: { amount: number; denom: string }[];
+    };
 
 interface ProposalFormProps {
   title: string;
@@ -95,16 +97,16 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             const changes = paramChangeRef.current?.getChanges();
             if (!Array.isArray(changes)) throw new Error("No changes");
             return handleSubmit({ ...args, msgType, changes });
-          }
-          else if (msgType === "fundCommunityPool") {
+          } else if (msgType === "fundCommunityPool") {
             const amount = (formData.get("amount") as string) || "";
             return handleSubmit({
               ...args,
               msgType,
-              fundAmount: [{ amount: Number(amount) * COIN_UNITS, denom: denom || "" }],
+              fundAmount: [
+                { amount: Number(amount) * COIN_UNITS, denom: denom || "" },
+              ],
             });
-          } 
-          else if (msgType === "communityPoolSpendProposal") {
+          } else if (msgType === "communityPoolSpendProposal") {
             const recipient = (formData.get("recipient") as string) || "";
             const requestedAmount = (formData.get("amount") as string) || "";
             const denom = (formData.get("denom") as string) || "";

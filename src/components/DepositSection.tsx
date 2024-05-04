@@ -18,7 +18,7 @@ export const DepositSection: React.FC<unknown> = () => {
   const { api } = useNetwork();
   const { walletAddress, chainInfo } = useWallet();
   const depositRef = useRef<HTMLInputElement>(null);
-  const denom = chainInfo?.feeCurrencies[0].coinDenom || 'ubld'; //TODO: again fix this
+  const denom = chainInfo?.feeCurrencies[0].coinDenom || "ubld"; //TODO: again fix this
   const { minDeposit, votingPeriod } = useQueries({
     queries: [depositParamsQuery(api), votingParamsQuery(api)],
     combine: (

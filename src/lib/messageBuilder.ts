@@ -9,13 +9,11 @@ import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/para
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
-import { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
 export const registry = new Registry([
   ...defaultRegistryTypes,
-   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
+  ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
   // ["/cosmos.distribution.v1beta1.MsgCommunityPoolSpend", MsgCommunityPoolSpend],
 ]);
-
 
 interface MakeTextProposalArgs {
   title: string;

@@ -7,7 +7,9 @@ const placeholderText = "Select Chain";
 
 const ChainMenu = () => {
   const { currentChainName, availableChains } = useChain();
-  const title = currentChainName ? capitalize(currentChainName) : placeholderText;
+  const title = currentChainName
+    ? capitalize(currentChainName)
+    : placeholderText;
 
   const labelImage = useMemo(() => {
     return currentChainName
