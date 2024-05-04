@@ -9,10 +9,13 @@ import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/para
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
+import { MsgCommunityPoolSpend } from "cosmjs-types/cosmos/distribution/v1beta1/tx";
 export const registry = new Registry([
   ...defaultRegistryTypes,
-  ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
+   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
+  // ["/cosmos.distribution.v1beta1.MsgCommunityPoolSpend", MsgCommunityPoolSpend],
 ]);
+
 
 interface MakeTextProposalArgs {
   title: string;
@@ -21,6 +24,23 @@ interface MakeTextProposalArgs {
   deposit?: string | number;
   denom: string;
 }
+
+export const makeFundCommunityPool = ({
+  amount,
+  denom,
+  depositor,
+}: {
+  amount: number | string;
+  denom: string;
+  depositor: string;
+}) => ({
+  typeUrl: "/cosmos.distribution.v1beta1.MsgFundCommunityPool",
+  value: {
+    amount: coins(amount, denom),
+    depositor,
+  },
+});
+
 export const makeCommunityPoolSpendProposalMsg = ({
   proposer,
   recipient,
@@ -32,7 +52,7 @@ export const makeCommunityPoolSpendProposalMsg = ({
 }: {
   proposer: string;
   recipient: string;
-  amount: string | number;
+  amount: number | string;
   denom: string;
   title: string;
   description: string;

@@ -1,13 +1,22 @@
 import { lazy } from "react";
 import type { LazyExoticComponent } from "react";
-import type { ChainName } from "../hooks/useChain";
+import { ChainListItem } from "../contexts/chain";
+import { useChain } from "../hooks/useChain";
 
-//TOFIX: This is a workaround to avoid circular dependencies
-export const chainConfigMap: Record<
-  ChainName,
-  LazyExoticComponent<() => JSX.Element>
-> = {
-  agoric: lazy(() => import("./agoric")),
-  inter: lazy(() => import("./inter")),
-  cosmos: lazy(() => import("./cosmos")),
+export type ChainName = string;
+
+const chainConfigMap = (): Record<ChainName, LazyExoticComponent<React.FC<any>>> => {
+  const chainMap: Record<ChainName, LazyExoticComponent<React.FC<any>>> = {};
+const {availableChains } =  useChain();
+  // Dynamically import chain components based on the available chains
+  availableChains.forEach((chain: ChainListItem) => {
+    const { value: chainName } = chain;
+    chainMap[chainName] = lazy(() => import(`./${chainName}/${chainName}.tsx`));
+  });
+
+  console.log('Chain map:', chainMap);
+
+  return chainMap;
 };
+
+export { chainConfigMap };

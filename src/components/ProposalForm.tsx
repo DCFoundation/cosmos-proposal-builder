@@ -38,7 +38,9 @@ export type ProposalDetail =
   | {
       msgType: "communityPoolSpendProposal";
       spend: { recipient: string; amount: number; denom: string }[];
-    };
+    }
+  | { msgType: "fundCommunityPool"; fundAmount: {amount: number; denom: string}[]};
+
 
 interface ProposalFormProps {
   title: string;
@@ -93,7 +95,16 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             const changes = paramChangeRef.current?.getChanges();
             if (!Array.isArray(changes)) throw new Error("No changes");
             return handleSubmit({ ...args, msgType, changes });
-          } else if (msgType === "communityPoolSpendProposal") {
+          }
+          else if (msgType === "fundCommunityPool") {
+            const amount = (formData.get("amount") as string) || "";
+            return handleSubmit({
+              ...args,
+              msgType,
+              fundAmount: [{ amount: Number(amount) * COIN_UNITS, denom: denom || "" }],
+            });
+          } 
+          else if (msgType === "communityPoolSpendProposal") {
             const recipient = (formData.get("recipient") as string) || "";
             const requestedAmount = (formData.get("amount") as string) || "";
             const denom = (formData.get("denom") as string) || "";
@@ -190,6 +201,30 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                       id="amount"
                       className="col-span-2 mt-0 block w-full rounded-md border-0 py-1.5 text-grey shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                       placeholder="Amount to spend from the community pool"
+                    />
+                  </div>
+                </>
+              ) : null}
+              {msgType === "fundCommunityPool" ? (
+                <>
+                  <div className="grid grid-cols-2 gap-[10px] pt-[20px]">
+                    <div className="flex items-center">
+                      <label
+                        htmlFor="amount"
+                        className="text-sm font-medium text-blue"
+                      >
+                        Amount
+                      </label>
+                      <span className="ml-2 text-sm text-gray-500">
+                        ({denom})
+                      </span>
+                    </div>
+                    <input
+                      type="text"
+                      name="amount"
+                      id="amount"
+                      className="col-span-2 mt-0 block w-full rounded-md border-0 py-1.5 text-grey shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+                      placeholder="Amount to fund the community pool"
                     />
                   </div>
                 </>

@@ -30,7 +30,7 @@ import { accountBalancesQuery } from "../../lib/queries.ts";
 import { selectBldCoins } from "../../lib/selectors.ts";
 
 const Inter = () => {
-  const { netName } = useNetwork();
+  const { currentNetworkName: netName } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
   const { api } = useNetwork();
   const psmFormRef = useRef<HTMLFormElement>(null);
@@ -43,7 +43,7 @@ const Inter = () => {
   );
 
   const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
+    () => makeSignAndBroadcast(stargateClient, walletAddress, netName!),
     [stargateClient, walletAddress, netName],
   );
 

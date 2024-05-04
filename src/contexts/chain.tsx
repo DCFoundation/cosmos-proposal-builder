@@ -1,76 +1,124 @@
-import { ReactNode, createContext, useMemo } from "react";
+import { createContext, useEffect, useState } from "react";
 import { useLocation } from "wouter";
+import { Bech32Config, ChainInfo, FeeCurrency } from "@keplr-wallet/types";
+import { fetchApprovedChains, fetchNetworksForChain, generateBech32Config, getChainNameFromLocation } from "../config/chainConfig";
 import { capitalize } from "../utils/capitalize";
-import { NETNAMES } from "./network";
-
-/** "chains" can be apps or chains */
-const _chainNames = ["agoric", "inter", "cosmos"] as const;
-export type ChainName = (typeof _chainNames)[number];
-
-const imageMap: Record<ChainName, string> = {
-  agoric: "/assets/agoric.svg",
-  inter: "/assets/inter.svg",
-  cosmos: "/assets/cosmos-hub.svg",
-};
 
 export type ChainListItem = {
   label: string;
-  value: ChainName;
+  value: string;
   href: string;
   image: string;
 };
-
-export type ChainList = ChainListItem[];
-
-export interface IChainContext {
-  chain: ChainName | undefined;
-  chains: ChainList;
+export interface ChainContextValue {
+  currentChainName: string | null;
+  availableChains: ChainListItem[];
+  networksForCurrentChain: string[];
+  getChainInfo: (networkName: string) => Promise<ChainInfo | null>;
 }
-const chainList = Array.from(_chainNames).map((chain) => ({
-  label: capitalize(chain),
-  value: chain,
-  href: `/${chain}`,
-  image: imageMap[chain],
-})) as IChainContext["chains"];
 
-export const ChainContext = createContext<IChainContext>({
-  chain: undefined,
-  chains: chainList,
+export const ChainContext = createContext<ChainContextValue>({
+  currentChainName: null,
+  availableChains: [],
+  networksForCurrentChain: [],
+  getChainInfo: async () => null,
 });
+export type GaspPriceStep = {
+  fixed: number;
+  low: number;
+  average: number;
+  high: number;
+}
+//TODO: make sure we get exponent since all chains do have this
+const makeCurrency = ({minimalDenom, exponent, gasPriceStep}: {minimalDenom: string, exponent: number | null, gasPriceStep: GaspPriceStep | null}): FeeCurrency => {
+    const feeCurrency: FeeCurrency = {
+      coinDenom: minimalDenom,
+      coinMinimalDenom: minimalDenom,
+      coinDecimals: exponent || 6,
+      gasPriceStep: gasPriceStep || { low: 0, average: 0, high: 0}
+    }
 
-const getChainName = (chainName: string): ChainName | undefined => {
-  if (!chainName) return undefined;
-  const pathname = chainName.slice(1);
-  return _chainNames.includes(pathname as ChainName)
-    ? (pathname as ChainName)
-    : _chainNames[0];
-};
-export function getNetworksForChain(
-  chain: ChainName,
-): (typeof NETNAMES)[ChainName] {
-  const networkEntry = Object.entries(NETNAMES).find(([key]) => key === chain);
-
-  if (!networkEntry) {
-    console.error(`No network entries found for chain: ${chain}`);
-    return [] as unknown as (typeof NETNAMES)[ChainName];
-  }
-  const [_, networkEntries] = networkEntry;
-
-  return networkEntries;
+    return feeCurrency;
 }
 
-export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
+export const ChainContextProvider = ({ children }: { children: React.ReactNode }) => {
   const [location] = useLocation();
-  const _chain = useMemo(() => getChainName(location), [location]);
+  const [currentChainName, setCurrentChainName] = useState<string | null>(null);
+  const [availableChains, setAvailableChains] = useState<ChainListItem[]>([]);
+  const [networksForCurrentChain, setNetworksForCurrentChain] = useState<string[]>([]);
+
+  useEffect(() => {
+    const fetchAvailableChains = async () => {
+      const chainNames = await fetchApprovedChains();
+      const chains = chainNames.map((chainName) => ({
+        label: capitalize(chainName),
+        value: chainName,
+        href: `/${chainName}`,
+        image: `/logo/${chainName}.svg`,
+      }));
+      setAvailableChains(chains);
+    };
+
+    fetchAvailableChains();
+  }, []);
+
+  useEffect(() => {
+    const fetchChainName = async () => {
+      const chainName = await getChainNameFromLocation(location);
+      console.error('we compute chain name to be ', chainName);
+      setCurrentChainName(chainName);
+    };
+    fetchChainName();
+
+    if (currentChainName) {
+      fetchNetworksForChain(currentChainName).then(setNetworksForCurrentChain);
+    } else {
+      console.error('no network for current chain?  Bummer');
+      setNetworksForCurrentChain([]);
+    }
+  }, [location, currentChainName]);
+
+  //todo optimize this, take all and map to makeCurrency same for rpc and rest
+  //also move to suggestChain as before
+  const getChainInfo = async (networkName: string): Promise<ChainInfo | null> => {
+    if (!currentChainName) return null;
+    console.error('current chain name', currentChainName);
+    try {
+      const fetchedConfig = await import(`../chainConfig/${currentChainName}/${networkName}/chain.json`);
+      const bech32Config: Bech32Config = generateBech32Config(fetchedConfig.bech32Config);
+      const stakeCurrency = makeCurrency(fetchedConfig.staking?.stakingTokens[0].denom);
+    const feeCurrencies = makeCurrency(fetchedConfig.fees?.feeTokens[0].denom);
+      const currencies = [feeCurrencies, stakeCurrency];
+      console.error(' fetchedConfig is ', fetchedConfig);
+      const chainInfo: ChainInfo = {
+        rpc: fetchedConfig.apis.rpc[0].address,
+        rest: fetchedConfig.apis.rest[0].address,
+        chainId: fetchedConfig.chainId,
+        chainName: currentChainName,
+        stakeCurrency,
+        feeCurrencies: [feeCurrencies],
+        bech32Config: bech32Config,
+        bip44: fetchedConfig.bip44,
+        currencies: currencies
+      };
+      return chainInfo;
+    } catch (error) {
+      console.error(`Failed to fetch chain info for ${currentChainName}/${networkName}:`, error);
+      return null;
+    }
+  };
 
   return (
     <ChainContext.Provider
       value={{
-        chain: _chain,
-        chains: chainList,
+        currentChainName,
+        availableChains,
+        networksForCurrentChain,
+        getChainInfo,
       }}
     >
       {children}
     </ChainContext.Provider>
   );
 };
+

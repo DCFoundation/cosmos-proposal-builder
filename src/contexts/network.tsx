@@ -1,108 +1,75 @@
 import { ReactNode, createContext, useEffect, useMemo, useState } from "react";
-import { getNetworkConfig } from "../lib/getNetworkConfig";
 import { useSearch } from "wouter/use-location";
 import { toast } from "react-toastify";
-import { ChainName, getNetworksForChain } from "./chain";
+import { fetchChainConfig, NetworkConfig } from "../config/chainConfig";
 import { useChain } from "../hooks/useChain";
 
-export type NetNames = Record<string, string[]>;
-export const NETNAMES: NetNames = {
-  agoric: ["local", "devnet", "ollinet", "xnet", "emerynet", "main"],
-  cosmos: ["cosmoshub-mainnet", "cosmoshub-devnet", "cosmoshub-local"],
-  inter: [],
-};
-
-NETNAMES.inter = [...NETNAMES.agoric];
-
-export type NetName = (typeof NETNAMES)[keyof typeof NETNAMES][number];
-
-interface NetworkContext {
-  chain: ChainName | undefined;
-  netName: NetName | undefined;
-  netNames: NetName[];
+export interface NetworkContextValue {
+  currentNetworkName: string | null;
+  siblingNetworkNames: string[];
   networkConfig: NetworkConfig | null;
   error: string | null;
   api: string | undefined;
 }
 
-export const NetworkContext = createContext<NetworkContext>({
-  chain: undefined,
-  netName: undefined,
-  netNames: Object.entries(NETNAMES).flatMap(([_, names]) => names),
+export const NetworkContext = createContext<NetworkContextValue>({
+  currentNetworkName: null,
+  siblingNetworkNames: [],
   networkConfig: null,
   error: null,
   api: undefined,
 });
 
-const getNameName = (
-  chainName: string,
-  netName: string,
-): NetName | undefined =>
-  NETNAMES[chainName].includes(netName as NetName)
-    ? (netName as NetName)
-    : undefined;
 
-export const NetworkContextProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const { chain } = useChain();
+export const NetworkContextProvider = ({ children }: { children: ReactNode }) => {
+  const [currentNetworkName, setCurrentNetworkName] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [networkConfig, setNetworkConfig] = useState<NetworkConfig | null>(null);
+  const { currentChainName, networksForCurrentChain } = useChain();
   const search = useSearch();
-  const network = useMemo(
+  const selectedNetwork = useMemo(
     () => new URLSearchParams(search).get("network") ?? null,
-    [search],
+    [search]
   );
-  const [netName, setNameName] = useState<NetName | undefined>(
-    network ? getNameName(chain as ChainName, network as string) : undefined,
-  );
-  const [networkConfig, setNetworkConfig] = useState<NetworkConfig | null>(
-    null,
-  );
-  const [error, setError] = useState<NetworkContext["error"]>(null);
 
   useEffect(() => {
-    if (netName && chain) {
-      getNetworkConfig(chain, netName)
-        .then((value) => setNetworkConfig(value || null))
+    if (selectedNetwork && networksForCurrentChain.includes(selectedNetwork)) {
+      setCurrentNetworkName(selectedNetwork);
+    }
+  }, [selectedNetwork, networksForCurrentChain]);
+
+  useEffect(() => {
+    if (currentNetworkName && currentChainName) {
+      fetchChainConfig(currentChainName, currentNetworkName)
+        .then(setNetworkConfig)
         .catch(() => {
           setNetworkConfig(null);
           setError("Failed to fetch network configuration.");
           toast.error("Failed to fetch network configuration.", {
             position: "bottom-center",
-            autoClose: 3000,
+            autoClose: 300,
           });
         });
     }
-  }, [chain, netName]);
+  }, [currentChainName, currentNetworkName]);
 
-  useEffect(() => {
-    const newNetName = getNameName(chain as string, network as string);
-    if (newNetName !== netName) setNameName(newNetName);
-  }, [network, chain, netName]);
-
-  const netNames = useMemo(
-    () => getNetworksForChain(chain as ChainName),
-    [chain],
-  );
-
-  const api = useMemo(() => {
-    if (netName === "local") return "http://localhost:1317";
-    return networkConfig?.apiAddrs?.[0];
-  }, [networkConfig, netName]);
+  const restApi = useMemo(() => {
+    if (currentNetworkName === "local") return "http://localhost:1317";
+    return networkConfig?.apis.rest[0].address;
+  }, [networkConfig, currentNetworkName]);
 
   return (
     <NetworkContext.Provider
       value={{
-        chain: chain as ChainName,
-        netName: network as NetName,
-        netNames,
+        currentNetworkName,
+        siblingNetworkNames: networksForCurrentChain,
         networkConfig,
-        api,
         error,
+        api: restApi,
       }}
     >
       {children}
     </NetworkContext.Provider>
   );
 };
+
