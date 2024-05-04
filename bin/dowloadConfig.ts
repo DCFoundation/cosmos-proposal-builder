@@ -22,50 +22,66 @@ type ApiEntry = {
   };
 
 interface ChainConfig {
-  chain_name: string;
-  chain_id: string;
-  network_type: string;
+  chainName: string;
+  chainId: string;
+  networkName: string;
   apis: Apis;
-  logo_URIs?: string[];
+  logoURIs?: string[];
   //TODO: Add other properties as needed  
 }
-
 const cleanupObject = (obj: any): ChainConfig => {
-    // If it's of the config type, do nothing
-    if (isChainConfig(obj)) {
-      return obj;
+  // If it's of the config type, do nothing
+  if (isChainConfig(obj)) {
+    return obj;
+  }
+
+  const cleanedObj: any = {};
+  const keys = Object.keys(obj);
+
+  // Clean up and convert properties from downloaded JSON object
+  for (const key of keys) {
+    const camelCaseKey = toCamelCase(key);
+    if (camelCaseKey === 'networkType') {
+      // Special case for networkName
+      cleanedObj.networkName = obj[key];
+    } else if (camelCaseKey === 'compatibleVersions') {
+      // Special case for compatibleVersions
+      cleanedObj.compatibleVersions = obj[key];
+    } else if (camelCaseKey === 'keyAlgos') {
+      // Special case for keyAlgos
+      cleanedObj.keyAlgos = obj[key];
+    } else if (Array.isArray(obj[key])) {
+      cleanedObj[camelCaseKey] = obj[key].map((entry: any) => {
+        const camelCaseEntry: any = {};
+        const entryKeys = Object.keys(entry);
+        for (const entryKey of entryKeys) {
+          const camelCaseEntryKey = toCamelCase(entryKey);
+          camelCaseEntry[camelCaseEntryKey] = entry[entryKey];
+        }
+        return camelCaseEntry;
+      });
+    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
+      cleanedObj[camelCaseKey] = cleanupObject(obj[key]);
+    } else {
+      cleanedObj[camelCaseKey] = obj[key];
     }
-  
-    const cleanedObj: any = {};
-  
-    // Clean up and convert properties from downloaded JSON object
-    cleanedObj.chain_name = obj.chain_name;
-    cleanedObj.chain_id = obj.chain_id;
-    cleanedObj.network_type = obj.network_type;
-    cleanedObj.apis = {
-      rpc: obj.apis.rpc.map((entry: any) => ({
-        address: entry.address,
-        provider: entry.provider,
-      })),
-      rest: obj.apis.rest.map((entry: any) => ({
-        address: entry.address,
-        provider: entry.provider,
-      })),
-      grpc: obj.apis.grpc.map((entry: any) => ({
-        address: entry.address,
-        provider: entry.provider,
-      })),
-    };  
-    return cleanedObj as ChainConfig;
-  };
-  
+  }
+
+  return cleanedObj as ChainConfig;
+};
+const toCamelCase = (str: string): string => {
+  return str.replace(/([-_][a-z])/gi, ($1) => {
+    return $1.toUpperCase().replace('-', '').replace('_', '');
+  });
+};
+
   const isChainConfig = (obj: any): obj is ChainConfig => {
     return (
       typeof obj === 'object' &&
       obj !== null &&
-      'chain_name' in obj &&
-      'chain_id' in obj &&
-      'network_type' in obj &&
+      'chainName' in obj &&
+      'chainId' in obj &&
+      'networkName' in obj &&
       'apis' in obj
     );
   };
@@ -103,11 +119,35 @@ const fetchChainConfig = async (chainName: string): Promise<ChainConfig> => {
       config = cleanupObject(data);
     }
     // to replace this with a better way to get the logo urls
-    config.logo_URIs = [`/public/logo/${chainName}.svg`, `/public/logo/${chainName}.png`];
+    // config.logo_URIs = [`/public/logo/${chainName}.svg`, `/public/logo/${chainName}.png`];
+    config.logoURIs = [`/public/logo/${chainName}.svg`, `/public/logo/${chainName}.png`];
     return config;
   };
   
+const downloadAsset = async (chainName: string, assetName: string): Promise<void> => {
+  const assetUrl = `${RAW_FILE_REPO_URL}/${GIT_REF}/${chainName}/images/${assetName}`;
+  const response = await axios.get(assetUrl, { responseType: 'stream' });
+
+  const assetDir = path.join('public', chainName);
+  if (!fs.existsSync(assetDir)) {
+    fs.mkdirSync(assetDir, { recursive: true });
+  }
+
+  const assetPath = path.join(assetDir, assetName);
+  const writer = fs.createWriteStream(assetPath);
+  response.data.pipe(writer);
+
+  return new Promise((resolve, reject) => {
+    writer.on('finish', resolve);
+    writer.on('error', reject);
+  });
+};
+
 const downloadImage = async (url: string, outputPath: string): Promise<void> => {
+  if (!outputPath) {
+    console.error('Error: outputPath is undefined');
+    return;
+  }
     const response = await axios.get(url, { responseType: 'stream' });
     const writer = fs.createWriteStream(outputPath);
     response.data.pipe(writer);
@@ -130,45 +170,51 @@ const fetchChainImages = async (chainName: string): Promise<string[]> => {
       .map((file: any) => file.download_url);
   };
 
-
 const downloadApprovedChainConfigs = async (): Promise<void> => {
-    const approvedChains = await fetchApprovedChains();
-  
-    for (const chainName of approvedChains) {
-      try {
-        const chainConfig = await fetchChainConfig(chainName);
-  
-        const configDir = path.join('config', chainName, chainConfig.network_type);
-        if (!fs.existsSync(configDir)) {
-          fs.mkdirSync(configDir, { recursive: true });
-        }
-  
-        const configPath = path.join(configDir, `/chain.json`);
-        fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
-  
-        console.log(`Chain configuration for ${chainName} downloaded and saved successfully.`);
-  
-        const imageUrls = await fetchChainImages(chainName);
-        const assetDir = path.join('public', chainName);
-  
-        if (!fs.existsSync(assetDir)) {
-          fs.mkdirSync(assetDir, { recursive: true });
-        }
-  
-        const downloadPromises = imageUrls.map(async (imageUrl) => {
-          const imageName = path.basename(imageUrl);
-          const outputPath = path.join(assetDir, imageName);
-  
-          await downloadImage(imageUrl, outputPath);
-          console.log(`Image ${imageName} for ${chainName} downloaded successfully.`);
-        });
-  
-        await Promise.all(downloadPromises);
-      } catch (error) {
-        console.error(`Error processing chain ${chainName}:`, error);
+  const approvedChains = await fetchApprovedChains();
+
+  for (const chainName of approvedChains) {
+    try {
+      const chainConfig = await fetchChainConfig(chainName);
+
+      // Check for undefined values
+      if (!chainName || !chainConfig.networkName) {
+        console.error(`Error: chainName or networkName is undefined for chain ${chainName}`);
+        continue;
       }
+
+      const configDir = path.join('config', chainName, chainConfig.networkName);
+      if (!fs.existsSync(configDir)) {
+        fs.mkdirSync(configDir, { recursive: true });
+      }
+
+      const configPath = path.join(configDir, `/chain.json`);
+      fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
+
+      console.log(`Chain configuration for ${chainName} downloaded and saved successfully.`);
+
+      const imageUrls = await fetchChainImages(chainName);
+      const assetDir = path.join('public', chainName);
+
+      if (!fs.existsSync(assetDir)) {
+        fs.mkdirSync(assetDir, { recursive: true });
+      }
+
+      const downloadPromises = imageUrls.map(async (imageUrl) => {
+        const imageName = path.basename(imageUrl);
+        const outputPath = path.join(assetDir, imageName);
+
+        await downloadImage(imageUrl, outputPath);
+        console.log(`Image ${imageName} for ${chainName} downloaded successfully.`);
+      });
+
+      await Promise.all(downloadPromises);
+    } catch (error) {
+      console.error(`Error processing chain ${chainName}:`, error);
     }
-  };
+  }
+};
+
 const main = async () => {
   try {
     await downloadApprovedChainConfigs();
