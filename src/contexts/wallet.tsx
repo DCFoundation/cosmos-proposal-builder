@@ -152,7 +152,7 @@ export const WalletContextProvider = ({
       window.localStorage.removeItem("walletAddress");
       stargateClientRef.current = undefined;
     }
-  }, [currentChainName]);
+  }, [currentChainName]); //TODO: wallet only changes upon networ/wallet switcj
 
   return (
     <WalletContext.Provider

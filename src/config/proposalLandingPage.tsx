@@ -53,6 +53,9 @@ const ProposalsLandingPage = () => {
   //   }, [currentChainName]);
 
   // const enabledProposals = ['textProposal', 'parameterChangeProposal', 'fundCommunityPool', 'communityPoolSpendProposal'];
+  /***
+   * TODO: This should come from a json config like everything else
+   */
   const enabledProposals = [
     "textProposal",
     "parameterChangeProposal",
