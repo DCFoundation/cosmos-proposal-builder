@@ -8,166 +8,139 @@ import {
 } from "react";
 import { Decimal } from "@cosmjs/math";
 import { SigningStargateClient } from "@cosmjs/stargate";
-import { AccountData } from "@keplr-wallet/types";
-import { useNetwork } from "../hooks/useNetwork";
-import { suggestChain } from "../lib/suggestChain";
+import { AccountData, ChainInfo } from "@keplr-wallet/types";
 import { registry } from "../lib/messageBuilder";
 import { toast } from "react-toastify";
+import { useChain } from "../hooks/useChain";
+import { useNetwork } from "../hooks/useNetwork";
 
-console.error(
-  " registry we have ",
-  Object.entries(registry).map(([key, value]) => {
-    console.error(" key ", key, " value ", value);
-  }),
-);
-
-interface WalletContext {
+interface WalletContextValue {
   walletAddress: string | null;
   connectWallet: () => Promise<void>;
   stargateClient: SigningStargateClient | undefined;
   isLoading: boolean;
-  rpc: string | null;
+  chainInfo: ChainInfo | null;
 }
 
-export const WalletContext = createContext<WalletContext>({
+export const WalletContext = createContext<WalletContextValue>({
   walletAddress: null,
-  connectWallet: () => Promise.resolve(undefined),
+  connectWallet: () => Promise.resolve(),
   stargateClient: undefined,
   isLoading: false,
-  rpc: null,
+  chainInfo: null,
 });
 
-export const WalletContextProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const stargateClient = useRef<SigningStargateClient | undefined>(undefined);
-  const { netName, chain } = useNetwork();
-  if (!chain) throw new Error("Chain not found");
-  const [currNetName, setCurrNetName] = useState(netName);
-  const [rpc, setRpc] = useState<WalletContext["rpc"]>(() => {
-    if (window.localStorage.getItem("rpc")) {
-      return window.localStorage.getItem("rpc") || null;
-    }
-    return null;
-  });
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  
-  const [walletAddress, setWalletAddress] = useState<
-    WalletContext["walletAddress"]
-  >(() => {
-    if (window.localStorage.getItem("walletAddress")) {
-      return window.localStorage.getItem("walletAddress") || null;
-    }
-    return null;
-  });
 
-  const saveAddress = useCallback(({ address }: AccountData) => {
+export const WalletContextProvider = ({ children }: { children: ReactNode }) => {
+  const { currentChainName, getChainInfo } = useChain();
+  const { currentNetworkName } = useNetwork();
+  const [walletAddress, setWalletAddress] = useState<string | null>(() => {
+    return window.localStorage.getItem("walletAddress") || null;
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [chainInfo, setChainInfo] = useState<ChainInfo | null>(null);
+  const stargateClientRef = useRef<SigningStargateClient | undefined>(undefined);
+
+  const saveAddress = useCallback(({ address }: AccountData)  => {
     window.localStorage.setItem("walletAddress", address);
     setWalletAddress(address);
-  }, []);
+  }, [currentChainName]);
 
-  const handleWalletChange = async () => {
-    console.error("ssskkskss Key store in Keplr is changed. Refetching account info...");
+  const handleWalletChange = useCallback(async () => {
+    console.log("Key store in Keplr is changed. Refetching account info...");
 
-    try {
-      const { chainId } = await suggestChain(chain as string, netName as string);
+    if (currentChainName && currentNetworkName) {
+      try {
+        const chainInfo = await getChainInfo(currentNetworkName);
+        if (chainInfo) {
+          await window.keplr.enable(chainInfo.chainId);
+          const offlineSigner = window.keplr.getOfflineSigner(chainInfo.chainId);
+          const accounts = await offlineSigner.getAccounts();
 
-      if (chainId) {
-        await window.keplr.enable(chainId);
-        const offlineSigner = window.keplr.getOfflineSigner(chainId);
-        const accounts = await offlineSigner.getAccounts();
-
-        if (accounts?.[0].address !== walletAddress) {
-          saveAddress(accounts[0]);
+          if (accounts?.[0].address !== walletAddress) {
+            saveAddress(accounts[0]);
+          }
         }
+      } catch (error) {
+        console.error("Error handling wallet change:", error);
       }
-    } catch (error) {
-      console.error("Error handling wallet change:", error);
     }
+  }, [currentChainName, currentNetworkName, getChainInfo, walletAddress, saveAddress]);
 
-
-  // Clean up the event listener on component unmount
-  return () => {
-    window.removeEventListener("keplr_keystorechange", handleWalletChange);
-  };
-  
-  };
-  window.addEventListener("keplr_keystorechange", handleWalletChange);
-
-    
 
   const connectWallet = useCallback(async () => {
+    if (!currentChainName || !currentNetworkName) {
+      console.error('Either chain or network isnt set');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const { chainId, rpc, feeCurrencies } = await suggestChain(
-        chain as string,
-        netName as string,
-      );
-      setRpc(rpc);
-      if (chainId) {
-        await window.keplr.enable(chainId);
-        const offlineSigner = window.keplr.getOfflineSigner(chainId);
+      const chainInfo = await getChainInfo(currentNetworkName);
+      if (chainInfo) {
+        setChainInfo(chainInfo);
+        await window.keplr.enable(chainInfo.chainId);
+        const offlineSigner = window.keplr.getOfflineSigner(chainInfo.chainId);
         const accounts = await offlineSigner.getAccounts();
         if (accounts?.[0].address !== walletAddress) {
           saveAddress(accounts[0]);
         }
         try {
-          stargateClient.current =
-            await SigningStargateClient.connectWithSigner(rpc, offlineSigner, {
-              registry,
-              gasPrice: {
-                denom: feeCurrencies[0].coinMinimalDenom,
-                amount: Decimal.fromUserInput("500000", 0),
-              },
-            });
-        } catch (e) {
-          console.error("error stargateClient setup", e);
+          stargateClientRef.current = await SigningStargateClient.connectWithSigner(chainInfo.rpc, offlineSigner, {
+            registry,
+            gasPrice: {
+              denom: chainInfo.feeCurrencies[0].coinMinimalDenom,
+              amount: Decimal.fromUserInput("500000", 0),
+            },
+          });
+        } catch (error) {
+          console.error("Error setting up SigningStargateClient:", error);
           window.localStorage.removeItem("walletAddress");
         }
       }
     } catch (error) {
       console.error("Failed to suggest chain:", error);
       toast.error("Select network first.", {
-        position: 'top-right',
+        position: "top-right",
         autoClose: 30000,
       });
     } finally {
       setIsLoading(false);
     }
-  }, [chain, netName, walletAddress]);
+  }, [currentChainName, currentNetworkName, getChainInfo, walletAddress, saveAddress]);
+  useEffect(() => {
+    window.addEventListener("keplr_keystorechange", handleWalletChange);
+
+    return () => {
+      window.removeEventListener("keplr_keystorechange", handleWalletChange);
+    };
+  }, [handleWalletChange]);
 
   useEffect(() => {
-    if (netName && currNetName !== netName) {
-      if (walletAddress) connectWallet();
-      setCurrNetName(netName);
-    }
-  }, [netName, chain, currNetName, walletAddress, connectWallet]);
-
-  useEffect(() => {
-    if (!netName && stargateClient.current) {
-      stargateClient.current = undefined;
-      setWalletAddress(null);
-      return;
-    }
-    if (walletAddress && netName && !stargateClient.current) {
+    if (currentChainName && currentNetworkName && !walletAddress) {
       connectWallet();
     }
+  }, [currentChainName, currentNetworkName, walletAddress, connectWallet]);
 
-  }, [chain, walletAddress, netName, connectWallet, saveAddress, handleWalletChange]);
+  useEffect(() => {
+    if (currentChainName && currentNetworkName) {
+      setWalletAddress(null);
+      setChainInfo(null);
+      window.localStorage.removeItem("walletAddress");
+      stargateClientRef.current = undefined;
+    }
+  }, [currentChainName]);
 
-  return (
-    <WalletContext.Provider
-      value={{
-        walletAddress,
-        connectWallet,
-        stargateClient: stargateClient.current,
-        isLoading,
-        rpc,
-      }}
-    >
-      {children}
-    </WalletContext.Provider>
-  );
+  return (<WalletContext.Provider
+    value={{
+      walletAddress,
+      connectWallet,
+      stargateClient: stargateClientRef.current,
+      isLoading,
+      chainInfo,
+    }}
+  >
+    {children}
+  </WalletContext.Provider>
+);
 };
