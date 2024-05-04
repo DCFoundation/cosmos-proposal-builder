@@ -1,33 +1,33 @@
 {
   "$schema": "../chain.schema.json",
-  "chain_name": "cosmoshub",
-  "chain_id": "cosmoshub-4",
+  "chainName": "cosmoshub",
+  "chainId": "cosmoshub-4",
   "website": "https://cosmos.network/",
-  "pretty_name": "Cosmos Hub",
+  "prettyName": "Cosmos Hub",
   "status": "live",
-  "network_type": "mainnet",
-  "bech32_prefix": "cosmos",
+  "networkName": "mainnet",
+  "bech32Prefix": "cosmos",
   "genesis": {
-    "genesis_url": "https://github.com/cosmos/mainnet/raw/master/genesis/genesis.cosmoshub-4.json.gz"
+    "genesisUrl": "https://github.com/cosmos/mainnet/raw/master/genesis/genesis.cosmoshub-4.json.gz"
   },
-  "daemon_name": "gaiad",
-  "node_home": "$HOME/.gaia",
-  "key_algos": [
+  "daemonName": "gaiad",
+  "nodeHome": "$HOME/.gaia",
+  "keyAlgos": [
     "secp256k1"
   ],
   "slip44": 118,
   "fees": {
-    "fee_tokens": [
+    "feeTokens": [
       {
         "denom": "uatom",
-        "fixed_min_gas_price": 0
+        "fixedMinGasPrice": 0
       }
     ]
   },
   "codebase": {
-    "git_repo": "https://github.com/cosmos/gaia",
-    "recommended_version": "v7.0.3",
-    "compatible_versions": [
+    "gitRepo": "https://github.com/cosmos/gaia",
+    "recommendedVersion": "v7.0.3",
+    "compatibleVersions": [
       "v7.0.0",
       "v7.0.1",
       "v7.0.2",
@@ -79,7 +79,7 @@
         "provider": "PUPMØS"
       }
     ],
-    "persistent_peers": [
+    "persistentPeers": [
       {
         "id": "ee27245d88c632a556cf72cc7f3587380c09b469",
         "address": "45.79.249.253:26656"
@@ -283,25 +283,25 @@
     {
       "kind": "mintscan",
       "url": "https://www.mintscan.io/cosmos",
-      "tx_page": "https://www.mintscan.io/cosmos/txs/${txHash}"
+      "txPage": "https://www.mintscan.io/cosmos/txs/${txHash}"
     },
     {
       "kind": "ping-pub",
       "url": "https://ping.pub/cosmos",
-      "tx_page": "https://ping.pub/cosmos/tx/${txHash}"
+      "txPage": "https://ping.pub/cosmos/tx/${txHash}"
     },
     {
       "kind": "bigdipper",
       "url": "https://cosmos.bigdipper.live/",
-      "tx_page": "https://cosmos.bigdipper.live/transactions/${txHash}"
+      "txPage": "https://cosmos.bigdipper.live/transactions/${txHash}"
     },
     {
       "kind": "atomscan",
       "url": "https://atomscan.com",
-      "tx_page": "https://atomscan.com/transactions/${txHash}"
+      "txPage": "https://atomscan.com/transactions/${txHash}"
     }
   ],
-  "logo_URIs": [
+  "logoURIs": [
     "/public/logo/cosmoshub.svg",
     "/public/logo/cosmoshub.png"
   ]

@@ -29,9 +29,9 @@ export type GaspPriceStep = {
   average: number;
   high: number;
 }
-
+//TODO: make sure we get exponent since all chains do have this
 const makeCurrency = ({minimalDenom, exponent, gasPriceStep}: {minimalDenom: string, exponent: number | null, gasPriceStep: GaspPriceStep | null}): FeeCurrency => {
-    let feeCurrency: FeeCurrency = {
+    const feeCurrency: FeeCurrency = {
       coinDenom: minimalDenom,
       coinMinimalDenom: minimalDenom,
       coinDecimals: exponent || 6,
@@ -65,19 +65,21 @@ export const ChainContextProvider = ({ children }: { children: React.ReactNode }
   useEffect(() => {
     const fetchChainName = async () => {
       const chainName = await getChainNameFromLocation(location);
+      console.error('we compute chain name to be ', chainName);
       setCurrentChainName(chainName);
     };
-
     fetchChainName();
 
     if (currentChainName) {
       fetchNetworksForChain(currentChainName).then(setNetworksForCurrentChain);
     } else {
+      console.error('no network for current chain?  Bummer');
       setNetworksForCurrentChain([]);
     }
-  }, [location]);
+  }, [location, currentChainName]);
 
   //todo optimize this, take all and map to makeCurrency same for rpc and rest
+  //also move to suggestChain as before
   const getChainInfo = async (networkName: string): Promise<ChainInfo | null> => {
     if (!currentChainName) return null;
     console.error('current chain name', currentChainName);

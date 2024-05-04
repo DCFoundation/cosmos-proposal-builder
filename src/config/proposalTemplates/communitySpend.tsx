@@ -8,12 +8,12 @@ import { makeSignAndBroadcast } from "../../lib/signAndBroadcast.tsx";
 import { renderDenom } from "../../utils/coin.ts";
 
 const CommunitySpend = () => {
-  const { netName, networkConfig } = useNetwork();
-  const { walletAddress, stargateClient } = useWallet();
-  const denom = networkConfig?.denom;
+  const { currentNetworkName: netName, } = useNetwork();
+  const { walletAddress, stargateClient, chainInfo } = useWallet();
+  const denom = chainInfo?.feeCurrencies[0].coinDenom;
   const proposalFormRef = useRef<HTMLFormElement>(null);
   const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
+    () => makeSignAndBroadcast(stargateClient, walletAddress, netName!),
     [stargateClient, walletAddress, netName],
   );
 
@@ -35,7 +35,7 @@ const CommunitySpend = () => {
         proposer: walletAddress,
         recipient,
         amount,
-        denom: networkConfig?.denom || "uatom",
+        denom: denom!,
         title: vals.title,
         description: vals.description,
         deposit: vals.deposit,

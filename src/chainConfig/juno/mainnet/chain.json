@@ -1,48 +1,48 @@
 {
   "$schema": "../chain.schema.json",
-  "chain_name": "juno",
+  "chainName": "juno",
   "status": "live",
-  "network_type": "mainnet",
+  "networkName": "mainnet",
   "website": "https://junochain.com/",
-  "pretty_name": "Juno",
-  "chain_id": "juno-1",
-  "bech32_prefix": "juno",
-  "daemon_name": "junod",
-  "node_home": "$HOME/.juno",
+  "prettyName": "Juno",
+  "chainId": "juno-1",
+  "bech32Prefix": "juno",
+  "daemonName": "junod",
+  "nodeHome": "$HOME/.juno",
   "genesis": {
-    "genesis_url": "https://raw.githubusercontent.com/CosmosContracts/mainnet/main/juno-1/genesis.json"
+    "genesisUrl": "https://raw.githubusercontent.com/CosmosContracts/mainnet/main/juno-1/genesis.json"
   },
-  "key_algos": [
+  "keyAlgos": [
     "secp256k1"
   ],
   "slip44": 118,
   "fees": {
-    "fee_tokens": [
+    "feeTokens": [
       {
         "denom": "ujuno",
-        "low_gas_price": 0.03,
-        "average_gas_price": 0.04,
-        "high_gas_price": 0.05
+        "lowGasPrice": 0.03,
+        "averageGasPrice": 0.04,
+        "highGasPrice": 0.05
       }
     ]
   },
   "staking": {
-    "staking_tokens": [
+    "stakingTokens": [
       {
         "denom": "ujuno"
       }
     ]
   },
   "codebase": {
-    "git_repo": "https://github.com/CosmosContracts/juno",
-    "recommended_version": "v9.0.0",
-    "compatible_versions": [
+    "gitRepo": "https://github.com/CosmosContracts/juno",
+    "recommendedVersion": "v9.0.0",
+    "compatibleVersions": [
       "v9.0.0"
     ],
-    "cosmos_sdk_version": "0.45",
-    "tendermint_version": "0.34",
-    "cosmwasm_version": "0.27",
-    "cosmwasm_enabled": true
+    "cosmosSdkVersion": "0.45",
+    "tendermintVersion": "0.34",
+    "cosmwasmVersion": "0.27",
+    "cosmwasmEnabled": true
   },
   "peers": {
     "seeds": [
@@ -60,7 +60,7 @@
         "provider": "PUPMØS"
       }
     ],
-    "persistent_peers": [
+    "persistentPeers": [
       {
         "id": "b1f46f1a1955fc773d3b73180179b0e0a07adce1",
         "address": "162.55.244.250:39656"
@@ -195,25 +195,25 @@
     {
       "kind": "ping.pub",
       "url": "https://ping.pub/juno",
-      "tx_page": "https://ping.pub/juno/tx/${txHash}"
+      "txPage": "https://ping.pub/juno/tx/${txHash}"
     },
     {
       "kind": "explorers.guru",
       "url": "https://juno.explorers.guru",
-      "tx_page": "https://juno.explorers.guru/transaction/${txHash}"
+      "txPage": "https://juno.explorers.guru/transaction/${txHash}"
     },
     {
       "kind": "mintscan",
       "url": "https://www.mintscan.io/juno",
-      "tx_page": "https://www.mintscan.io/juno/txs/${txHash}"
+      "txPage": "https://www.mintscan.io/juno/txs/${txHash}"
     },
     {
       "kind": "atomscan",
       "url": "https://atomscan.com/juno",
-      "tx_page": "https://atomscan.com/juno/transactions/${txHash}"
+      "txPage": "https://atomscan.com/juno/transactions/${txHash}"
     }
   ],
-  "logo_URIs": [
+  "logoURIs": [
     "/public/logo/juno.svg",
     "/public/logo/juno.png"
   ]

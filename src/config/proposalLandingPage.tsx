@@ -1,8 +1,6 @@
 import { ReactNode, useMemo, useRef } from "react";
 import { toast } from "react-toastify";
-
 import { useQuery } from "@tanstack/react-query";
-// import { useChain } from "../hooks/useChain";
 import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
 import { useWatchBundle } from "../hooks/useWatchBundle";
@@ -19,9 +17,10 @@ import { Tabs } from "../components/Tabs";
 import { makeCoreEvalProposalMsg, makeInstallBundleMsg, makeParamChangeProposalMsg, makeTextProposalMsg } from "../lib/messageBuilder";
 import { isValidBundle } from "../utils/validate";
 import { compressBundle } from "../lib/compression";
+
 const ProposalsLandingPage = () => {
+    const { currentNetworkName } = useNetwork();
     const {walletAddress, chainInfo, stargateClient } = useWallet()
-  const { currentNetworkName } = useNetwork();
   const denom =  chainInfo?.feeCurrencies[0].coinDenom || 'ubld'; //Todo fix this maybe throw error
   const { api } = useNetwork();
   const proposalFormRef = useRef<HTMLFormElement>(null);
@@ -37,7 +36,7 @@ const ProposalsLandingPage = () => {
     [accountBalances],
   );
   const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, currentNetworkName),
+    () => makeSignAndBroadcast(stargateClient, walletAddress, currentNetworkName!),
     [stargateClient, walletAddress, currentNetworkName],
   );
 
