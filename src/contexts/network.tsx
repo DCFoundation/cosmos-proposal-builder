@@ -5,6 +5,7 @@ import { fetchChainConfig, NetworkConfig } from "../config/chainConfig";
 import { useChain } from "../hooks/useChain";
 
 export interface NetworkContextValue {
+  currentChainName: string | null;
   currentNetworkName: string | null;
   siblingNetworkNames: string[];
   networkConfig: NetworkConfig | null;
@@ -13,6 +14,7 @@ export interface NetworkContextValue {
 }
 
 export const NetworkContext = createContext<NetworkContextValue>({
+  currentChainName: null,
   currentNetworkName: null,
   siblingNetworkNames: [],
   networkConfig: null,
@@ -33,12 +35,13 @@ export const NetworkContextProvider = ({
     null,
   );
   const { currentChainName, networksForCurrentChain } = useChain();
+  console.error('current chain name is ', currentChainName);
   const search = useSearch();
   const selectedNetwork = useMemo(
     () => new URLSearchParams(search).get("network") ?? null,
     [search],
   );
-
+  console.error('networks for current chain are ', networksForCurrentChain);
   useEffect(() => {
     if (selectedNetwork && networksForCurrentChain.includes(selectedNetwork)) {
       setCurrentNetworkName(selectedNetwork);
@@ -68,6 +71,7 @@ export const NetworkContextProvider = ({
   return (
     <NetworkContext.Provider
       value={{
+        currentChainName,
         currentNetworkName,
         siblingNetworkNames: networksForCurrentChain,
         networkConfig,

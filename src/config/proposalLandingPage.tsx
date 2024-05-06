@@ -1,10 +1,10 @@
-import { ReactNode, useMemo, useRef } from "react";
+import { ReactNode, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
 import { useWatchBundle } from "../hooks/useWatchBundle";
-import { accountBalancesQuery } from "../lib/queries";
+import { accountBalancesQuery, depositParamsQuery, votingParamsQuery } from "../lib/queries";
 import { selectCoins } from "../lib/selectors";
 import { makeSignAndBroadcast } from "../lib/signAndBroadcast";
 import { ProposalArgs, ProposalForm } from "../components/ProposalForm";
@@ -16,12 +16,15 @@ import { AlertBox } from "../components/AlertBox";
 import { Tabs } from "../components/Tabs";
 import {
   makeCoreEvalProposalMsg,
+  makeFundCommunityPool,
   makeInstallBundleMsg,
   makeParamChangeProposalMsg,
   makeTextProposalMsg,
 } from "../lib/messageBuilder";
 import { isValidBundle } from "../utils/validate";
 import { compressBundle } from "../lib/compression";
+import { DepositParams, VotingParams } from "cosmjs-types/cosmos/gov/v1beta1/gov";
+import { coinsUnit, renderCoins } from "../utils/coin";
 
 const ProposalsLandingPage = () => {
   const { currentNetworkName } = useNetwork();
@@ -93,15 +96,15 @@ const ProposalsLandingPage = () => {
           denom,
         });
       }
-      // if (msgType === "fundCommunityPool") {
-      //   if (!("fundAmount" in vals)) throw new Error("Missing fundAmount");
-      //   proposalMsg = makeFundCommunityPool({
-      //     ...vals,
-      //     amount: vals.fundAmount[0].amount,
-      //     depositor: walletAddress,
-      //     denom,
-      //   });
-      // }
+      if (msgType === "fundCommunityPool") {
+        if (!("fundAmount" in vals)) throw new Error("Missing fundAmount");
+        proposalMsg = makeFundCommunityPool({
+          ...vals,
+          amount: vals.fundAmount[0].amount,
+          depositor: walletAddress,
+          denom,
+        });
+      }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
       try {
@@ -262,10 +265,72 @@ const ProposalsLandingPage = () => {
       enabledProposals.includes(tab.msgType as QueryParams["msgType"]),
     );
   }, [enabledProposals, handleProposal, handleBundle]);
+  const [alertBox, setAlertBox] = useState(true);
+
+  const { minDeposit } = useQueries({
+    queries: [depositParamsQuery(api), votingParamsQuery(api)],
+    combine: (
+      results: [
+        UseQueryResult<DepositParams, unknown>,
+        UseQueryResult<VotingParams, unknown>,
+      ],
+    ) => {
+      const [deposit, voting] = results;
+      return {
+        minDeposit: deposit.data?.minDeposit,
+        votingPeriod: voting.data?.votingPeriod,
+      };
+    },
+  });
 
   return (
     <>
-      <AlertBox coins={coinwealth} />
+    {minDeposit &&
+        (!coinwealth || coinsUnit(coinwealth) < coinsUnit(minDeposit)) &&
+        alertBox && (
+            <div
+              className={
+                "flex justify-center w-full max-w-7xl px-2 py-2 m-auto bg-white rounded-lg -mb-5"
+              }
+            >
+              <div className={"basis-full"}>
+                <div
+                  className={
+                    "toast text-center bg-lightblue2 p-4 text-blue font-light rounded-lg flex justify-between items-center"
+                  }
+                >
+                  <div className={"basis-auto grow pr-4"}>
+                    You need to have{" "}
+                    <span className={"text-red font-black"}>
+                      {renderCoins(minDeposit)}
+                    </span>{" "}
+                    in your wallet to submit this action
+                  </div>
+                  <div className={"basis-auto"}>
+                    <svg
+                      width="32"
+                      height="32"
+                      viewBox="0 0 32 32"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={"cursor-pointer"}
+                      onClick={() => setAlertBox(false)}
+                    >
+                      <rect width="32" height="32" rx="6" fill="white" />
+                      <path
+                        d="M20.5 11.5L11.5 20.5M11.5 11.5L20.5 20.5"
+                        stroke="#0F3941"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+   {/* <AlertBox coins={coinwealth} /> */}
       <Tabs tabs={proposalTabs} />
     </>
   );

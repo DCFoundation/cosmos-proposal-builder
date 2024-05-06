@@ -10,6 +10,8 @@ import { makeFundCommunityPool } from "../../lib/messageBuilder";
 const FundCommunityPool = () => {
   const { currentNetworkName: netName } = useNetwork();
   const { walletAddress, stargateClient, chainInfo } = useWallet();
+  console.error('chain info frome template is ', chainInfo);
+  console.error('stargate client from template is ', stargateClient);
   const denom = chainInfo?.feeCurrencies[0].coinDenom;
   const proposalFormRef = useRef<HTMLFormElement>(null);
   const signAndBroadcast = useMemo(

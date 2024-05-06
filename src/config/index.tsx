@@ -5,11 +5,14 @@ import { useChain } from "../hooks/useChain";
 
 export type ChainName = string;
 
-const chainConfigMap = (): Record<
+const ChainConfigMap = (): Record<
   ChainName,
-  LazyExoticComponent<React.FC<{}>>
+  LazyExoticComponent<React.FC<unknown>>
 > => {
-  const chainMap: Record<ChainName, LazyExoticComponent<React.FC<any>>> = {};
+  const chainMap: Record<
+    ChainName,
+    LazyExoticComponent<React.FC<unknown>>
+  > = {};
   const { availableChains } = useChain();
   // Dynamically import chain components based on the available chains
   availableChains.forEach((chain: ChainListItem) => {
@@ -22,4 +25,4 @@ const chainConfigMap = (): Record<
   return chainMap;
 };
 
-export { chainConfigMap };
+export { ChainConfigMap };

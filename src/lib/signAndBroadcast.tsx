@@ -28,8 +28,6 @@ export const makeSignAndBroadcast =
     });
     let txResult: DeliverTxResponse | undefined;
     try {
-      console.error("proposalMsg", proposalMsg);
-      console.error("type", type);
       const estimate = await stargateClient.simulate(
         walletAddress,
         [proposalMsg],
