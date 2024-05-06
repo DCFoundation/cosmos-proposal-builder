@@ -1,3 +1,4 @@
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import fs from "fs";
 import path from "path";
@@ -30,13 +31,14 @@ interface ChainConfig {
   logoURIs?: string[];
   //TODO: Add other properties as needed
 }
-const cleanupObject = (obj: unknown): ChainConfig => {
+const cleanupObject = (obj: { [key: string]: any }): ChainConfig => {
   // If it's of the config type, do nothing
   if (isChainConfig(obj)) {
     return obj;
   }
 
-  const cleanedObj: any = {};
+  const cleanedObj: { [key: string]: any } = {};
+
   const keys = Object.keys(obj);
 
   // Clean up and convert properties from downloaded JSON object
@@ -68,7 +70,7 @@ const cleanupObject = (obj: unknown): ChainConfig => {
     }
   }
 
-  return cleanedObj as ChainConfig;
+  return cleanedObj as unknown as ChainConfig;
 };
 const toCamelCase = (str: string): string => {
   return str.replace(/([-_][a-z])/gi, ($1) => {
