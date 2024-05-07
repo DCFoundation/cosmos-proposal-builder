@@ -1,4 +1,6 @@
 import React, { Suspense } from "react";
+import { ToastContainer } from "react-toastify";
+
 import { Switch, Route } from "wouter";
 import { ChainTiles } from "./components/ChainTiles";
 import { NetworkDropdown } from "./components/NetworkDropdown";
@@ -6,7 +8,7 @@ import { Nav } from "./components/Nav";
 import { WalletConnectButton } from "./components/WalletConnectButton";
 import { ChainMenu } from "./components/ChainMenu";
 import { LayoutFooter } from "./components/LayoutFooter";
-import { ProposalsLandingPage } from "./config/proposalLandingPage";
+import { ProposalsLandingPage } from "./config";
 
 const App: React.FC = () => {
   return (
@@ -39,6 +41,13 @@ const App: React.FC = () => {
         </Suspense>
         <LayoutFooter />
       </main>
+      <ToastContainer
+        autoClose={false}
+        position="bottom-right"
+        closeOnClick={false}
+        closeButton={true}
+        bodyClassName="text-sm font-medium text-gray-900"
+      />
     </div>
   );
 };

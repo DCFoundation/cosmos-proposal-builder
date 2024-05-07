@@ -8,11 +8,11 @@ import { renderDenom } from "../../utils/coin";
 import { makeFundCommunityPool } from "../../lib/messageBuilder";
 
 const FundCommunityPool = () => {
-  const { currentNetworkName: netName } = useNetwork();
-  const { walletAddress, stargateClient, chainInfo } = useWallet();
-  console.error('chain info frome template is ', chainInfo);
-  console.error('stargate client from template is ', stargateClient);
-  const denom = chainInfo?.feeCurrencies[0].coinDenom;
+  const { currentNetworkName: netName, networkConfig } = useNetwork();
+  const { walletAddress, stargateClient } = useWallet();
+  // console.error('chain info frome template is ', chainInfo);
+  console.error("stargate client from template is ", stargateClient);
+  const denom = networkConfig?.fees.feeTokens[0].denom;
   const proposalFormRef = useRef<HTMLFormElement>(null);
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName!),

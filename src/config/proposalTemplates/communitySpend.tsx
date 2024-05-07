@@ -1,74 +1,80 @@
-import { useMemo, useRef } from "react";
 import { toast } from "react-toastify";
-import { ProposalForm, ProposalArgs } from "../../components/ProposalForm.tsx";
-import { useNetwork } from "../../hooks/useNetwork.ts";
-import { useWallet } from "../../hooks/useWallet.ts";
-import { makeCommunityPoolSpendProposalMsg } from "../../lib/messageBuilder.ts";
-import { makeSignAndBroadcast } from "../../lib/signAndBroadcast.tsx";
-import { renderDenom } from "../../utils/coin.ts";
+import { ProposalForm, ProposalArgs } from "../../components/ProposalForm";
+import { useNetwork } from "../../hooks/useNetwork";
+import { useWallet } from "../../hooks/useWallet";
+import { makeCommunityPoolSpendProposalMsg } from "../../lib/messageBuilder";
+import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
+import { renderDenom } from "../../utils/coin";
 
-const CommunitySpend = () => {
-  const { currentNetworkName: netName } = useNetwork();
-  const { walletAddress, stargateClient, chainInfo } = useWallet();
-  const denom = chainInfo?.feeCurrencies[0].coinDenom;
-  const proposalFormRef = useRef<HTMLFormElement>(null);
-  const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, netName!),
-    [stargateClient, walletAddress, netName],
+interface CommunitySpendProps {
+  onSubmit: (proposalData: ProposalArgs) => Promise<void>;
+}
+
+const CommunitySpend = ({ onSubmit }: CommunitySpendProps) => {
+  const { currentNetworkName: networkName, networkConfig } = useNetwork();
+  const { walletAddress, stargateClient } = useWallet();
+  const denom = networkConfig?.fees.feeTokens[0].denom;
+
+  const signAndBroadcast = makeSignAndBroadcast(
+    stargateClient,
+    walletAddress,
+    networkName!,
   );
 
-  const handleProposal = async (vals: ProposalArgs) => {
+  const handleProposal = async (proposalData: ProposalArgs) => {
     if (!walletAddress) {
-      toast.error("Wallet not connected.", { autoClose: 3000 });
-      throw new Error("wallet not connected");
+      throw new Error("Wallet not connected");
     }
 
-    if (vals.msgType === "communityPoolSpendProposal") {
-      const { spend } = vals;
-      if (!spend || spend.length === 0) {
-        throw new Error("No community pool spend data provided");
-      }
+    if (proposalData.msgType !== "communityPoolSpendProposal") {
+      throw new Error("Invalid proposal type");
+    }
 
-      //TODO: denom is possibly undefined. This should be handled
-      const { recipient, amount } = spend[0];
-      const proposalMsg = makeCommunityPoolSpendProposalMsg({
-        proposer: walletAddress,
-        recipient,
-        amount,
-        denom: denom!,
-        title: vals.title,
-        description: vals.description,
-        deposit: vals.deposit,
-      });
-      try {
-        await signAndBroadcast(proposalMsg, "proposal");
-        proposalFormRef.current?.reset();
-      } catch (e) {
-        console.error(e);
-        toast.error("Error submitting proposal", { autoClose: 3000 });
-      }
+    const { spend } = proposalData;
+    if (!spend || spend.length === 0) {
+      toast.error("No community pool spend data provided", { autoClose: 3000 });
+      throw new Error("No community pool spend data provided");
+    }
+    if (!denom) {
+      toast.error("No denom provided", { autoClose: 3000 });
+      throw new Error("No denom provided");
+    }
+
+    const { recipient, amount } = spend[0];
+    const proposalMsg = makeCommunityPoolSpendProposalMsg({
+      proposer: walletAddress,
+      recipient,
+      amount,
+      denom: denom,
+      title: proposalData.title,
+      description: proposalData.description,
+      deposit: proposalData.deposit,
+    });
+
+    try {
+      await signAndBroadcast(proposalMsg, "proposal");
+      onSubmit(proposalData);
+    } catch (e) {
+      console.error(e);
+      toast.error("Error submitting proposal", { autoClose: 3000 });
     }
   };
 
-  //TODO - Query for the minimum amount required to submit a proposal
   return (
-    <>
-      <ProposalForm
-        ref={proposalFormRef}
-        handleSubmit={handleProposal}
-        titleDescOnly={true}
-        title="Community Spend Proposal"
-        msgType="communityPoolSpendProposal"
-        governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
-        description={
-          <>
-            This governance proposal to spend funds from the community pool. The
-            proposal specifies the recipient address and the amount to be spent.
-          </>
-        }
-        denom={denom ? renderDenom(denom) : "...loading"}
-      />
-    </>
+    <ProposalForm
+      title="Community Spend Proposal"
+      description={
+        <>
+          This governance proposal to spend funds from the community pool. The
+          proposal specifies the recipient address and the amount to be spent.
+        </>
+      }
+      handleSubmit={handleProposal}
+      titleDescOnly={true}
+      msgType="communityPoolSpendProposal"
+      governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
+      denom={denom ? renderDenom(denom) : "...loading"}
+    />
   );
 };
 

@@ -1,6 +1,12 @@
-import { Bech32Config, ChainInfo, FeeCurrency } from "@keplr-wallet/types";
-import { ChainListItem, GaspPriceStep } from "../contexts/chain";
+import {
+  AppCurrency,
+  Bech32Config,
+  ChainInfo,
+  FeeCurrency,
+} from "@keplr-wallet/types";
+import { ChainListItem } from "../contexts/chain";
 import { capitalize } from "../utils/capitalize";
+import { renderDenom } from "../utils/coin";
 
 export interface ApiEntry {
   address: string;
@@ -13,14 +19,15 @@ export interface Apis {
   grpc?: ApiEntry[];
 }
 
+export type GaspPriceStep = {
+  fixed: number;
+  low: number;
+  average: number;
+  high: number;
+};
+
 export interface StakeEntry {
   stakingTokens: FeeToken[];
-  // stakingTokens: string;
-  // stakingDenom: string;
-  // stakingFraction: number;
-  // unbondingPeriod: number;
-  // maxValidators: number;
-  // rewardDenom: string;
 }
 export interface FeeToken {
   denom: string;
@@ -46,11 +53,6 @@ export interface NetworkConfig {
   staking?: StakeEntry;
 }
 
-// export interface ChainConfig {
-//   chain_name: string;
-//   networks: NetworkConfig[];
-// }
-
 export const fetchApprovedChains = async (): Promise<string[]> => {
   return ["agoric", "cosmoshub", "juno", "osmosis"];
 };
@@ -67,6 +69,7 @@ export const getChainNameFromLocation = async (
 export const fetchNetworksForChain = async (
   chainName: string,
 ): Promise<string[]> => {
+  console.error("fetching networks for chain", chainName);
   try {
     const { default: networks } = await import(
       `../chainConfig/${chainName}/index.json`
@@ -97,20 +100,15 @@ export const fetchChainConfig = async (
   return fetchedConfig;
 };
 export const fetchAvailableChains = async (): Promise<ChainListItem[]> => {
-    const chainNames = await fetchApprovedChains();
-    return chainNames.map((chainName) => ({
-      label: capitalize(chainName),
-      value: chainName,
-      href: `/${chainName}`,
-      image: `/logo/${chainName}.svg`,
-    }));
-  };
-  
-//   export const fetchNetworksForChain = async (
-//     chainName: string,
-//   ): Promise<string[]> => {
-//     return await fetchNetworksForChain(chainName);
-//   };
+  const chainNames = await fetchApprovedChains();
+  return chainNames.map((chainName) => ({
+    label: capitalize(chainName),
+    value: chainName,
+    href: `/${chainName}`,
+    image: `/logo/${chainName}.svg`,
+  }));
+};
+
 export const makeCurrency = ({
   minimalDenom,
   exponent,
@@ -121,27 +119,16 @@ export const makeCurrency = ({
   gasPriceStep?: GaspPriceStep;
 }): FeeCurrency => {
   const feeCurrency: FeeCurrency = {
-    coinDenom: minimalDenom,
+    coinDenom: renderDenom(minimalDenom),
     coinMinimalDenom: minimalDenom,
     coinDecimals: exponent || 6,
     gasPriceStep: gasPriceStep || { low: 0, average: 0, high: 0 },
   };
-  console.error('making currency for ', minimalDenom, feeCurrency );
+  console.error("making currency for ", minimalDenom, feeCurrency);
   return feeCurrency;
 };
 
-interface ValidConfig {
-    feeCurrencies: {
-      feeTokens: {
-        denom: string,
-        fixedMinGasPrice?: number,
-        lowGasPrice?: number
-        averageGasPrice?: number, // is 0.025 a number in js?
-        highGasPrice?: number,
-      }
-    }
-}
-
+/* eslint-disable  @typescript-eslint/no-explicit-any */
 const memoize = <T extends (...args: any[]) => any>(fn: T) => {
   const cache = new Map<string, ReturnType<T>>();
 
@@ -156,15 +143,14 @@ const memoize = <T extends (...args: any[]) => any>(fn: T) => {
   };
 };
 //Thinking chain should be sanitized at this stage so we assume chainName is a valid name
-// we do not expect 
-export const getChainInfo = async(chainName: string) =>{
-    const networkfForthisChain =  await fetchNetworksForChain(chainName);
-    //TODO: check networks must be > 0
-    if (networkfForthisChain.length === 0) {
-      throw new Error(`No networks found for chain ${chainName}`);
-    }
-  const chainConfig =  async (networkName: string) => {
-
+// we do not expect
+export const getChainInfo = async (chainName: string) => {
+  const networkfForthisChain = await fetchNetworksForChain(chainName);
+  //TODO: check networks must be > 0
+  if (networkfForthisChain.length === 0) {
+    throw new Error(`No networks found for chain ${chainName}`);
+  }
+  const chainConfig = async (networkName: string) => {
     console.error("current chain name", chainName);
     try {
       const fetchedConfig = await import(
@@ -173,15 +159,16 @@ export const getChainInfo = async(chainName: string) =>{
       console.error(" fetchedConfig is ", fetchedConfig.bech32Prefix);
 
       const bech32Config: Bech32Config = generateBech32Config(
-        fetchedConfig.bech32Prefix
+        fetchedConfig.bech32Prefix,
       );
       const stakeCurrency = makeCurrency(
         fetchedConfig.staking?.stakingTokens?.[0]?.denom || "",
       );
       const feeCurrencies = makeCurrency(
-        fetchedConfig.fees?.feeTokens?.[0]?.denom || "",);
+        fetchedConfig.fees?.feeTokens?.[0]?.denom || "",
+      );
       const currencies = [feeCurrencies, stakeCurrency];
-      console.error('currencies are ', currencies);
+      console.error("currencies are ", currencies);
       const chainInfo: ChainInfo = {
         rpc: fetchedConfig.apis.rpc[0].address,
         rest: fetchedConfig.apis.rest[0].address,
@@ -195,31 +182,38 @@ export const getChainInfo = async(chainName: string) =>{
         },
         currencies: currencies,
       };
-      console.error('chain info is ', chainInfo);
+      console.error("chain info is ", chainInfo);
       return chainInfo;
     } catch (error) {
       console.error(
         `Failed to fetch chain info for ${chainName}/${networkName}:`,
-        error
+        error,
       );
       return null;
     }
-  }
+  };
   return memoize(chainConfig);
   // const chainInfos = networkfForthisChain.map(chainConfig);
 };
 
 export const makeChainInfo = async (networkConfig: NetworkConfig) => {
+  let stakeCurrency: FeeCurrency | undefined = undefined;
   const bech32Config: Bech32Config = generateBech32Config(
-    networkConfig.bech32Prefix
+    networkConfig.bech32Prefix,
   );
-  const stakeCurrency = makeCurrency(
-    {minimalDenom: networkConfig.staking?.stakingTokens.at(0)?.denom || "ubld"},
-  );
-  const feeCurrencies = makeCurrency(
-    {minimalDenom: networkConfig.fees.feeTokens[0].denom});
+  if (!networkConfig.fees) {
+    throw new Error("No fees found in network config");
+  }
+  if (networkConfig.staking?.stakingTokens) {
+    stakeCurrency = makeCurrency({
+      minimalDenom: networkConfig.staking.stakingTokens[0].denom,
+    });
+  }
+
+  const feeCurrencies = makeCurrency({
+    minimalDenom: networkConfig.fees.feeTokens[0].denom,
+  });
   const currencies = [feeCurrencies, stakeCurrency];
-  console.error('currencies are ', currencies);
   const chainInfo: ChainInfo = {
     rpc: networkConfig.apis.rpc[0].address,
     rest: networkConfig.apis.rest[0].address,
@@ -231,8 +225,17 @@ export const makeChainInfo = async (networkConfig: NetworkConfig) => {
     bip44: {
       coinType: networkConfig.slip44,
     },
-    currencies: currencies,
+    currencies: currencies.filter(
+      (
+        currency,
+      ): currency is AppCurrency & {
+        gasPriceStep?: {
+          low: number;
+          average: number;
+          high: number;
+        };
+      } => currency !== undefined,
+    ),
   };
-  console.error('chain info is ', chainInfo);
   return chainInfo;
-}
+};

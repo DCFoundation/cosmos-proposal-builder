@@ -2,28 +2,46 @@ import { useWallet } from "../hooks/useWallet";
 import { Button, ButtonProps } from "../components/Button";
 import { trimAddress } from "../utils/trimAddress";
 import { useMemo } from "react";
-// import { useChain } from "../hooks/useChain";
+import { toast } from "react-toastify";
 
 const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
-  const { connectWallet, walletAddress } = useWallet();
-  // const { currentChainName: chain } = useChain();
-  const connectHandler = () => {
-    connectWallet()
-      .then(console.log)
-      .catch(console.error)
-      .finally(() => console.log("connect wallet finished"));
-  };
+  const { connectWallet, walletAddress, stargateClient } = useWallet();
+
+  // const connectHandler = useMemo(() => {
+  //   connectWallet()
+  //     .then(console.log)
+  //     .catch(console.error)
+  //     .finally(() => console.log("connect wallet finished"));
+  // }, [connectWallet]);
+
+  const connectHandler = useMemo(
+    () => () => {
+      connectWallet()
+        .then(console.log)
+        .catch(console.error)
+        .finally(() => console.log("connect wallet finished"));
+    },
+    [connectWallet],
+  );
 
   const buttonText = useMemo(() => {
-    if (!walletAddress) return "Connect Wallet";
+    console.error("Wallet Connect wallet address is ", walletAddress);
+    console.error("Wallet Connectstargate client is ", stargateClient);
+    if (!walletAddress || !stargateClient) return "Connect Wallet";
     try {
       return trimAddress(walletAddress);
     } catch (error) {
       console.error("Invalid wallet address:", error);
+      toast.error("Invalid wallet address", { autoClose: 3000 });
       return "Invalid Address";
     }
-  }, [walletAddress, connectHandler]);
+  }, [walletAddress, connectHandler, stargateClient]);
 
-  return <Button onClick={connectHandler} text={buttonText} theme={theme} />;
+  const handleClick = () => {
+    connectHandler();
+  };
+
+  return <Button onClick={handleClick} text={buttonText} theme={theme} />;
 };
+
 export { WalletConnectButton };

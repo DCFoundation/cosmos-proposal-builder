@@ -25,7 +25,6 @@ type BaseProposalArgs = {
 };
 
 export type ProposalArgs = BaseProposalArgs & ProposalDetail;
-
 export type QueryType = ReturnType<(typeof paramOptions)[number]["query"]>;
 export type SelectorReturnType = ReturnType<
   (typeof paramOptions)[number]["selector"]
