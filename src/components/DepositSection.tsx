@@ -15,10 +15,10 @@ import { NetworkDropdown } from "./NetworkDropdown.tsx";
 import { selectCoins } from "../lib/selectors.ts";
 
 export const DepositSection: React.FC<unknown> = () => {
-  const { api } = useNetwork();
-  const { walletAddress, chainInfo } = useWallet();
+  const { api, networkConfig } = useNetwork();
+  const { walletAddress } = useWallet();
   const depositRef = useRef<HTMLInputElement>(null);
-  const denom = chainInfo?.feeCurrencies[0].coinDenom || 'ubld'; //TODO: again fix this
+  const denom = networkConfig?.fees.feeTokens[0].denom || "ubld";
   const { minDeposit, votingPeriod } = useQueries({
     queries: [depositParamsQuery(api), votingParamsQuery(api)],
     combine: (

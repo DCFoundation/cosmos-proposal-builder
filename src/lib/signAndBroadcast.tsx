@@ -3,6 +3,7 @@ import type { SigningStargateClient } from "@cosmjs/stargate";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast } from "react-toastify";
+// import type { NetName } from "../hooks/useNetwork";
 import { makeFeeObject } from "./messageBuilder";
 import { parseError } from "../utils/transactionParser";
 import { TxToastMessage } from "../components/TxToastMessage";
@@ -28,8 +29,6 @@ export const makeSignAndBroadcast =
     });
     let txResult: DeliverTxResponse | undefined;
     try {
-      console.error("proposalMsg", proposalMsg);
-      console.error("type", type);
       const estimate = await stargateClient.simulate(
         walletAddress,
         [proposalMsg],

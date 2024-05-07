@@ -13,7 +13,7 @@ const ChainTiles = () => {
       <div className="flex flex-col min-w-full rounded-xl bg-white p-3">
         <div className="py-2 px-2">
           <div>
-          <h2 className="text-[28px] font-semibold text-blue">
+            <h2 className="text-[28px] font-semibold text-blue">
               {selectChainTitle}
             </h2>
             <p className="mt-4 text-sm text-grey">{selectChainDescription}</p>
@@ -28,10 +28,7 @@ const ChainTiles = () => {
                   key={value}
                   className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-gray-50 text-center shadow-md hover:bg-gray-100"
                 >
-                  <Link
-                    href={`/${value}`}
-                    className="flex flex-1 flex-col p-8"
-                  >
+                  <Link href={`/${value}`} className="flex flex-1 flex-col p-8">
                     <img
                       className="mx-auto h-28 w-28 flex-shrink-0"
                       src={image}

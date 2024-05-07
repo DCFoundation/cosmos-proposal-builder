@@ -156,7 +156,7 @@ const Inter = () => {
         oracleBrand: issuerName,
         proposedName: issuerName,
         oracleAddresses:
-          netName === "main"
+          netName === "mainnet"
             ? MAINNET_ORACLE_OPERATORS
             : EMERYNET_ORACLE_OPERATORS,
       };
