@@ -1,32 +1,23 @@
 import { createContext } from "react";
 import { useLocation } from "wouter";
 import { fetchAvailableChains } from "../config/chainConfig";
+import { useQuery, UseQueryResult, QueryKey } from "@tanstack/react-query";
 
-// const resolvechainName = (location: string) => {
-//   const pathname = location.slice(1);
-//   const available = fetchAvailableChains().then(
-//     (chains) => chains.filter((chain) => chain.value === pathname)[0]?.value
-//   );
-//   return available;
-// };
-//TODO useInfiniteQuery for this
-//https://tanstack.com/query/v4/docs/framework/react/reference/useInfiniteQuery
 export type ChainListItem = {
   label: string;
   value: string;
   href: string;
   image: string;
 };
+
 export interface ChainContextValue {
   currentChainName: string | null;
   availableChains: ChainListItem[];
 }
-const chainList: ChainListItem[] =
-  (await fetchAvailableChains()) as ChainContextValue["availableChains"];
 
 export const ChainContext = createContext<ChainContextValue>({
   currentChainName: null,
-  availableChains: chainList,
+  availableChains: [],
 });
 
 export const ChainContextProvider = ({
@@ -35,14 +26,35 @@ export const ChainContextProvider = ({
   children: React.ReactNode;
 }) => {
   const [location] = useLocation();
-
   const chainName = location.split("/")[1];
+
+  const {
+    data: chainList = [],
+    isLoading,
+    error,
+  }: UseQueryResult<ChainListItem[], Error> = useQuery<ChainListItem[], Error>({
+    queryKey: ["availableChains"] as QueryKey,
+    queryFn: () => fetchAvailableChains(),
+  });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const availableChains = chainList.map((chain) => ({
+    ...chain,
+    href: `/${chain.value}`,
+  }));
 
   return (
     <ChainContext.Provider
       value={{
         currentChainName: chainName,
-        availableChains: chainList,
+        availableChains,
       }}
     >
       {children}
