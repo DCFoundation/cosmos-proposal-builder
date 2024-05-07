@@ -114,6 +114,7 @@ const ProposalsLandingPage = () => {
       }
     } catch (e) {
       console.error(e);
+      toast.error("Error submitting proposal", { autoClose: 3000 });
     }
   };
 

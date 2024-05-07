@@ -7,6 +7,7 @@ import {
 import { ChainListItem } from "../contexts/chain";
 import { capitalize } from "../utils/capitalize";
 import { renderDenom } from "../utils/coin";
+import { toast } from "react-toastify";
 
 export interface ApiEntry {
   address: string;
@@ -69,7 +70,6 @@ export const getChainNameFromLocation = async (
 export const fetchNetworksForChain = async (
   chainName: string,
 ): Promise<string[]> => {
-  console.error("fetching networks for chain", chainName);
   try {
     const { default: networks } = await import(
       `../chainConfig/${chainName}/index.json`
@@ -77,6 +77,7 @@ export const fetchNetworksForChain = async (
     return networks;
   } catch (error) {
     console.error(`Failed to fetch networks for chain ${chainName}:`, error);
+    toast.error(`Failed to fetch networks for chain ${chainName}`);
     return [];
   }
 };
@@ -124,7 +125,6 @@ export const makeCurrency = ({
     coinDecimals: exponent || 6,
     gasPriceStep: gasPriceStep || { low: 0, average: 0, high: 0 },
   };
-  console.error("making currency for ", minimalDenom, feeCurrency);
   return feeCurrency;
 };
 

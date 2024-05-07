@@ -43,14 +43,6 @@ export const NetworkContextProvider = ({
   const { currentChainName } = useChain();
   const [chainName, setChainName] =
     useState<NetworkContextValue["currentChainName"]>(currentChainName);
-
-  // if (!currentChainName) {
-  //   toast.error("Chain not selected", {
-  //     position: "bottom-center",
-  //     autoClose: 3000,
-  //   });
-  //   console.error("Chain not selected ", currentChainName);
-  // }
   const search = useSearch();
   const selectedNetwork = useMemo(
     () => new URLSearchParams(search).get("network") ?? null,

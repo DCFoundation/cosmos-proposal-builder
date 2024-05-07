@@ -124,7 +124,6 @@ export const WalletContextProvider = ({
       }
       if (chainId) {
         // setChainInfo(chainInfo);
-        console.error("chainId is from wallet ", chainId);
         await keplr.enable(chainId);
         const offlineSigner = keplr.getOfflineSigner(chainId);
         const accounts = await offlineSigner.getAccounts();
@@ -141,6 +140,10 @@ export const WalletContextProvider = ({
               },
             });
         } catch (error) {
+          toast.error("Error setting up SigningStargateClient: " + error, {
+            position: "top-right",
+            autoClose: 30000,
+          });
           console.error("Error setting up SigningStargateClient:", error);
           window.localStorage.removeItem("walletAddress");
         }
