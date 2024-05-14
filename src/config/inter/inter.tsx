@@ -31,12 +31,12 @@ import { selectBldCoins } from "../../lib/selectors.ts";
 
 //TODO define enabled proposals for inter as a workaround
 const Inter = () => {
-  const { currentNetworkName: netName } = useNetwork();
-  const { walletAddress, stargateClient, api } = useWallet();
+  const { currentNetworkName: netName , api} = useNetwork();
+  const { walletAddress, stargateClient, } = useWallet();
   const psmFormRef = useRef<HTMLFormElement>(null);
   const vaultFormRef = useRef<HTMLFormElement>(null);
 
-  const accountBalances = useQuery(accountBalancesQuery(api!, walletAddress));
+  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const bldCoins = useMemo(
     () => selectBldCoins(accountBalances),
     [accountBalances],

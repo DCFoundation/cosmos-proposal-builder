@@ -12,8 +12,8 @@ import { WalletConnectButton } from "../../components/WalletConnectButton";
 import { selectCoins } from "../../lib/selectors";
 
 const FundCommunityPool = () => {
-  const { currentNetworkName: netName, networkConfig } = useNetwork();
-  const { walletAddress, stargateClient, api } = useWallet();
+  const { currentNetworkName: netName, networkConfig, api } = useNetwork();
+  const { walletAddress, stargateClient } = useWallet();
   const denom = networkConfig?.fees.feeTokens[0].denom;
   const [fundAmount, setFundAmount] = useState(0);
   const accountBalances = useQuery(accountBalancesQuery(api!, walletAddress));
