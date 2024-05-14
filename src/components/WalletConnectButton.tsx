@@ -16,8 +16,6 @@ const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
       .finally(() => console.log("Connect wallet finished"));
   };
 
-  // console.error('walletAddress', walletAddress);
-  console.error("walletAddress", walletAddress);
   const buttonText = useMemo(() => {
     if (isLoading) return "Loading...";
     if (!walletAddress || !stargateClient) return "Connect Wallet";
@@ -27,7 +25,6 @@ const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
       return trimAddress(walletAddress);
     } catch (error) {
       console.error("Invalid wallet address:", error);
-      // toast.error("Invalid wallet address", { autoClose: 3000 });
       return "Loading...";
     }
   }, [walletAddress, bech32Prefix, isLoading, stargateClient]);

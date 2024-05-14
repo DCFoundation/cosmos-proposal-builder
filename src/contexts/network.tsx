@@ -29,7 +29,7 @@ export const NetworkContextProvider = ({
   children: ReactNode;
 }) => {
   const { currentChain } = useChain();
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
 
   const search = useSearch();
   const selectedNetwork = useMemo(
@@ -37,7 +37,6 @@ export const NetworkContextProvider = ({
     [search],
   );
 
-  console.error("location", location, selectedNetwork);
   const {
     data: networksList = [],
     isLoading: isLoadingNetworks,

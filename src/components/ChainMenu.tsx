@@ -11,8 +11,6 @@ const ChainMenu = () => {
   const { isLoading: isLoadingWallet, walletAddress } = useWallet();
 
   const title = currentChain ? capitalize(currentChain.label) : placeholderText;
-  console.error("title", title);
-  console.error("currentChain from chain menu", currentChain);
   const labelImage = useMemo(
     () => (currentChain ? currentChain.image : undefined),
     [currentChain],
@@ -32,7 +30,6 @@ const ChainMenu = () => {
     return [{ label: "Loading...", value: "" }];
   }, [availableChains, setCurrentChain]);
 
-  console.error("items", items);
   const status = useMemo(() => {
     if (isLoadingWallet) return "loading";
     if (walletAddress && currentChain) return "active";
