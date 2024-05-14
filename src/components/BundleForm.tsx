@@ -16,6 +16,7 @@ import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
 
 import { selectStorageCost, selectIstBalance } from "../lib/selectors";
 import { useWallet } from "../hooks/useWallet";
+import { useNetwork } from "../hooks/useNetwork";
 
 export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
 
@@ -34,7 +35,8 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
     const [bundle, setBundle] = useState<BundleFormArgs["bundle"] | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
     const codeInputRef = useRef<CodeInputMethods | null>(null);
-    const { walletAddress, api } = useWallet();
+    const { api } = useNetwork();
+    const { walletAddress } = useWallet();
     const swingsetParams = useQuery(swingSetParamsQuery(api!));
     const costPerByte = useMemo(
       () => selectStorageCost(swingsetParams),

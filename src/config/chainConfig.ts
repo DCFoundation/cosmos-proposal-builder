@@ -168,9 +168,7 @@ export const stableCurrency = makeCurrency({
 });
 
 //TODO: return only the rpc and rest enpoints that are live
-export const makeChainInfo = async (
-  networkConfig: NetworkConfig,
-): Promise<ChainInfo> => {
+export const makeChainInfo = (networkConfig: NetworkConfig): ChainInfo => {
   let stakeCurrency: FeeCurrency | undefined = undefined;
   const {
     chainName,

@@ -1,5 +1,4 @@
-
-import { createContext, useMemo } from "react";
+import { createContext, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
 import { fetchAvailableChains } from "../config/chainConfig";
 import { useQuery, UseQueryResult, QueryKey } from "@tanstack/react-query";
@@ -15,16 +14,10 @@ export type ChainListItem = {
 export interface ChainContextValue {
   currentChain: ChainListItem | null;
   availableChains: ChainListItem[];
-  location: string | null;
-  setLocation: (location: string) => void;
+  setCurrentChain: (chain: ChainListItem) => void;
 }
 
-export const ChainContext = createContext<ChainContextValue>({
-  currentChain: null,
-  availableChains: [],
-  location: null,
-  setLocation: () => {},
-});
+export const ChainContext = createContext<ChainContextValue | null>(null);
 
 export const ChainContextProvider = ({
   children,
@@ -43,14 +36,21 @@ export const ChainContextProvider = ({
     queryFn: () => fetchAvailableChains(),
   });
 
+  const setChain = useCallback(
+    (chain: ChainListItem) => {
+      setLocation(`/${chain.value}`);
+    },
+    [setLocation],
+  );
   const currentChain: ChainListItem | undefined = useMemo(
     () => chainList.find((chain) => chain.value === chainName),
     [chainName, chainList],
   );
+
+  //dirty temporary fix to appease linter - fix later
   if (isLoadingChains) {
     return <div>Loading...</div>;
   }
-
   if (error) {
     return <div>Error: {error.message}</div>;
   }
@@ -60,8 +60,7 @@ export const ChainContextProvider = ({
       value={{
         currentChain: currentChain || null,
         availableChains: chainList,
-        location,
-        setLocation,
+        setCurrentChain: setChain,
       }}
     >
       {children}

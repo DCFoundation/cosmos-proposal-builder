@@ -3,16 +3,15 @@ import { capitalize } from "../utils/capitalize";
 import { DropdownMenu } from "./DropdownMenu";
 import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
+import { useChain } from "../hooks/useChain";
 
 const placeholderText = "Select Network";
 
 const NetworkDropdown = () => {
-  const {
-    currentChain,
-    currentNetworkName,
-    siblingNetworkNames,
-    setCurrentNetworkName,
-  } = useNetwork();
+  const { currentNetworkName, siblingNetworkNames, setCurrentNetworkName } =
+    useNetwork();
+
+  const { currentChain } = useChain();
   const {
     isLoading: isLoadingWallet,
     stargateClient,
@@ -26,13 +25,6 @@ const NetworkDropdown = () => {
   const items = useMemo(() => {
     if (currentChain && siblingNetworkNames) {
       return [
-        {
-          label: "Reset Network",
-          value: null,
-          onClick: () => {
-            setCurrentNetworkName(null);
-          },
-        },
         ...siblingNetworkNames.map((network) => ({
           label: capitalize(network),
           value: network,
@@ -45,6 +37,7 @@ const NetworkDropdown = () => {
     return [{ label: "Loading...", value: "" }];
   }, [currentChain, siblingNetworkNames, setCurrentNetworkName]);
 
+  console.error("current Network Name", currentNetworkName);
   const status = useMemo(() => {
     if (isLoadingWallet) return "loading";
     if (stargateClient && currentChain && currentNetworkName) return "active";

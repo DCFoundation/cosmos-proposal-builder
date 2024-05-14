@@ -18,13 +18,14 @@ import { createProposalMessage } from "../utils/createProposalMessage";
 import { toast } from "react-toastify";
 import { makeInstallBundleMsg } from "../lib/messageBuilder";
 import { enabledProposals } from "./chainConfig";
+import { useChain } from "../hooks/useChain";
 
 const ProposalsLandingPage = () => {
-  const { networkConfig, currentChain } = useNetwork();
-  const { walletAddress, stargateClient, rpc, api } = useWallet();
+  const { networkConfig, api, chainInfo } = useNetwork();
+  const { currentChain } = useChain();
+  const { walletAddress, stargateClient } = useWallet();
   const denom = networkConfig?.fees.feeTokens[0].denom;
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
-
   const [permittedProposals, setPermittedProposals] = useState<
     QueryParams["msgType"][]
   >([]);
@@ -46,7 +47,7 @@ const ProposalsLandingPage = () => {
     }
   }, [currentChain, fetchEnabledProposals, networkConfig]);
 
-  const watchBundle = useWatchBundle(rpc!, {
+  const watchBundle = useWatchBundle(chainInfo?.rpc, {
     clipboard: window.navigator.clipboard,
   });
 
@@ -59,13 +60,12 @@ const ProposalsLandingPage = () => {
   if (!explorerUrl) {
     console.error("No explorer url found. ");
   }
-  const accountBalances = useQuery(accountBalancesQuery(api!, walletAddress));
+  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
 
   const coinWealth = useMemo(
     () => selectCoins(denom!, accountBalances),
     [accountBalances, denom],
   );
-  // const { data: availableFunds = [] } = useQuery(communityPoolQuery(api!));
 
   const signAndBroadcast = useMemo(
     () =>

@@ -1,18 +1,18 @@
 import { useMemo } from "react";
 import { capitalize } from "../utils/capitalize";
 import { DropdownMenu } from "./DropdownMenu";
-import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
 import { useChain } from "../hooks/useChain";
 
 const placeholderText = "Select Chain";
 
 const ChainMenu = () => {
-  const { availableChains } = useChain();
-  const { currentChain, setCurrentChain } = useNetwork();
+  const { availableChains, currentChain, setCurrentChain } = useChain();
   const { isLoading: isLoadingWallet, walletAddress } = useWallet();
 
   const title = currentChain ? capitalize(currentChain.label) : placeholderText;
+  console.error("title", title);
+  console.error("currentChain from chain menu", currentChain);
   const labelImage = useMemo(
     () => (currentChain ? currentChain.image : undefined),
     [currentChain],

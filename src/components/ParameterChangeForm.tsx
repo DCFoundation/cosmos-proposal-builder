@@ -18,7 +18,7 @@ import { BeansPerUnit } from "../types/swingset";
 import type { FormValue, ParameterChangeTypeOption } from "../types/form";
 import { toast } from "react-toastify";
 import { NetworkDropdown } from "./NetworkDropdown.tsx";
-import { useWallet } from "../hooks/useWallet.ts";
+import { useNetwork } from "../hooks/useNetwork.ts";
 
 type ParameterChangeFormMethods = {
   getChanges: () => ParamChange[];
@@ -33,11 +33,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   ref: React.ForwardedRef<ParameterChangeFormMethods>,
 ) {
   const { paramType } = qs.parse(useSearch());
-  const { api } = useWallet();
-  // if (!api) {
-  //   toast.error("Please select a network!", { autoClose: 3000 });
-  //   throw new Error("No api found.");
-  // }
+  const { api } = useNetwork();
   const match = options.find((x) => x.key === paramType) ?? options[0];
   const [stagedParams, setStagedParams] = useState<FormValue[] | null>(null);
   const paramsQuery = useQuery(match.query(api!));

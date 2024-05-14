@@ -2,7 +2,6 @@ import { useWallet } from "../hooks/useWallet";
 import { Button, ButtonProps } from "../components/Button";
 import { trimAddress } from "../utils/trimAddress";
 import { useMemo } from "react";
-import { toast } from "react-toastify";
 import { useNetwork } from "../hooks/useNetwork";
 
 const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
@@ -14,20 +13,22 @@ const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
     connectWallet()
       .then(console.log)
       .catch(console.error)
-      .finally(() => console.log("connect wallet finished"));
+      .finally(() => console.log("Connect wallet finished"));
   };
 
+  // console.error('walletAddress', walletAddress);
+  console.error("walletAddress", walletAddress);
   const buttonText = useMemo(() => {
     if (isLoading) return "Loading...";
     if (!walletAddress || !stargateClient) return "Connect Wallet";
-    if (!bech32Prefix) return "Invalid Network";
+    if (!bech32Prefix) return "Select Network";
     try {
-      assert(walletAddress.startsWith(bech32Prefix), "Invalid Address");
+      assert(walletAddress.startsWith(bech32Prefix), "Invalid  Address");
       return trimAddress(walletAddress);
     } catch (error) {
       console.error("Invalid wallet address:", error);
-      toast.error("Invalid wallet address", { autoClose: 3000 });
-      return "Invalid Address";
+      // toast.error("Invalid wallet address", { autoClose: 3000 });
+      return "Loading...";
     }
   }, [walletAddress, bech32Prefix, isLoading, stargateClient]);
 
