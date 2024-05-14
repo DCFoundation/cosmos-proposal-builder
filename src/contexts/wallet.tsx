@@ -161,7 +161,14 @@ export const WalletContextProvider = ({
       removeAddress();
     }
   }, [stargateClient, currChain, networkConfig, removeAddress]);
-
+  
+  useEffect(() => {
+    window.addEventListener("keplr_keystorechange", connectWallet);
+    return () => {
+      window.removeEventListener("keplr_keystorechange", connectWallet);
+    };
+  }, [connectWallet]);
+  
   return (
     <WalletContext.Provider
       value={{
