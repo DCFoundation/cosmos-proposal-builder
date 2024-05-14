@@ -37,7 +37,6 @@ const NetworkDropdown = () => {
     return [{ label: "Loading...", value: "" }];
   }, [currentChain, siblingNetworkNames, setCurrentNetworkName]);
 
-  console.error("current Network Name", currentNetworkName);
   const status = useMemo(() => {
     if (isLoadingWallet) return "loading";
     if (stargateClient && currentChain && currentNetworkName) return "active";
