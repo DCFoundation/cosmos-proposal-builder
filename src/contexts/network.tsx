@@ -123,6 +123,9 @@ export const NetworkContextProvider = ({
     if (selectedNetwork && currentChain) {
       chainConfig(currentChain.parent, selectedNetwork);
     }
+    else {
+      setNetworkConfig(null);
+    }
   }, [selectedNetwork, currentChain, chainConfig]);
 
   const restApi = useMemo(() => {
