@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 
 export interface NetworkContextValue {
-  siblingNetworkNames: string[] | null;
+  chainNetworkNames: string[] | null; 
   currentNetworkName: string | null;
   networkConfig: NetworkConfig | null;
   error: Error | null;
@@ -81,7 +81,7 @@ export const NetworkContextProvider = ({
   return (
     <NetworkContext.Provider
       value={{
-        siblingNetworkNames: networksList,
+        chainNetworkNames: networksList,
         error: networkConfigError || networksFetchError,
         currentNetworkName: selectedNetwork,
         networkConfig: networkConfig,

@@ -3,6 +3,10 @@ import { useLocation } from "wouter";
 import { fetchAvailableChains } from "../config/chainConfig";
 import { useQuery, UseQueryResult, QueryKey } from "@tanstack/react-query";
 
+/**
+ * Some chains have a parent chain. We use parent to fetch configs and data.
+ * We however still use chain value for routing and related functions. example is inter(child) and agoric(parent)
+ */
 export type ChainListItem = {
   label: string;
   value: string;

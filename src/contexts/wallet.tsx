@@ -48,7 +48,6 @@ export const WalletContextProvider = ({
   const connectWalletMutation = useMutation({
     mutationKey: ["connectWallet", chainInfo],
     mutationFn: async () => {
-      // setIsLoading(true);
       if (!window.keplr) {
         toast.error("Keplr not found", {
           position: "top-right",

@@ -8,7 +8,7 @@ import { useChain } from "../hooks/useChain";
 const placeholderText = "Select Network";
 
 const NetworkDropdown = () => {
-  const { currentNetworkName, siblingNetworkNames, setCurrentNetworkName } =
+  const { currentNetworkName, chainNetworkNames, setCurrentNetworkName } =
     useNetwork();
 
   const { currentChain } = useChain();
@@ -23,9 +23,9 @@ const NetworkDropdown = () => {
     : placeholderText;
 
   const items = useMemo(() => {
-    if (currentChain && siblingNetworkNames) {
+    if (currentChain && chainNetworkNames) {
       return [
-        ...siblingNetworkNames.map((network) => ({
+        ...chainNetworkNames.map((network) => ({
           label: capitalize(network),
           value: network,
           onClick: () => {
@@ -35,7 +35,7 @@ const NetworkDropdown = () => {
       ];
     }
     return [{ label: "Loading...", value: "" }];
-  }, [currentChain, siblingNetworkNames, setCurrentNetworkName]);
+  }, [currentChain, chainNetworkNames, setCurrentNetworkName]);
 
   const status = useMemo(() => {
     if (isLoadingWallet) return "loading";
