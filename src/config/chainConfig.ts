@@ -228,7 +228,7 @@ export const suggestChain = async (
   chainInfo: ChainInfo,
 ): Promise<ChainInfo> => {
   const { keplr } = window;
-  if (!window.keplr) {
+  if (!keplr) {
     toast.error("Keplr not found", {
       position: "top-right",
       autoClose: 3000,

@@ -48,13 +48,21 @@ export const WalletContextProvider = ({
   const connectWalletMutation = useMutation({
     mutationKey: ["connectWallet", chainInfo],
     mutationFn: async () => {
-      if (!chainInfo) {
-        toast.error("No chain info found", {
+      if (!window.keplr) {
+        toast.error("We couldn't find keplr wallet. Install extension and reload page", {
           position: "top-right",
           autoClose: 3000,
         });
-        throw new Error("No chain info found");
+        throw new Error("Missing Keplr");
       }
+      if (!chainInfo) {
+        toast.error("We couldn't resolve chain info", { autoClose: 3000 });
+        throw new Error("Chain info not available");
+        }
+      
+
+      console.error('keplr', window.keplr);
+
       const { chainId, rpc, feeCurrencies } = await suggestChain(chainInfo);
       await window.keplr.enable(chainId);
 
