@@ -13,6 +13,7 @@ import { registry } from "../lib/messageBuilder";
 import { toast } from "react-toastify";
 import { useNetwork } from "../hooks/useNetwork";
 import { useMutation } from "@tanstack/react-query";
+import { suggestChain } from "../config/chainConfig";
 
 interface WalletContextValue {
   walletAddress: string | null;
@@ -44,18 +45,9 @@ export const WalletContextProvider = ({
     window.localStorage.removeItem(WALLET_ADDRESS_KEY);
     setWalletAddress(null);
   }, []);
-
   const connectWalletMutation = useMutation({
     mutationKey: ["connectWallet", chainInfo],
     mutationFn: async () => {
-      if (!window.keplr) {
-        toast.error("Keplr not found", {
-          position: "top-right",
-          autoClose: 3000,
-        });
-        throw Error("Missing Keplr");
-      }
-
       if (!chainInfo) {
         toast.error("No chain info found", {
           position: "top-right",
@@ -63,16 +55,16 @@ export const WalletContextProvider = ({
         });
         throw new Error("No chain info found");
       }
-      const { chainId, rpc, feeCurrencies } = chainInfo;
-
+      const { chainId, rpc, feeCurrencies } = await suggestChain(chainInfo);
       await window.keplr.enable(chainId);
+
       const offlineSigner = window.keplr.getOfflineSigner(chainId);
       const accounts = await offlineSigner.getAccounts();
       if (accounts?.[0].address !== walletAddress) {
         saveAddress(accounts[0]);
       }
-
       try {
+        // signingClient
         stargateClient.current = await SigningStargateClient.connectWithSigner(
           rpc,
           offlineSigner,
@@ -80,12 +72,11 @@ export const WalletContextProvider = ({
             registry,
             gasPrice: {
               denom: feeCurrencies[0].coinMinimalDenom,
-              amount: Decimal.fromUserInput("500000", 0),
+              amount: Decimal.fromUserInput("50000000", 0),
             },
           },
         );
       } catch (error) {
-        console.error("Error setting up SigningStargateClient:", error);
         removeAddress();
         stargateClient.current = undefined;
       }
@@ -93,10 +84,10 @@ export const WalletContextProvider = ({
   });
 
   useEffect(() => {
-    if (chainInfo) {
+    if (chainInfo && !stargateClient.current) {
       connectWalletMutation.mutateAsync();
     }
-  }, [connectWalletMutation.mutateAsync, chainInfo]);
+  }, [connectWalletMutation.mutateAsync, chainInfo, stargateClient.current]);
 
   useEffect(() => {
     const fn = () => {

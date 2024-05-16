@@ -3,16 +3,23 @@ import type { SigningStargateClient } from "@cosmjs/stargate";
 import type { EncodeObject } from "@cosmjs/proto-signing";
 import { createId } from "@paralleldrive/cuid2";
 import { toast } from "react-toastify";
-// import type { NetName } from "../hooks/useNetwork";
 import { makeFeeObject } from "./messageBuilder";
 import { parseError } from "../utils/transactionParser";
 import { TxToastMessage } from "../components/TxToastMessage";
+
+window.keplr.defaultOptions = {
+  sign: {
+    preferNoSetFee: true,
+    preferNoSetMemo: true,
+  },
+};
 
 export const makeSignAndBroadcast =
   (
     stargateClient: SigningStargateClient | undefined,
     walletAddress: string | null,
     explorerUrl: string | null,
+    feeDenom: string | null,
   ) =>
   async (
     proposalMsg: EncodeObject,
@@ -39,7 +46,8 @@ export const makeSignAndBroadcast =
       txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
-        makeFeeObject({ gas }),
+
+        makeFeeObject({ gas, denom: feeDenom || undefined, amount: "1000" }),
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
@@ -56,7 +64,7 @@ export const makeSignAndBroadcast =
         render: ({ closeToast }) => (
           <TxToastMessage
             resp={txResult as DeliverTxResponse}
-            explorerUrl={explorerUrl as string}
+            explorerUrl={explorerUrl}
             closeToast={closeToast as () => void}
             type={type}
           />

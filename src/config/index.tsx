@@ -24,7 +24,8 @@ const ProposalsLandingPage = () => {
   const { networkConfig, api, chainInfo } = useNetwork();
   const { currentChain } = useChain();
   const { walletAddress, stargateClient } = useWallet();
-  const denom = networkConfig?.fees.feeTokens[0].denom;
+  const stakingDenom = networkConfig?.staking?.stakingTokens[0].denom;
+  const feeDenom = networkConfig?.fees.feeTokens[0].denom;
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
   const [permittedProposals, setPermittedProposals] = useState<
     QueryParams["msgType"][]
@@ -42,35 +43,28 @@ const ProposalsLandingPage = () => {
   // reconfigure permitted proposals when chain changes(not parent chain)
   //TODO: incomplete logic - currently using a workaround for child chains - just inter currently
   useEffect(() => {
-    if (currentChain) {
-      fetchEnabledProposals(currentChain.value);
-    }
+    currentChain && fetchEnabledProposals(currentChain.value);
   }, [currentChain, fetchEnabledProposals, networkConfig]);
 
   const watchBundle = useWatchBundle(chainInfo?.rpc, {
     clipboard: window.navigator.clipboard,
   });
-
-  if (!api || !walletAddress) {
-    console.error("No api and/or wallet address found. ");
-  }
-  if (!denom) {
-    console.error("No denom found. ");
-  }
-  if (!explorerUrl) {
-    console.error("No explorer url found. ");
-  }
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
 
   const coinWealth = useMemo(
-    () => selectCoins(denom!, accountBalances),
-    [accountBalances, denom],
+    () => selectCoins(stakingDenom!, accountBalances),
+    [accountBalances, stakingDenom],
   );
 
   const signAndBroadcast = useMemo(
     () =>
-      makeSignAndBroadcast(stargateClient, walletAddress, explorerUrl || null),
-    [stargateClient, walletAddress, explorerUrl],
+      makeSignAndBroadcast(
+        stargateClient,
+        walletAddress,
+        explorerUrl || null,
+        feeDenom || null,
+      ),
+    [stargateClient, walletAddress, explorerUrl, feeDenom],
   );
 
   const handleProposal = async (
@@ -86,7 +80,7 @@ const ProposalsLandingPage = () => {
       msgType,
       proposalData,
       walletAddress,
-      denom!,
+      stakingDenom || "",
     );
 
     if (!proposalMsg) throw new Error("Error parsing query or inputs.");
@@ -262,7 +256,7 @@ const ProposalsLandingPage = () => {
     return tabs.filter((tab) =>
       permittedProposals.includes(tab.msgType as QueryParams["msgType"]),
     );
-  }, [handleProposal, permittedProposals]);
+  }, [permittedProposals]);
 
   return (
     <>

@@ -18,7 +18,7 @@ export const DepositSection: React.FC<unknown> = () => {
   const { networkConfig, api } = useNetwork();
   const { walletAddress } = useWallet();
   const depositRef = useRef<HTMLInputElement>(null);
-  const denom = networkConfig?.fees.feeTokens[0].denom || "ubld";
+  const denom = networkConfig?.staking?.stakingTokens[0].denom;
   const { minDeposit, votingPeriod } = useQueries({
     queries: [depositParamsQuery(api!), votingParamsQuery(api!)],
     combine: (
@@ -35,7 +35,7 @@ export const DepositSection: React.FC<unknown> = () => {
     },
   });
 
-  const accountBalances = useQuery(accountBalancesQuery(api!, walletAddress));
+  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const coins = useMemo(
     () => selectCoins(denom, accountBalances),
     [accountBalances, denom],

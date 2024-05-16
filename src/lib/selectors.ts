@@ -84,9 +84,10 @@ export const selectSinglePathDenomTraces = (
 
 /** denom eg 'uatom' */
 export const selectCoins = (
-  denom: string,
+  denom: string | undefined,
   query: UseQueryResult<BankBalances, unknown>,
 ) => {
+  if (!denom) return undefined;
   if (!query?.data) return undefined;
   return (query.data as BankBalances).filter((x) => x.denom === denom);
 };

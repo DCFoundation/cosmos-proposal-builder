@@ -10,9 +10,10 @@
   "rpcAddrs": ["https://emerynet.rpc.agoric.net:443"],
   "apiAddrs": ["https://emerynet.api.agoric.net:443"],
   "seeds": ["0f04c4610b7511a64b8644944b907416db568590@35.222.138.81:26656"],
+  "walletUrl": "emerynet.staking.agoric.app",
   "slip44": 564,
-  "fees": {
-    "feeTokens": [
+  "staking": {
+    "stakingTokens": [
       {
         "denom": "ubld",
         "fixedMinGasPrice": 0,
@@ -22,10 +23,10 @@
       }
     ]
   },
-  "staking": {
-    "stakingTokens": [
+  "fees": {
+    "feeTokens": [
       {
-        "denom": "ubld"
+        "denom": "uist"
 
       }
     ]

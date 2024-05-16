@@ -12,11 +12,13 @@ import { WalletConnectButton } from "../../components/WalletConnectButton";
 import { selectCoins } from "../../lib/selectors";
 
 const FundCommunityPool = () => {
-  const { currentNetworkName: netName, networkConfig, api } = useNetwork();
+  const { networkConfig, api } = useNetwork();
   const { walletAddress, stargateClient } = useWallet();
-  const denom = networkConfig?.fees.feeTokens[0].denom;
+  const denom = networkConfig?.staking?.stakingTokens[0].denom;
   const [fundAmount, setFundAmount] = useState(0);
-  const accountBalances = useQuery(accountBalancesQuery(api!, walletAddress));
+  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
+
+  const explorerUrl = networkConfig?.explorers?.[0]?.url;
 
   const coinWealth = useMemo(
     () => selectCoins(denom!, accountBalances),
@@ -24,8 +26,14 @@ const FundCommunityPool = () => {
   );
 
   const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, netName!),
-    [stargateClient, walletAddress, netName],
+    () =>
+      makeSignAndBroadcast(
+        stargateClient,
+        walletAddress,
+        explorerUrl || null,
+        denom || null,
+      ),
+    [stargateClient, walletAddress, explorerUrl, denom],
   );
 
   const handleProposal = async (e: FormEvent) => {

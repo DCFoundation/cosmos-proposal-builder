@@ -11,7 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useLocation } from "wouter";
 
 export interface NetworkContextValue {
-  chainNetworkNames: string[] | null; 
+  chainNetworkNames: string[] | null;
   currentNetworkName: string | null;
   networkConfig: NetworkConfig | null;
   error: Error | null;

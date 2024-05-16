@@ -8,6 +8,7 @@
   "bech32Prefix": "osmo",
   "daemonName": "osmosisd",
   "nodeHome": "$HOME/.osmosisd",
+  "authority": "osmo10d07y265gmmuvt4z0w9aw880jnsr700jjeq4qp",
   "keyAlgos": [
     "secp256k1"
   ],

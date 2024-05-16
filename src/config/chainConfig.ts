@@ -34,7 +34,7 @@ export interface FeeToken {
 }
 export interface FeeEntry {
   feeTokens: FeeToken[];
-  gasPriceStep?: GaspPriceStep;
+  gasPriceStep: GaspPriceStep | null;
 }
 
 export interface NetworkConfig {
@@ -45,10 +45,10 @@ export interface NetworkConfig {
   fees: FeeEntry;
   bech32Prefix: string;
   apis: Apis;
-  logoURIs?: string[];
-  staking?: StakeCurrencyEntry;
-  explorers?: ExplorerEntry[];
-  walletUrl?: string;
+  logoURIs: string[] | null;
+  staking: StakeCurrencyEntry | null;
+  explorers: ExplorerEntry[] | null;
+  walletUrl: string | null;
 }
 export interface ExplorerEntry {
   name?: string;
@@ -202,24 +202,40 @@ export const makeChainInfo = (networkConfig: NetworkConfig): ChainInfo => {
   const feeCurrencies = makeCurrency({
     minimalDenom: fees.feeTokens[0].denom,
   });
-  const currencies = [feeCurrencies, stakeCurrency, stableCurrency];
+  const currencies = [feeCurrencies, stakeCurrency];
   const chainInfo: ChainInfo = {
     rpc: rpcendpoint,
     rest: restendpoint,
-    chainId:
-      chainName === "agoric" || networkName === "mainnet" ? chainId : chainName,
+    chainId,
+    // chainName === "agoric" || networkName === "mainnet" ?
     chainName: `${chainName} ${networkName}`,
     stakeCurrency: stakeCurrency,
-    feeCurrencies: [feeCurrencies, stableCurrency],
+    feeCurrencies: chainName === "agoric" ? [stableCurrency] : [feeCurrencies],
     bech32Config: bech32Config,
     bip44: {
       coinType: slip44,
     },
+    walletUrlForStaking: networkConfig.walletUrl || undefined,
     currencies: currencies.filter(
       (currency): currency is FeeCurrency => !!currency,
     ),
     features: ["stargate", "ibc-transfer"],
   };
+  return chainInfo;
+};
+
+export const suggestChain = async (
+  chainInfo: ChainInfo,
+): Promise<ChainInfo> => {
+  const { keplr } = window;
+  if (!window.keplr) {
+    toast.error("Keplr not found", {
+      position: "top-right",
+      autoClose: 3000,
+    });
+    throw Error("Missing Keplr");
+  }
+  await keplr.experimentalSuggestChain(chainInfo);
   return chainInfo;
 };
 

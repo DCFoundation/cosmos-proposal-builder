@@ -8,12 +8,12 @@ import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
-import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
+import { MsgSubmitProposal } from "cosmjs-types/cosmos/gov/v1beta1/tx";
+import { Coin } from "../types/bank";
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
-  // ["/cosmos.distribution.v1beta1.MsgCommunityPoolSpend", MsgCommunityPoolSpend],
 ]);
 
 interface MakeTextProposalArgs {
@@ -22,6 +22,13 @@ interface MakeTextProposalArgs {
   proposer: string;
   deposit?: string | number;
   denom: string;
+}
+export interface CustomProposal {
+  description: string;
+  spend: {
+    recipient: string;
+    amount: Coin[];
+  };
 }
 
 export const makeFundCommunityPool = ({
@@ -57,28 +64,38 @@ export const makeCommunityPoolSpendProposalMsg = ({
   description: string;
   deposit?: number | string;
 }) => {
-  const communityPoolSpendProposal: CommunityPoolSpendProposal = {
-    title,
+  const proposalData: CustomProposal = {
     description,
-    recipient,
-    amount: coins(amount, denom),
-  };
-  const messageArray = Uint8Array.from(
-    CommunityPoolSpendProposal.encode(communityPoolSpendProposal).finish(),
-  );
-  const msgSubmitProposal = {
-    typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
-    value: {
-      content: {
-        typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
-        value: messageArray,
-      },
-      proposer: proposer,
-      ...(deposit &&
-        Number(deposit) && { initialDeposit: coins(deposit, denom) }),
+    spend: {
+      recipient,
+      amount: coins(amount.toString(), denom),
     },
   };
-  return msgSubmitProposal;
+
+  const msgSubmitProposal: MsgSubmitProposal = {
+    content: {
+      typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+      value: TextProposal.encode(
+        TextProposal.fromPartial({
+          title: ` Community Pool Spend Proposal - ${title}`,
+          description: `
+| Description | Spend Amount | Recipient |
+| --- | --- | --- |
+| ${proposalData.description} | ${proposalData.spend.amount
+            .map((coin) => `${coin.amount} ${coin.denom}`)
+            .join(", ")} | ${fromBech32(proposalData.spend.recipient)}|
+          `,
+        }),
+      ).finish(),
+    },
+    proposer,
+    initialDeposit: deposit ? coins(deposit.toString(), denom) : [],
+  };
+
+  return {
+    typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+    value: msgSubmitProposal,
+  };
 };
 
 export const makeTextProposalMsg = ({
@@ -200,8 +217,11 @@ interface MakeFeeObjectArgs {
   gas?: string | number;
 }
 
-export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) =>
-  ({
+export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) => {
+  const fee = {
     amount: coins(amount || 0, denom || "uist"),
     gas: gas ? String(gas) : "auto",
-  }) as StdFee;
+  } as StdFee;
+
+  return fee;
+};

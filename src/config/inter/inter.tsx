@@ -31,11 +31,12 @@ import { selectBldCoins } from "../../lib/selectors.ts";
 
 //TODO define enabled proposals for inter as a workaround
 const Inter = () => {
-  const { currentNetworkName: netName , api} = useNetwork();
-  const { walletAddress, stargateClient, } = useWallet();
+  const { currentNetworkName: netName, api, networkConfig } = useNetwork();
+  const { walletAddress, stargateClient } = useWallet();
   const psmFormRef = useRef<HTMLFormElement>(null);
   const vaultFormRef = useRef<HTMLFormElement>(null);
 
+  const explorerUrl = networkConfig?.explorers?.[0]?.url;
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const bldCoins = useMemo(
     () => selectBldCoins(accountBalances),
@@ -43,8 +44,14 @@ const Inter = () => {
   );
 
   const signAndBroadcast = useMemo(
-    () => makeSignAndBroadcast(stargateClient, walletAddress, netName!),
-    [stargateClient, walletAddress, netName],
+    () =>
+      makeSignAndBroadcast(
+        stargateClient,
+        walletAddress,
+        explorerUrl || null,
+        "uist",
+      ),
+    [stargateClient, walletAddress, explorerUrl],
   );
 
   const handlePsmSubmit = async (e: FormEvent) => {
@@ -53,10 +60,6 @@ const Inter = () => {
 
     if (!walletAddress) {
       toast.error("Wallet not connected.", { autoClose: 3000 });
-      return;
-    }
-    if (!netName) {
-      toast.error("Network not selected.", { autoClose: 3000 });
       return;
     }
 

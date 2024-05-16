@@ -36,7 +36,6 @@ const IBCDenomInput = () => {
   const { api } = useNetwork();
   const [selected, setSelected] = useState<DenomTrace | Coin | null>(null);
   const [query, setQuery] = useState<string>("");
-  if (!api) console.error("No api found.");
 
   const ibcDenomTraces = useQuery(ibcDenomTracesQuery(api));
   const singleChannelTraces = useMemo(

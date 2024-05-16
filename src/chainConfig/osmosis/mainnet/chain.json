@@ -10,6 +10,7 @@
     "bech32Prefix": "osmo",
     "daemonName": "osmosisd",
     "nodeHome": "$HOME/.osmosisd",
+    "authority": "osmo10d07y265gmmuvt4z0w9aw880jnsr700jjeq4qp",
     "genesis": {
       "genesisUrl": "https://github.com/osmosis-labs/networks/raw/main/osmosis-1/genesis.json"
     },

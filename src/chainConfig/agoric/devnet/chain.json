@@ -15,7 +15,7 @@
   "fees": {
     "feeTokens": [
       {
-        "denom": "ubld",
+        "denom": "uist",
         "fixedMinGasPrice": 0
       }
     ]

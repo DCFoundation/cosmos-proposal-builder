@@ -56,6 +56,7 @@ describe("makeSignAndBroadcast Unit Tests", () => {
       mockStargateClient,
       walletAddress,
       explorerUrl,
+      null,
     );
 
     const res = await signAndBroadcast(proposalMsg, "proposal");
@@ -88,6 +89,7 @@ describe("makeSignAndBroadcast Unit Tests", () => {
       mockStargateClient,
       walletAddress,
       explorerUrl,
+      null,
     );
 
     await expect(signAndBroadcast(proposalMsg, "proposal")).rejects.toThrow(
