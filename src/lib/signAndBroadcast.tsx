@@ -11,6 +11,7 @@ import { TxToastMessage } from "../components/TxToastMessage";
  * By default, Keplr overrides the transaction fee on the signing page 
  * https://docs.keplr.app/api/#interaction-options
 */
+window.keplr = window.keplr || {};
 window.keplr.defaultOptions = {
   sign: {
     preferNoSetFee: true,
