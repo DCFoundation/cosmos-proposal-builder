@@ -59,10 +59,6 @@ export const WalletContextProvider = ({
         toast.error("We couldn't resolve chain info", { autoClose: 3000 });
         throw new Error("Chain info not available");
         }
-      
-
-      console.error('keplr', window.keplr);
-
       const { chainId, rpc, feeCurrencies } = await suggestChain(chainInfo);
       await window.keplr.enable(chainId);
 

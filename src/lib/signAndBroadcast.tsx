@@ -12,12 +12,12 @@ import { TxToastMessage } from "../components/TxToastMessage";
  * https://docs.keplr.app/api/#interaction-options
 */
 // window.keplr = window.keplr || {};
-if (window.keplr) window.keplr.defaultOptions = {
+(window.keplr) && (window.keplr.defaultOptions = {
   sign: {
     preferNoSetFee: true,
     // preferNoSetMemo: true,
   },
-};
+});
 
 
 /** 
