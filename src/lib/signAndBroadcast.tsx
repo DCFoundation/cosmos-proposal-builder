@@ -7,12 +7,22 @@ import { makeFeeObject } from "./messageBuilder";
 import { parseError } from "../utils/transactionParser";
 import { TxToastMessage } from "../components/TxToastMessage";
 
+/**
+ * By default, Keplr overrides the transaction fee on the signing page 
+ * https://docs.keplr.app/api/#interaction-options
+*/
 window.keplr.defaultOptions = {
   sign: {
     preferNoSetFee: true,
-    preferNoSetMemo: true,
+    // preferNoSetMemo: true,
   },
 };
+
+/** 
+ * Some chains require a minimum fee amount to be set
+ * 1000 is arbitrary number that worke on chains tested so far
+*/
+const FEE_AMOUNT = "1000";
 
 export const makeSignAndBroadcast =
   (
@@ -26,7 +36,6 @@ export const makeSignAndBroadcast =
     type: "bundle" | "proposal" = "proposal",
   ) => {
     if (!stargateClient) {
-      toast.error("Network not connected.", { autoClose: 3000 });
       throw new Error("stargateClient not found");
     }
     if (!walletAddress) throw new Error("wallet not connected");
@@ -46,8 +55,7 @@ export const makeSignAndBroadcast =
       txResult = await stargateClient.signAndBroadcast(
         walletAddress,
         [proposalMsg],
-
-        makeFeeObject({ gas, denom: feeDenom || undefined, amount: "1000" }),
+        makeFeeObject({ gas, denom: feeDenom || undefined, amount: FEE_AMOUNT }),
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
