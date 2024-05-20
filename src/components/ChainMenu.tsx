@@ -3,32 +3,30 @@ import { capitalize } from "../utils/capitalize";
 import { DropdownMenu } from "./DropdownMenu";
 import { useWallet } from "../hooks/useWallet";
 import { useChain } from "../hooks/useChain";
+import { CHAINS } from "../constants/chains";
 
 const placeholderText = "Select Chain";
 
 const ChainMenu = () => {
-  const { availableChains, currentChain, setCurrentChain } = useChain();
+  const { currentChain, setCurrentChain } = useChain();
   const { isLoading: isLoadingWallet, walletAddress } = useWallet();
 
   const title = currentChain ? capitalize(currentChain.label) : placeholderText;
   const labelImage = useMemo(
     () => (currentChain ? currentChain.image : undefined),
-    [currentChain],
+    [currentChain]
   );
 
   const items = useMemo(() => {
-    if (availableChains) {
-      return availableChains.map(({ label, value, image, href, parent }) => ({
-        label,
-        value,
-        image,
-        onClick: () => {
-          setCurrentChain({ value, label, image, href, parent });
-        },
-      }));
-    }
-    return [{ label: "Loading...", value: "" }];
-  }, [availableChains, setCurrentChain]);
+    return CHAINS.map(({ label, value, image }) => ({
+      label,
+      value,
+      image,
+      onClick: () => {
+        setCurrentChain(value);
+      },
+    }));
+  }, [setCurrentChain]);
 
   const status = useMemo(() => {
     if (isLoadingWallet) return "loading";

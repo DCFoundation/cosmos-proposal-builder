@@ -1,69 +1,38 @@
-import { createContext, useCallback, useMemo } from "react";
+import { createContext, ReactNode, useCallback, useMemo } from "react";
 import { useLocation } from "wouter";
-import { fetchAvailableChains } from "../config/chainConfig";
-import { useQuery, UseQueryResult, QueryKey } from "@tanstack/react-query";
 
-/**
- * Some chains have a parent chain. We use parent to fetch configs and data.
- * We however still use chain value for routing and related functions. example is inter(child) and agoric(parent)
- */
-export type ChainListItem = {
-  label: string;
-  value: string;
-  href: string;
-  parent: ChainListItem["value"];
-  image: string;
-};
+import { CHAINS } from "../constants/chains";
+import { ChainItem } from "../types/chain";
 
 export interface ChainContextValue {
-  currentChain: ChainListItem | null;
-  availableChains: ChainListItem[];
-  setCurrentChain: (chain: ChainListItem) => void;
+  currentChain: ChainItem | null;
+  setCurrentChain: (chain: string) => void;
 }
 
 export const ChainContext = createContext<ChainContextValue | null>(null);
 
-export const ChainContextProvider = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
   const [location, setLocation] = useLocation();
   const chainName = location.split("/")[1];
 
-  const {
-    data: chainList = [],
-    isLoading: isLoadingChains,
-    error,
-  }: UseQueryResult<ChainListItem[], Error> = useQuery<ChainListItem[], Error>({
-    queryKey: ["availableChains"] as QueryKey,
-    queryFn: () => fetchAvailableChains(),
-  });
-
   const setChain = useCallback(
-    (chain: ChainListItem) => {
-      setLocation(`/${chain.value}`);
+    (chain: string) => {
+      setLocation(`/${chain}`);
     },
-    [setLocation],
-  );
-  const currentChain: ChainListItem | undefined = useMemo(
-    () => chainList.find((chain) => chain.value === chainName),
-    [chainName, chainList],
+    [setLocation]
   );
 
-  //dirty temporary fix to appease linter - fix later
-  if (isLoadingChains) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  const currentChain = useMemo(
+    () => CHAINS.find((c) => c.value === chainName) ?? null,
+    [chainName]
+  );
+
+  // console.error("current chain info from chain context is ", currentChain);
 
   return (
     <ChainContext.Provider
       value={{
-        currentChain: currentChain || null,
-        availableChains: chainList,
+        currentChain,
         setCurrentChain: setChain,
       }}
     >

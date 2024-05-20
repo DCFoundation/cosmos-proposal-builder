@@ -1,0 +1,15 @@
+
+{
+ "messages": [
+  {
+   "@type": "/cosmos.distribution.v1beta1.MsgCommunityPoolSpend",
+   "authority": "juno10d07y265gmmuvt4z0w9aw880jnsr700jvss730",
+   "recipient": "juno14juhdqftm8zd9n9pv4shjf92jzrm8ey4422jky",
+   "amount": []
+  }
+ ],
+ "metadata": "ipfs://CID",
+ "deposit": "100ujuno",
+ "title": "I want all the money",
+ "summary": "I need money for my llamas"
+}

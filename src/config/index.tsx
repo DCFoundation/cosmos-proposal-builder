@@ -17,7 +17,6 @@ import { AlertBox } from "../components/AlertBox";
 import { createProposalMessage } from "../utils/createProposalMessage";
 import { toast } from "react-toastify";
 import { makeInstallBundleMsg } from "../lib/messageBuilder";
-import { enabledProposals } from "./chainConfig";
 import { useChain } from "../hooks/useChain";
 
 const ProposalsLandingPage = () => {
@@ -27,24 +26,14 @@ const ProposalsLandingPage = () => {
   const stakingDenom = networkConfig?.staking?.stakingTokens[0].denom;
   const feeDenom = networkConfig?.fees.feeTokens[0].denom;
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
-  const [permittedProposals, setPermittedProposals] = useState<
-    QueryParams["msgType"][]
-  >([]);
 
-  const fetchEnabledProposals = useCallback(async (chainName: string) => {
-    try {
-      const proposals = await enabledProposals(chainName);
-      setPermittedProposals(proposals);
-    } catch {
-      setPermittedProposals([]);
-    }
+  const permittedProposals = useMemo(() => {
+    return !currentChain
+      ? null
+      : (Object.entries(currentChain.enabledProposalTypes)
+          .filter(([_, value]) => value === true)
+          .map(([key]) => key) as QueryParams["msgType"][]);
   }, []);
-
-  // reconfigure permitted proposals when chain changes(not parent chain)
-  //TODO: incomplete logic - currently using a workaround for child chains - just inter currently
-  useEffect(() => {
-    currentChain && fetchEnabledProposals(currentChain.value);
-  }, [currentChain, fetchEnabledProposals, networkConfig]);
 
   const watchBundle = useWatchBundle(chainInfo?.rpc, {
     clipboard: window.navigator.clipboard,
@@ -53,7 +42,7 @@ const ProposalsLandingPage = () => {
 
   const coinWealth = useMemo(
     () => selectCoins(stakingDenom!, accountBalances),
-    [accountBalances, stakingDenom],
+    [accountBalances, stakingDenom]
   );
 
   const signAndBroadcast = useMemo(
@@ -62,14 +51,14 @@ const ProposalsLandingPage = () => {
         stargateClient,
         walletAddress,
         explorerUrl || null,
-        feeDenom || null,
+        feeDenom || null
       ),
-    [stargateClient, walletAddress, explorerUrl, feeDenom],
+    [stargateClient, walletAddress, explorerUrl, feeDenom]
   );
 
   const handleProposal = async (
     msgType: QueryParams["msgType"],
-    proposalData: ProposalArgs,
+    proposalData: ProposalArgs
   ) => {
     if (!walletAddress) {
       toast.error("Wallet not connected.", { autoClose: 3000 });
@@ -80,7 +69,7 @@ const ProposalsLandingPage = () => {
       msgType,
       proposalData,
       walletAddress,
-      stakingDenom || "",
+      stakingDenom || ""
     );
 
     if (!proposalMsg) throw new Error("Error parsing query or inputs.");
@@ -89,7 +78,7 @@ const ProposalsLandingPage = () => {
       await signAndBroadcast(proposalMsg, "proposal");
     } catch (e) {
       console.error("Error submitting proposal:", e);
-      toast.error("Error submitting proposal");
+      toast.error("Error submitting proposal " + e);
     }
   };
 
@@ -101,7 +90,7 @@ const ProposalsLandingPage = () => {
       throw new Error("Invalid bundle.");
     }
     const { compressedBundle, uncompressedSize } = await compressBundle(
-      JSON.parse(bundleData.bundle),
+      JSON.parse(bundleData.bundle)
     );
     const proposalMsg = makeInstallBundleMsg({
       compressedBundle,
@@ -254,7 +243,7 @@ const ProposalsLandingPage = () => {
     ];
 
     return tabs.filter((tab) =>
-      permittedProposals.includes(tab.msgType as QueryParams["msgType"]),
+      permittedProposals.includes(tab.msgType as QueryParams["msgType"])
     );
   }, [permittedProposals]);
 

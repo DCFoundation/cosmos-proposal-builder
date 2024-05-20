@@ -1,113 +1,8 @@
 import { Bech32Config, ChainInfo, FeeCurrency } from "@keplr-wallet/types";
-import { ChainListItem } from "../contexts/chain";
 import { capitalize } from "../utils/capitalize";
 import { renderDenom } from "../utils/coin";
 import { toast } from "react-toastify";
-
-export interface ApiEntry {
-  address: string;
-  provider?: string;
-}
-
-export interface Apis {
-  rpc: ApiEntry[];
-  rest: ApiEntry[];
-  grpc?: ApiEntry[];
-}
-
-export type GaspPriceStep = {
-  fixed: number;
-  low: number;
-  average: number;
-  high: number;
-};
-
-export interface StakeCurrencyEntry {
-  stakingTokens: FeeToken[];
-}
-export interface FeeToken {
-  denom: string;
-  fixedMinGasPrice?: number;
-  lowGasPrice?: number;
-  averageGasPrice?: number;
-  highGasPrice?: number;
-}
-export interface FeeEntry {
-  feeTokens: FeeToken[];
-  gasPriceStep: GaspPriceStep | null;
-}
-
-export interface NetworkConfig {
-  chainName: string;
-  chainId: string;
-  networkName: string;
-  slip44: number;
-  fees: FeeEntry;
-  bech32Prefix: string;
-  apis: Apis;
-  logoURIs: string[] | null;
-  staking: StakeCurrencyEntry | null;
-  explorers: ExplorerEntry[] | null;
-  walletUrl: string | null;
-}
-export interface ExplorerEntry {
-  name?: string;
-  url: string;
-  txPage?: string;
-  accountPage?: string;
-}
-
-export type ChainRouter = Record<string, string | boolean>;
-// maybe [chainName, chainParent] is the right type
-const fetchApprovedChains = async (): Promise<Record<string, string>> => {
-  try {
-    const { default: chains } = (await import("../chainConfig/index.json")) as {
-      default: ChainRouter;
-    };
-    // const approvedChains: Record<string, string> = Object.fromEntries(
-    //   Object.entries(chains).map(([key, value]) => [key, value.toString()])
-    // );
-    const result = Object.fromEntries(
-      Object.entries(chains).map(([key, value]) => [
-        key,
-        value === true ? key : value,
-      ]),
-    );
-    return result as Record<string, string>;
-  } catch (error) {
-    console.error("Failed to fetch approved chains:", error);
-    toast.error("Failed to fetch approved chains");
-    return {};
-  }
-};
-//start here
-export const getChainNameFromLocation = async (
-  location: string,
-): Promise<string | null> => {
-  const pathname = location.slice(1);
-  return fetchApprovedChains()
-    .then((chains) =>
-      Object.keys(chains).includes(pathname) ? pathname : null,
-    )
-    .catch(() => {
-      throw new Error("Failed to fetch approved chains");
-    });
-};
-
-export const fetchNetworksForChain = async (
-  chainName: string,
-): Promise<string[]> => {
-  try {
-    const { default: networks } = await import(
-      `../chainConfig/${chainName}/index.json`
-    );
-    return networks;
-  } catch (error) {
-    console.error(`Failed to fetch networks for chain ${chainName}:`, error);
-    toast.error(`Failed to fetch networks for chain ${chainName}`);
-    return [];
-  }
-};
+import { ChainItem, NetworkConfig, GaspPriceStep } from "../types/chain";
 
 export const generateBech32Config = (bech32Prefix: string): Bech32Config => ({
   bech32PrefixAccAddr: bech32Prefix,
@@ -118,32 +13,26 @@ export const generateBech32Config = (bech32Prefix: string): Bech32Config => ({
   bech32PrefixConsPub: `${bech32Prefix}valconspub`,
 });
 
-export const fetchChainConfig = async (
-  chainName: string,
-  networkName: string,
-): Promise<NetworkConfig> => {
-  const fetchedConfig: NetworkConfig = await import(
-    `../chainConfig/${chainName}/${networkName}/chain.json`
-  );
-  return fetchedConfig;
-};
-export const fetchAvailableChains = async (): Promise<ChainListItem[]> => {
-  try {
-    const chainNames = await fetchApprovedChains();
-    return Object.entries(chainNames).map(([chainName, chainParent]) => ({
-      label: capitalize(chainName),
-      value: chainName,
-      parent: chainParent as string,
-      href: `/${chainName}`,
-      image: `/logo/${chainName}.svg`,
-    }));
-  } catch (error) {
-    console.error("Failed to fetch available chains:", error);
-    toast.error("Failed to fetch available chains");
-    return [];
-  }
-};
+export interface ImageObject {
+  png?: string;
+  svg?: string;
+}
 
+export function getChainItem({
+  value,
+  ...chain
+}: {
+  value: string;
+  enabledProposalTypes: ChainItem["enabledProposalTypes"];
+  networks: ChainItem["networks"];
+}) {
+  return {
+    label: capitalize(value),
+    value,
+    href: `/${value}`,
+    ...chain,
+  };
+}
 export const makeCurrency = ({
   minimalDenom,
   exponent,
@@ -217,7 +106,7 @@ export const makeChainInfo = (networkConfig: NetworkConfig): ChainInfo => {
     },
     walletUrlForStaking: networkConfig.walletUrl || undefined,
     currencies: currencies.filter(
-      (currency): currency is FeeCurrency => !!currency,
+      (currency): currency is FeeCurrency => !!currency
     ),
     features: ["stargate", "ibc-transfer"],
   };
@@ -225,7 +114,7 @@ export const makeChainInfo = (networkConfig: NetworkConfig): ChainInfo => {
 };
 
 export const suggestChain = async (
-  chainInfo: ChainInfo,
+  chainInfo: ChainInfo
 ): Promise<ChainInfo> => {
   const { keplr } = window;
   if (!keplr) {
@@ -237,14 +126,4 @@ export const suggestChain = async (
   }
   await keplr.experimentalSuggestChain(chainInfo);
   return chainInfo;
-};
-
-export const enabledProposals = async (chainName: string) => {
-  const { default: proposals } = await import(
-    `../chainConfig/${chainName}/enabledProposalTypes.json`
-  );
-  const enabledNames = Object.entries(proposals)
-    .filter(([_, value]) => value === true)
-    .map(([key]) => key) as QueryParams["msgType"][];
-  return enabledNames;
 };

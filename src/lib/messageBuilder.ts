@@ -83,7 +83,7 @@ export const makeCommunityPoolSpendProposalMsg = ({
 | --- | --- | --- |
 | ${proposalData.description} | ${proposalData.spend.amount
             .map((coin) => `${coin.amount} ${coin.denom}`)
-            .join(", ")} | ${fromBech32(proposalData.spend.recipient)}|
+            .join(", ")} | ${proposalData.spend.recipient}|
           `,
         }),
       ).finish(),
