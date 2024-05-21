@@ -8,7 +8,6 @@ const RAW_FILE_REPO_URL =
   "https://raw.githubusercontent.com/cosmos/chain-registry";
 const REPO_URL = "https://api.github.com/repos/cosmos/chain-registry/contents";
 
-
 type ApiEntry = {
   address: string;
   provider?: string;
@@ -27,7 +26,7 @@ type ChainConfig = {
   apis: Apis;
   logoURIs?: string[];
   //TODO: Add other properties as needed
-}
+};
 
 const validateChainConfig = (config: any): config is ChainConfig => {
   const requiredEntries: (keyof ChainConfig)[] = [

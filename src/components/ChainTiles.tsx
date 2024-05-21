@@ -1,11 +1,13 @@
 import { Link } from "wouter";
-import { CHAINS } from "../constants/chains";
+import { useChain } from "../hooks/useChain";
 
 const selectChainTitle = "Cosmos Proposal Builder";
 const selectChainDescription =
   "Select a chain or protocol to begin building a proposal.";
 
-export const ChainTiles = () => {
+const ChainTiles = () => {
+  const { chains } = useChain();
+
   return (
     <div className="w-full max-w-7xl px-2 py-2 sm:px-0 m-auto">
       <div className="flex flex-col min-w-full rounded-xl bg-white p-3">
@@ -21,7 +23,7 @@ export const ChainTiles = () => {
               role="list"
               className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
             >
-              {CHAINS.map(({ value, label, image }) => (
+              {chains.map(({ value, label, image }) => (
                 <li
                   key={value}
                   className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-gray-50 text-center shadow-md hover:bg-gray-100"
@@ -43,3 +45,5 @@ export const ChainTiles = () => {
     </div>
   );
 };
+
+export { ChainTiles };

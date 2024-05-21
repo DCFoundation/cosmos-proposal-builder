@@ -46,7 +46,7 @@ const Inter = () => {
   const signAndBroadcast = useMemo(
     () =>
       makeSignAndBroadcast(
-        stargateClient,
+        stargateClient || undefined,
         walletAddress,
         explorerUrl || null,
         "uist",

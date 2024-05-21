@@ -5,14 +5,14 @@ export type ChainItem = {
   parent?: string;
   image?: string;
   enabledProposalTypes: {
-    textProposal: boolean;
-    parameterChangeProposal: boolean;
-    communityPoolSpendProposal: boolean;
-    softwareUpgradeProposal: boolean;
-    installBundle: boolean;
-    addPSM: boolean;
-    addVault: boolean;
-    coreEvalProposal: boolean;
+    textProposal?: boolean;
+    parameterChangeProposal?: boolean;
+    communityPoolSpendProposal?: boolean;
+    softwareUpgradeProposal?: boolean;
+    installBundle?: boolean;
+    addPSM?: boolean;
+    addVault?: boolean;
+    coreEvalProposal?: boolean;
   };
   networks: NetworkConfig[];
 };

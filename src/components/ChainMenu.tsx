@@ -1,31 +1,44 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { capitalize } from "../utils/capitalize";
 import { DropdownMenu } from "./DropdownMenu";
 import { useWallet } from "../hooks/useWallet";
 import { useChain } from "../hooks/useChain";
-import { CHAINS } from "../constants/chains";
+import { getChains } from "../constants/chains";
 
 const placeholderText = "Select Chain";
 
 const ChainMenu = () => {
   const { currentChain, setCurrentChain } = useChain();
   const { isLoading: isLoadingWallet, walletAddress } = useWallet();
-
+  const [items, setItems] = useState<
+    Array<{
+      label: string;
+      value: string;
+      image?: string;
+      onClick: () => void;
+    }>
+  >([]);
   const title = currentChain ? capitalize(currentChain.label) : placeholderText;
   const labelImage = useMemo(
     () => (currentChain ? currentChain.image : undefined),
     [currentChain]
   );
 
-  const items = useMemo(() => {
-    return CHAINS.map(({ label, value, image }) => ({
-      label,
-      value,
-      image,
-      onClick: () => {
-        setCurrentChain(value);
-      },
-    }));
+  useEffect(() => {
+    async function fetchItems() {
+      const CHAINS = await getChains();
+      const newItems = CHAINS.map(({ label, value, image }) => ({
+        label,
+        value,
+        image,
+        onClick: () => {
+          setCurrentChain(value);
+        },
+      }));
+      setItems(newItems);
+    }
+
+    fetchItems();
   }, [setCurrentChain]);
 
   const status = useMemo(() => {

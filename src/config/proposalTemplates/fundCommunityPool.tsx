@@ -28,7 +28,7 @@ const FundCommunityPool = () => {
   const signAndBroadcast = useMemo(
     () =>
       makeSignAndBroadcast(
-        stargateClient,
+        stargateClient || undefined,
         walletAddress,
         explorerUrl || null,
         denom || null,

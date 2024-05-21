@@ -31,7 +31,6 @@ interface ChainConfig {
   //TODO: Add other properties as needed
 }
 
-
 const fetchTestnets = async () => {
   const url = `${REPO_URL}/testnets`;
   const response = await axios.get(url);
@@ -41,7 +40,6 @@ const fetchTestnets = async () => {
     .filter((item) => item.type === "dir")
     .map((item) => item.name.replace("testnet", ""));
 };
-
 
 const validateChainConfig = (config: any): config is ChainConfig => {
   const requiredEntries: (keyof ChainConfig)[] = [
@@ -248,7 +246,7 @@ const downloadApprovedChainConfigs = async () => {
   for (const chainName of [...approvedChains, ...testnets]) {
     try {
       const isTestnet = testnets.includes(chainName);
-      const chainConfig = await fetchChainConfig(chainName, isTestnet);;
+      const chainConfig = await fetchChainConfig(chainName, isTestnet);
 
       //if chain config not valid return
       if (!chainConfig) {

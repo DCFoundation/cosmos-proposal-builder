@@ -2,7 +2,7 @@ import { Bech32Config, ChainInfo, FeeCurrency } from "@keplr-wallet/types";
 import { capitalize } from "../utils/capitalize";
 import { renderDenom } from "../utils/coin";
 import { toast } from "react-toastify";
-import { ChainItem, NetworkConfig, GaspPriceStep } from "../types/chain";
+import { ChainItem, GaspPriceStep } from "../types/chain";
 
 export const generateBech32Config = (bech32Prefix: string): Bech32Config => ({
   bech32PrefixAccAddr: bech32Prefix,
@@ -56,66 +56,10 @@ export const stableCurrency = makeCurrency({
   exponent: 6,
 });
 
-//TODO: return only the rpc and rest enpoints that are live
-export const makeChainInfo = (networkConfig: NetworkConfig): ChainInfo => {
-  let stakeCurrency: FeeCurrency | undefined = undefined;
-  const {
-    chainName,
-    apis,
-    networkName,
-    chainId,
-    bech32Prefix,
-    fees,
-    slip44,
-    staking,
-  } = networkConfig;
-  const { rpc, rest } = apis;
-  const restIndex = Math.floor(Math.random() * (rest ? rest.length : 1));
-  const rpcIndex = Math.floor(Math.random() * (rpc ? rpc.length : 1));
-  const restAddr = rest[restIndex].address;
-  const rpcAddr = rpc[rpcIndex].address;
-  const rpcendpoint = rpcAddr.match(/:\/\//) ? rpcAddr : `http://${rpcAddr}`;
-  const restendpoint = restAddr.match(/:\/\//)
-    ? restAddr
-    : `http://${restAddr}`;
-  const bech32Config: Bech32Config = generateBech32Config(bech32Prefix);
-  if (!fees) {
-    throw new Error("No fees found in network config");
-  }
-  if (staking?.stakingTokens) {
-    stakeCurrency = makeCurrency({
-      minimalDenom: staking.stakingTokens[0].denom,
-    });
-  }
-
-  const feeCurrencies = makeCurrency({
-    minimalDenom: fees.feeTokens[0].denom,
-  });
-  const currencies = [feeCurrencies, stakeCurrency];
-  const chainInfo: ChainInfo = {
-    rpc: rpcendpoint,
-    rest: restendpoint,
-    chainId,
-    // chainName === "agoric" || networkName === "mainnet" ?
-    chainName: `${chainName} ${networkName}`,
-    stakeCurrency: stakeCurrency,
-    feeCurrencies: chainName === "agoric" ? [stableCurrency] : [feeCurrencies],
-    bech32Config: bech32Config,
-    bip44: {
-      coinType: slip44,
-    },
-    walletUrlForStaking: networkConfig.walletUrl || undefined,
-    currencies: currencies.filter(
-      (currency): currency is FeeCurrency => !!currency
-    ),
-    features: ["stargate", "ibc-transfer"],
-  };
-  return chainInfo;
-};
-
 export const suggestChain = async (
-  chainInfo: ChainInfo
+  chainInfo: ChainInfo,
 ): Promise<ChainInfo> => {
+  console.log(" we are on suggestChain");
   const { keplr } = window;
   if (!keplr) {
     toast.error("Keplr not found", {

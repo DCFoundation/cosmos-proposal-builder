@@ -7,14 +7,7 @@ import { useNetwork } from "../hooks/useNetwork";
 const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
   const { networkConfig } = useNetwork();
   const bech32Prefix = networkConfig?.bech32Prefix;
-  const { connectWallet, walletAddress, stargateClient, isLoading } =
-    useWallet();
-  const connectHandler = () => {
-    connectWallet()
-      .then(console.log)
-      .catch(console.error)
-      .finally(() => console.log("Connect wallet finished"));
-  };
+  const { walletAddress, stargateClient, isLoading } = useWallet();
 
   const buttonText = useMemo(() => {
     if (isLoading) return "Loading...";
@@ -29,7 +22,7 @@ const WalletConnectButton = ({ theme }: { theme: ButtonProps["theme"] }) => {
     }
   }, [walletAddress, bech32Prefix, isLoading, stargateClient]);
 
-  return <Button onClick={connectHandler} text={buttonText} theme={theme} />;
+  return <Button text={buttonText} theme={theme} />;
 };
 
 export { WalletConnectButton };

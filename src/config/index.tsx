@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { ReactNode, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
@@ -20,20 +20,21 @@ import { makeInstallBundleMsg } from "../lib/messageBuilder";
 import { useChain } from "../hooks/useChain";
 
 const ProposalsLandingPage = () => {
-  const { networkConfig, api, chainInfo } = useNetwork();
   const { currentChain } = useChain();
-  const { walletAddress, stargateClient } = useWallet();
+  const { networkConfig, api, chainInfo } = useNetwork();
+  const { walletAddress, stargateClient, isLoading } = useWallet();
   const stakingDenom = networkConfig?.staking?.stakingTokens[0].denom;
   const feeDenom = networkConfig?.fees.feeTokens[0].denom;
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
-
+  console.error("Wallet address is ", walletAddress);
+  console.error("chain info is ", chainInfo);
   const permittedProposals = useMemo(() => {
     return !currentChain
       ? null
       : (Object.entries(currentChain.enabledProposalTypes)
           .filter(([_, value]) => value === true)
           .map(([key]) => key) as QueryParams["msgType"][]);
-  }, []);
+  }, [currentChain]);
 
   const watchBundle = useWatchBundle(chainInfo?.rpc, {
     clipboard: window.navigator.clipboard,
@@ -42,75 +43,84 @@ const ProposalsLandingPage = () => {
 
   const coinWealth = useMemo(
     () => selectCoins(stakingDenom!, accountBalances),
-    [accountBalances, stakingDenom]
+    [accountBalances, stakingDenom],
   );
 
   const signAndBroadcast = useMemo(
     () =>
       makeSignAndBroadcast(
-        stargateClient,
+        stargateClient || undefined,
         walletAddress,
         explorerUrl || null,
-        feeDenom || null
+        feeDenom || null,
       ),
-    [stargateClient, walletAddress, explorerUrl, feeDenom]
+    [stargateClient, walletAddress, explorerUrl, feeDenom],
   );
 
-  const handleProposal = async (
-    msgType: QueryParams["msgType"],
-    proposalData: ProposalArgs
-  ) => {
-    if (!walletAddress) {
-      toast.error("Wallet not connected.", { autoClose: 3000 });
-      throw new Error("Wallet not connected");
-    }
-
-    const proposalMsg = createProposalMessage(
-      msgType,
-      proposalData,
-      walletAddress,
-      stakingDenom || ""
-    );
-
-    if (!proposalMsg) throw new Error("Error parsing query or inputs.");
-
-    try {
-      await signAndBroadcast(proposalMsg, "proposal");
-    } catch (e) {
-      console.error("Error submitting proposal:", e);
-      toast.error("Error submitting proposal " + e);
-    }
-  };
-
-  const handleBundle = async (bundleData: BundleFormArgs) => {
-    if (!walletAddress) {
-      throw new Error("Wallet not connected");
-    }
-    if (!isValidBundle(bundleData.bundle)) {
-      throw new Error("Invalid bundle.");
-    }
-    const { compressedBundle, uncompressedSize } = await compressBundle(
-      JSON.parse(bundleData.bundle)
-    );
-    const proposalMsg = makeInstallBundleMsg({
-      compressedBundle,
-      uncompressedSize,
-      submitter: walletAddress,
-    });
-    if (proposalMsg === null) {
-      throw new Error("Error creating proposal message.");
-    }
-    try {
-      const txResponse = await signAndBroadcast(proposalMsg, "bundle");
-      if (txResponse) {
-        const { endoZipBase64Sha512 } = JSON.parse(bundleData.bundle);
-        await watchBundle(endoZipBase64Sha512, txResponse);
+  const handleProposal = useCallback(
+    async (msgType: QueryParams["msgType"], proposalData: ProposalArgs) => {
+      if (isLoading) {
+        console.error("loading wallet");
+        toast.info(" Wallet still loading");
+        return;
       }
-    } catch (e) {
-      console.error(e);
-      toast.error("Error submitting proposal", { autoClose: 3000 });
-    }
-  };
+      if (!walletAddress) {
+        console.error(" Wallet address seems to be ", walletAddress);
+        toast.error("Wallet not connected.", { autoClose: 3000 });
+        throw new Error("Wallet not connected");
+      }
+
+      const proposalMsg = createProposalMessage(
+        msgType,
+        proposalData,
+        walletAddress,
+        stakingDenom || "",
+      );
+
+      if (!proposalMsg) throw new Error("Error parsing query or inputs.");
+
+      try {
+        await signAndBroadcast(proposalMsg, "proposal");
+      } catch (e) {
+        console.error("Error submitting proposal:", e);
+        toast.error("Error submitting proposal " + e);
+      }
+    },
+    [walletAddress],
+  );
+
+  const handleBundle = useCallback(
+    async (bundleData: BundleFormArgs) => {
+      if (!walletAddress) {
+        throw new Error("Wallet not connected");
+      }
+      if (!isValidBundle(bundleData.bundle)) {
+        throw new Error("Invalid bundle.");
+      }
+      const { compressedBundle, uncompressedSize } = await compressBundle(
+        JSON.parse(bundleData.bundle),
+      );
+      const proposalMsg = makeInstallBundleMsg({
+        compressedBundle,
+        uncompressedSize,
+        submitter: walletAddress,
+      });
+      if (proposalMsg === null) {
+        throw new Error("Error creating proposal message.");
+      }
+      try {
+        const txResponse = await signAndBroadcast(proposalMsg, "bundle");
+        if (txResponse) {
+          const { endoZipBase64Sha512 } = JSON.parse(bundleData.bundle);
+          await watchBundle(endoZipBase64Sha512, txResponse);
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("Error submitting proposal", { autoClose: 3000 });
+      }
+    },
+    [walletAddress],
+  );
 
   const proposalTabs = useMemo(() => {
     const tabs: {
@@ -123,7 +133,9 @@ const ProposalsLandingPage = () => {
         msgType: "textProposal",
         content: (
           <ProposalForm
-            handleSubmit={(data) => handleProposal("textProposal", data)}
+            handleSubmit={async (data) =>
+              await handleProposal("textProposal", data)
+            }
             titleDescOnly={true}
             title="Text Proposal"
             msgType="textProposal"
@@ -144,7 +156,9 @@ const ProposalsLandingPage = () => {
         msgType: "coreEvalProposal",
         content: (
           <ProposalForm
-            handleSubmit={(data) => handleProposal("coreEvalProposal", data)}
+            handleSubmit={async (data) =>
+              await handleProposal("coreEvalProposal", data)
+            }
             titleDescOnly={false}
             title="CoreEval Proposal"
             msgType="coreEvalProposal"
@@ -219,8 +233,8 @@ const ProposalsLandingPage = () => {
         content: (
           <ProposalForm
             title="Community Spend Proposal"
-            handleSubmit={(data) =>
-              handleProposal("communityPoolSpendProposal", data)
+            handleSubmit={async (data) =>
+              await handleProposal("communityPoolSpendProposal", data)
             }
             description={
               <>
@@ -242,10 +256,11 @@ const ProposalsLandingPage = () => {
       },
     ];
 
-    return tabs.filter((tab) =>
-      permittedProposals.includes(tab.msgType as QueryParams["msgType"])
+    return tabs.filter(
+      (tab) =>
+        permittedProposals?.includes(tab.msgType as QueryParams["msgType"]),
     );
-  }, [permittedProposals]);
+  }, [permittedProposals, handleProposal]);
 
   return (
     <>
