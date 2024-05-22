@@ -21,27 +21,3 @@ export const useDepositParams = (api: string | undefined) => {
   });
   return { minDeposit, votingPeriod };
 };
-
-// const { data: depositParams } = useQuery<DepositParams>(depositParamsQuery(api));
-
-// const minDeposit = depositParams?.min_deposit;
-// const minDepositAmount = minDeposit ? coinsUnit(minDeposit) : 0;
-
-// return { minDeposit, minDepositAmount };
-//};
-
-//   const { minDeposit, votingPeriod } = useQueries({
-//     queries: [depositParamsQuery(api!), votingParamsQuery(api!)],
-//     combine: (
-//       results: [
-//         UseQueryResult<DepositParams, unknown>,
-//         UseQueryResult<VotingParams, unknown>,
-//       ],
-//     ) => {
-//       const [deposit, voting] = results;
-//       return {
-//         minDeposit: deposit.data?.min_deposit,
-//         votingPeriod: voting.data?.voting_period,
-//       };
-//     },
-//   });
