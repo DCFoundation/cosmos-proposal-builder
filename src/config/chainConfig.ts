@@ -13,11 +13,6 @@ export const generateBech32Config = (bech32Prefix: string): Bech32Config => ({
   bech32PrefixConsPub: `${bech32Prefix}valconspub`,
 });
 
-export interface ImageObject {
-  png?: string;
-  svg?: string;
-}
-
 export function getChainItem({
   value,
   ...chain
@@ -57,7 +52,7 @@ export const stableCurrency = makeCurrency({
 });
 
 export const suggestChain = async (
-  chainInfo: ChainInfo,
+  chainInfo: ChainInfo
 ): Promise<ChainInfo> => {
   console.log(" we are on suggestChain");
   const { keplr } = window;

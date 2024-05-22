@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-import permittedChains from "./data/permittedChains.json" assert { type: "json" };
+import permittedChains from "../data/permittedChains.json" assert { type: "json" };
 
 function generateChains() {
   const chainsImports = permittedChains
@@ -29,7 +29,7 @@ ${chainsImports}
 ${chainsExport}`;
 
   fs.writeFileSync(
-    path.resolve(__dirname, "./constants/chains.ts"),
+    path.resolve(__dirname, "../constants/chains.ts"),
     fileContent
   );
   //   fs.writeFileSync(
