@@ -108,10 +108,7 @@
             "address": "https://agoric-rpc.polkachu.com",
             "provider": "Polkachu"
           },
-          {
-            "address": "https://rpc.agoric.nodestake.top",
-            "provider": "NodeStake"
-          },
+
           {
             "address": "https://agoric.rpc.kjnodes.com",
             "provider": "kjnodes"
@@ -119,10 +116,6 @@
           {
             "address": "https://agoric-mainnet-rpc.autostake.com:443",
             "provider": "AutoStake 🛡️ Slash Protected"
-          },
-          {
-            "address": "https://rpc-agoric-01.stakeflow.io",
-            "provider": "Stakeflow"
           },
           {
             "address": "https://agoric-rpc.0base.dev",
@@ -176,10 +169,6 @@
           {
             "address": "https://api-agoric-01.stakeflow.io",
             "provider": "Stakeflow"
-          },
-          {
-            "address": "https://agoric-rest.0base.dev",
-            "provider": "0base.vc"
           },
           {
             "address": "https://agoric-api.w3coins.io",

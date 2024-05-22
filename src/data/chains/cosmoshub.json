@@ -306,10 +306,6 @@
             "provider": "Notional"
           },
           {
-            "address": "https://cosmos-rest.staketab.org",
-            "provider": "Staketab"
-          },
-          {
             "address": "https://lcd.cosmos.dragonstake.io",
             "provider": "DragonStake"
           },
@@ -338,10 +334,6 @@
             "provider": "NodeStake"
           },
           {
-            "address": "https://cosmos.api.silknodes.io",
-            "provider": "Silk Nodes"
-          },
-          {
             "address": "https://cosmos-rest.publicnode.com",
             "provider": "Allnodes ⚡️ Nodes & Staking"
           },
@@ -349,22 +341,12 @@
             "address": "https://cosmoshub.api.kjnodes.com",
             "provider": "kjnodes"
           },
-          {
-            "address": "https://api-cosmos-hub-01.stakeflow.io",
-            "provider": "Stakeflow"
-          },
+
           {
             "address": "https://cosmos-api.w3coins.io",
             "provider": "w3coins"
           },
-          {
-            "address": "https://api-cosmoshub.mms.team",
-            "provider": "MMS"
-          },
-          {
-            "address": "https://cosmos-api.tienthuattoan.ventures",
-            "provider": "TienThuatToan"
-          },
+
           {
             "address": "https://community.nuxian-node.ch:6797/gaia/crpc",
             "provider": "PRO Delegators"
@@ -372,10 +354,6 @@
           {
             "address": "https://cosmos-api.highstakes.ch",
             "provider": "High Stakes 🇨🇭"
-          },
-          {
-            "address": "https://cosmoshub-api.cosmosrescue.dev",
-            "provider": "cosmosrescue"
           },
           {
             "address": "https://cosmos-rest.interstellar-lounge.org",
@@ -693,10 +671,6 @@
           {
             "address": "https://public-cosmos-theta.w3node.com",
             "provider": "Interchain.FM"
-          },
-          {
-            "address": "https://rpc-theta.osmotest5.osmosis.zone/",
-            "provider": "Osmosis"
           }
         ],
         "rest": [
@@ -709,20 +683,12 @@
             "provider": "Hypha"
           },
           {
-            "address": "https://rest.state-sync-01.theta-testnet.polypore.xyz",
-            "provider": "Hypha"
-          },
-          {
             "address": "https://rest.state-sync-02.theta-testnet.polypore.xyz",
             "provider": "Hypha"
           },
           {
             "address": "https://public-cosmos-theta.w3node.com/rest/",
             "provider": "Interchain.FM"
-          },
-          {
-            "address": "https://lcd-theta.osmotest5.osmosis.zone/",
-            "provider": "Osmosis"
           }
         ],
         "grpc": [

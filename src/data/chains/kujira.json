@@ -34,6 +34,13 @@
             "lowGasPrice": 0.00019,
             "averageGasPrice": 0.00029,
             "highGasPrice": 0.00039
+          },
+          {
+            "denom": "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
+            "fixed_min_gas_price": 0.01186,
+            "low_gas_price": 0.01186,
+            "average_gas_price": 0.01779,
+            "high_gas_price": 0.02372
           }
         ]
       },
