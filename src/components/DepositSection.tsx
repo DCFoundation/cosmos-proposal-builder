@@ -1,44 +1,27 @@
 import React, { useMemo, useRef } from "react";
-import { UseQueryResult, useQueries, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
-import {
-  accountBalancesQuery,
-  depositParamsQuery,
-  votingParamsQuery,
-} from "../lib/queries";
-import type { DepositParams, VotingParams } from "../types/gov";
+import { accountBalancesQuery } from "../lib/queries";
 import { renderCoins, coinsUnit } from "../utils/coin";
 import moment from "moment";
 import { WalletConnectButton } from "./WalletConnectButton.tsx";
 import { NetworkDropdown } from "./NetworkDropdown.tsx";
 import { selectCoins } from "../lib/selectors.ts";
+import { useDepositParams } from "../hooks/useDepositParams.ts";
 
 export const DepositSection: React.FC<unknown> = () => {
   const { networkConfig, api } = useNetwork();
   const { walletAddress } = useWallet();
   const depositRef = useRef<HTMLInputElement>(null);
   const denom = networkConfig?.staking?.stakingTokens[0].denom;
-  const { minDeposit, votingPeriod } = useQueries({
-    queries: [depositParamsQuery(api!), votingParamsQuery(api!)],
-    combine: (
-      results: [
-        UseQueryResult<DepositParams, unknown>,
-        UseQueryResult<VotingParams, unknown>,
-      ],
-    ) => {
-      const [deposit, voting] = results;
-      return {
-        minDeposit: deposit.data?.min_deposit,
-        votingPeriod: voting.data?.voting_period,
-      };
-    },
-  });
+
+  const { minDeposit, votingPeriod } = useDepositParams(api!);
 
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const coins = useMemo(
     () => selectCoins(denom, accountBalances),
-    [accountBalances, denom],
+    [accountBalances, denom]
   );
   const renderTime = (time: string | undefined) => {
     const onlyNumberTime = String(time).slice(0, -1);

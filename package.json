@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "prebuild": "node src/generateChains.mjs",
     "build": "tsc && vite build",
     "dev": "vite",
     "start:docker": "docker-compose up -d",
