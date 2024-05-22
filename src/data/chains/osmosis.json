@@ -41,39 +41,6 @@
           "time": "1209600s"
         }
       },
-      "codebase": {
-        "gitRepo": "https://github.com/osmosis-labs/osmosis",
-        "genesis": {
-          "name": "v3",
-          "genesisUrl": "https://github.com/osmosis-labs/networks/raw/main/osmosis-1/genesis.json"
-        },
-        "recommendedVersion": "v25.0.0",
-        "compatibleVersions": ["v25.0.0"],
-        "cosmosSdkVersion": "osmosis-labs/cosmos-sdk v0.47.5-v25-osmo-1",
-        "consensus": {
-          "type": "cometbft",
-          "version": "osmosis-labs/cometbft v0.37.4-v25-osmo-2"
-        },
-        "cosmwasmVersion": "osmosis-labs/wasmd v0.45.0-osmo",
-        "cosmwasmEnabled": true,
-        "ibcGoVersion": "v7.4.0",
-        "icsEnabled": [
-          {
-            "0": "i",
-            "1": "c",
-            "2": "s",
-            "3": "2",
-            "4": "0",
-            "5": "-",
-            "6": "1"
-          }
-        ],
-        "goVersion": "1.21.4",
-        "binaries": {
-          "linux/amd64": "https://github.com/osmosis-labs/osmosis/releases/download/v25.0.0/osmosisd-25.0.0-linux-amd64",
-          "linux/arm64": "https://github.com/osmosis-labs/osmosis/releases/download/v25.0.0/osmosisd-25.0.0-linux-arm64"
-        }
-      },
       "images": [
         {
           "png": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmosis-chain-logo.png",
@@ -548,13 +515,6 @@
           "url": "https://mainnet.whispernode.com/osmosis",
           "txPage": "https://mainnet.whispernode.com/osmosis/tx/${txHash}",
           "accountPage": "https://mainnet.whispernode.com/osmosis/account/${accountAddress}"
-        }
-      ],
-      "keywords": [
-        {
-          "0": "d",
-          "1": "e",
-          "2": "x"
         }
       ]
     },

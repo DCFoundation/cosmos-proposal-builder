@@ -86,8 +86,6 @@ export const NetworkContextProvider = ({
         choice(rpc.map((r) => r.address)),
         choice(rest.map((r) => r.address)),
       ]);
-      console.warn("rpcEndpoint", rpcEndpoint);
-      console.warn("restEndpoint", restEndpoint);
       if (!(rpcEndpoint && restEndpoint)) {
         return null;
       }

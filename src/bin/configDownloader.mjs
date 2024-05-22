@@ -44,7 +44,7 @@ const cleanupObject = async (obj) => {
       cleanedObj[camelCaseKey] = await cleanupObject(obj[key]);
     } else {
       cleanedObj[camelCaseKey] = obj[key];
-    //   continue;
+      //   continue;
     }
   }
   console.log("cleanedObj", cleanedObj);
@@ -91,10 +91,12 @@ const fetchApprovedChains = async () => {
 
 const fetchChainConfig = async (chainName, networkType) => {
   try {
-    const networkName = networkType === 'testnet' ? `${chainName}testnet` : chainName;
-    const configUrl = networkType === "testnet"
-      ? `${RAW_FILE_REPO_URL}/master/testnets/${networkName}/chain.json`
-      : `${RAW_FILE_REPO_URL}/master/${chainName}/chain.json`;
+    const networkName =
+      networkType === "testnet" ? `${chainName}testnet` : chainName;
+    const configUrl =
+      networkType === "testnet"
+        ? `${RAW_FILE_REPO_URL}/master/testnets/${networkName}/chain.json`
+        : `${RAW_FILE_REPO_URL}/master/${chainName}/chain.json`;
 
     const configResponse = await axios.get(configUrl);
     const data = configResponse.data;
@@ -111,7 +113,7 @@ const fetchChainConfig = async (chainName, networkType) => {
     // config.networkName = networkName;
     // Set the chainName from the command-line argument
     config.chainName = chainName;
-    console.error(' we have images? ', config.images)
+    console.error(" we have images? ", config.images);
     // Set the logo URLs
     config.logoURIs = config.imageUrls;
     // console.log("config ixxxx ", config);
@@ -126,7 +128,7 @@ const downloadChainConfig = async (chainName, networkName) => {
     // const networkName = isTestnet ? `${chainName}testnet` : "mainnet";
     const chainConfig = await fetchChainConfig(chainName, networkName);
     console.log(" We have something   ", chainConfig);
-    
+
     const configDir = path.join(
       "public",
       "chainConfig",
@@ -170,29 +172,6 @@ const getOrCreatedir = async (dir) => {
   }
 };
 
-
-// const fetchChainImages = async (chainName) => {
-//     const chainConfig =  await import(`../chainConfig/${chainName}/mainnet/chain.json`);
-//     const logoUrls = chainConfig.images;
-//     if (logoUrls) {
-//         return [logoUrls]
-//     }
-//     // const downloadPromises = chainImages.map( async (imageUrl) =>
-//     return null;
-// }
-//   const url = `${REPO_URL}/${chainName}/images`;
-//   const response = await axios.get(url);
-//   const data = response.data;
-
-//   return data
-//     .filter(
-//       (file) =>
-//         file.type === "file" &&
-//         (file.name.endsWith(".png") || file.name.endsWith(".svg"))
-//     )
-//     .map((file) => file.download_url);
-// };
-
 const downloadApprovedChainConfigs = async () => {
   const approvedChains = await fetchApprovedChains();
 
@@ -213,7 +192,12 @@ const downloadApprovedChainConfigs = async () => {
         continue;
       }
 
-      const configDir = path.join("public", "chainConfig", chainName, chainConfig.networkName);
+      const configDir = path.join(
+        "public",
+        "chainConfig",
+        chainName,
+        chainConfig.networkName
+      );
 
       await getOrCreatedir(configDir);
 
@@ -222,31 +206,29 @@ const downloadApprovedChainConfigs = async () => {
       console.log(
         `Chain configuration for ${chainName} downloaded and saved successfully.`
       );
-    //   let imageUrls
-    //   let downloadPromises;
-    //   const assetDir = path.join("logo");
-    //   await getOrCreatedir(assetDir);
+      //   let imageUrls
+      //   let downloadPromises;
+      //   const assetDir = path.join("logo");
+      //   await getOrCreatedir(assetDir);
       //const chainImages = chainConfig.images
-        // if (chainImages){
-        //   downloadPromises = chainImages.map( async (imageUrl) =>
-        // {
-        //     const imageName = path.basename(imageUrl);
-        //     const outputPath = path.join(assetDir, ``)
-        // })
-        // }
-        //const imageUrls = await fetchChainImages(chainName);
-    
+      // if (chainImages){
+      //   downloadPromises = chainImages.map( async (imageUrl) =>
+      // {
+      //     const imageName = path.basename(imageUrl);
+      //     const outputPath = path.join(assetDir, ``)
+      // })
+      // }
+      //const imageUrls = await fetchChainImages(chainName);
 
+      // downloadPromises = imageUrls.map(async (imageUrl) => {
+      // const imageName = path.basename(imageUrl);
+      // const outputPath = path.join(assetDir, imageName);
 
-        // downloadPromises = imageUrls.map(async (imageUrl) => {
-        // const imageName = path.basename(imageUrl);
-        // const outputPath = path.join(assetDir, imageName);
-
-    //     await downloadImage(imageUrl, outputPath);
-    //     console.log(
-    //       `Image ${imageName} for ${chainName} downloaded successfully.`
-    //     );
-    //   });
+      //     await downloadImage(imageUrl, outputPath);
+      //     console.log(
+      //       `Image ${imageName} for ${chainName} downloaded successfully.`
+      //     );
+      //   });
 
       //await Promise.all(downloadPromises);
     } catch (error) {
@@ -254,180 +236,14 @@ const downloadApprovedChainConfigs = async () => {
     }
   }
 };
-
-// const downloadChainConfig = async (chainName, isTestnet) => {
-//     try {
-//       const networkName = isTestnet ?  `${chainName}testnet` : chainName;
-//       const configUrl = isTestnet
-//         ? `${RAW_FILE_REPO_URL}/${GIT_REF}/testnets/${networkName}/chain.json`
-//         : `${RAW_FILE_REPO_URL}/${GIT_REF}/${networkName}/chain.json`;
-
-//       const configResponse = await axios.get(configUrl);
-//       const chainConfig = configResponse.data;
-
-//       if (!validateChainConfig(chainConfig)) {
-//         console.error(`Skipping chain ${chainName} due to invalid config.`);
-//         return;
-//       }
-
-//       const configDir = path.join("config", chainName, networkName);
-//       const configPath = path.join(configDir, "chain.json");
-
-//       // Check if the JSON file already exists and has the expected structure
-//       if (fs.existsSync(configPath)) {
-//         const existingConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-//         if (validateChainConfig(existingConfig)) {
-//           console.log(
-//             `Chain configuration for ${chainName} (${networkName}) already exists and has the expected structure. Skipping download.`,
-//           );
-//           return;
-//         }
-//       }
-
-//       await getOrCreatedir(configDir);
-//       fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
-
-//       console.log(
-//         `Chain configuration for ${chainName} (${networkName}) downloaded and saved successfully.`,
-//       );
-
-//       const imageUrls = await fetchChainImages(chainName);
-//       const assetDir = path.join("public", chainName);
-
-//       await getOrCreatedir(assetDir);
-
-//       const downloadPromises = imageUrls.map(async (imageUrl) => {
-//         const imageName = path.basename(imageUrl);
-//         const outputPath = path.join(assetDir, imageName);
-
-//         // Check if the asset file already exists
-//         if (!fs.existsSync(outputPath)) {
-//           await downloadImage(imageUrl, outputPath);
-//           console.log(
-//             `Image ${imageName} for ${chainName} downloaded successfully.`,
-//           );
-//         } else {
-//           console.log(
-
-//             `Image ${imageName} for ${chainName} already exists. Skipping download.`,
-//           );
-//         }
-//       });
-
-//       await Promise.all(downloadPromises);
-//     } catch (error) {
-//       console.error(`Error processing chain ${chainName}:`, error);
-//     }
-//   };
-// const downloadChainConfig = async (chainName, isTestnet) => {
-
-//     try {
-//         const networkName = isTestnet ? `${chainName}testnet` : chainConfig.networkName;
-//         const configDir = path.join("config", chainName, networkName);
-
-//         const configPath = path.join(configDir, "chain.json");
-//         if (fs.existsSync(configPath)) {
-//           const existingConfig = JSON.parse(fs.readFileSync(configPath, "utf8"));
-//           if (validateChainConfig(existingConfig)) {
-//             console.log(
-//               `Chain configuration for ${chainName} (${networkName}) already exists and has the expected structure. Skipping download.`,
-//             );
-//             return;
-//           }
-//           }
-//     await getOrCreatedir(configDir);
-//       const chainConfig = await fetchChainConfig(chainName, isTestnet);
-
-//       if (!chainConfig) {
-//         console.error(`Skipping chain ${chainName} due to invalid config.`);
-//         return;
-//       }
-
-//       fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
-
-//       console.log(
-//         `Chain configuration for ${chainName} (${networkName}) downloaded and saved successfully.`,
-//       );
-
-//       const imageUrls = await fetchChainImages(chainName);
-//       const assetDir = path.join("public", chainName);
-
-//       await getOrCreatedir(assetDir);
-
-//       const downloadPromises = imageUrls.map(async (imageUrl) => {
-//         const imageName = path.basename(imageUrl);
-//         const outputPath = path.join(assetDir, imageName);
-
-//         // Check if the asset file already exists
-//         if (!fs.existsSync(outputPath)) {
-//           await downloadImage(imageUrl, outputPath);
-//           console.log(
-//             `Image ${imageName} for ${chainName} downloaded successfully.`,
-//           );
-//         } else {
-//           console.log(
-//             `Image ${imageName} for ${chainName} already exists. Skipping download.`,
-//           );
-//         }
-//       });
-
-//       await Promise.all(downloadPromises);
-//     } catch (error) {
-//       console.error(`Error processing chain ${chainName}:`, error);
-//     }
-//   };
-// const downloadChainConfig = async (chainName, isTestnet) => {
-//     try {
-//       const chainConfig = await fetchChainConfig(chainName, isTestnet);
-
-//       if (!chainConfig) {
-//         console.error(`Skipping chain ${chainName} due to invalid config.`);
-//         return;
-//       }
-
-//       const networkName = isTestnet ? `${chainName}testnet` : chainConfig.networkName;
-//       const configDir = path.join("config", chainName, networkName);
-
-//       await getOrCreatedir(configDir);
-
-//       const configPath = path.join(configDir, "chain.json");
-//       fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
-
-//       console.log(
-//         `Chain configuration for ${chainName} (${networkName}) downloaded and saved successfully.`,
-//       );
-
-//       const imageUrls = await fetchChainImages(chainName);
-//       const assetDir = path.join("public", chainName);
-
-//       await getOrCreatedir(assetDir);
-
-//       const downloadPromises = imageUrls.map(async (imageUrl) => {
-//         const imageName = path.basename(imageUrl);
-//         const outputPath = path.join(assetDir, imageName);
-
-//         await downloadImage(imageUrl, outputPath);
-//         console.log(
-//           `Image ${imageName} for ${chainName} downloaded successfully.`,
-//         );
-//       });
-
-//       await Promise.all(downloadPromises);
-//     } catch (error) {
-//       console.error(`Error processing chain ${chainName}:`, error);
-//     }
-//   };
 const main = async () => {
   try {
     const args = process.argv.slice(2);
     if (args.length === 2) {
       const chainName = args[0];
       const networkType = args[1];
-      console.warn(' chainName is ', chainName);
-      console.warn('networkType  nayo ni', networkType);
       // const isTestnet = networkType === "testnet";
       await downloadChainConfig(chainName, networkType);
-      console.log(" We passed aomeyfof");
     } else {
       await downloadApprovedChainConfigs();
     }

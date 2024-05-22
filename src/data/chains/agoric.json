@@ -48,21 +48,6 @@
           }
         ]
       },
-      "codebase": {
-        "gitRepo": "https://github.com/Agoric/agoric-sdk/",
-        "recommendedVersion": "agoric-upgrade-8",
-        "compatibleVersions": ["agoric-upgrade-8"],
-        "genesis": {
-          "genesisUrl": "https://main.agoric.net/genesis.json"
-        },
-        "versions": [
-          {
-            "name": "agoric-upgrade-8",
-            "recommendedVersion": "agoric-upgrade-8",
-            "compatibleVersions": ["agoric-upgrade-8"]
-          }
-        ]
-      },
       "description": "The Agoric platform makes it safe and seamless to build decentralized apps using your existing JavaScript knowledge.",
       "peers": {
         "seeds": [

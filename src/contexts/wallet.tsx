@@ -23,16 +23,12 @@ export const WalletContextProvider = ({
   const walletQuery = useQuery({
     queryKey: ["walletQueryData", chainInfo],
     queryFn: async () => {
-      console.warn("chainInfo", chainInfo);
       if (!chainInfo) return null;
       const { chainId, rpc, feeCurrencies } = await suggestChain(chainInfo);
-      console.warn("We got chainId as ", chainId);
       await window.keplr.enable(chainId);
 
       const offlineSigner = window.keplr.getOfflineSigner(chainId);
-      console.warn("offlineSigner", offlineSigner);
       const accounts = await offlineSigner.getAccounts();
-      console.warn("accounts", accounts);
       const stargateClient = await SigningStargateClient.connectWithSigner(
         rpc,
         offlineSigner,

@@ -26,8 +26,6 @@ const ProposalsLandingPage = () => {
   const stakingDenom = networkConfig?.staking?.stakingTokens[0].denom;
   const feeDenom = networkConfig?.fees.feeTokens[0].denom;
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
-  console.error("Wallet address is ", walletAddress);
-  console.error("chain info is ", chainInfo);
   const permittedProposals = useMemo(() => {
     return !currentChain
       ? null

@@ -54,7 +54,6 @@ export const stableCurrency = makeCurrency({
 export const suggestChain = async (
   chainInfo: ChainInfo
 ): Promise<ChainInfo> => {
-  console.log(" we are on suggestChain");
   const { keplr } = window;
   if (!keplr) {
     toast.error("Keplr not found", {
