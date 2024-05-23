@@ -52,7 +52,7 @@ export const stableCurrency = makeCurrency({
 });
 
 export const suggestChain = async (
-  chainInfo: ChainInfo
+  chainInfo: ChainInfo,
 ): Promise<ChainInfo> => {
   const { keplr } = window;
   if (!keplr) {

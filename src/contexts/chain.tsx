@@ -9,6 +9,10 @@ export interface ChainContextValue {
   setCurrentChain: (chain: string) => void;
 }
 
+export const chainItemMap: Map<string, ChainItem> = CHAINS.reduce(
+  (map, item) => map.set(item.value, item),
+  new Map<string, ChainItem>(),
+);
 export const ChainContext = createContext<ChainContextValue | null>(null);
 
 export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
@@ -19,18 +23,15 @@ export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
     (chain: string) => {
       setLocation(`/${chain}?network=mainnet`);
     },
-    [setLocation]
+    [setLocation],
   );
 
-  const currentChain = useMemo(
-    () => CHAINS.find((c) => c.value === chainName) ?? null,
-    [chainName]
-  );
+  const currentChain = useMemo(() => chainItemMap.get(chainName), [chainName]);
 
   return (
     <ChainContext.Provider
       value={{
-        currentChain,
+        currentChain: currentChain || null,
         setCurrentChain,
       }}
     >

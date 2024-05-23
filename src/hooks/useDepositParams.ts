@@ -10,7 +10,7 @@ export const useDepositParams = (api: string | undefined) => {
       results: [
         UseQueryResult<DepositParams, unknown>,
         UseQueryResult<VotingParams, unknown>,
-      ]
+      ],
     ): { minDeposit: Coin[] | undefined; votingPeriod: string | undefined } => {
       const [deposit, voting] = results;
       return {

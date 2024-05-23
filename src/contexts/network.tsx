@@ -33,12 +33,12 @@ export const NetworkContextProvider = ({
 
   const selectedNetwork = useMemo(
     () => new URLSearchParams(search).get("network") ?? null,
-    [search]
+    [search],
   );
 
   const networksList = useMemo(
     () => currentChain?.networks.map((n) => n.networkName) ?? null,
-    [currentChain?.networks]
+    [currentChain?.networks],
   );
 
   const networkConfig = useMemo(
@@ -46,9 +46,9 @@ export const NetworkContextProvider = ({
       !currentChain || !selectedNetwork
         ? null
         : currentChain.networks.find(
-            (n) => n.networkName === selectedNetwork
+            (n) => n.networkName === selectedNetwork,
           ) ?? null,
-    [currentChain, selectedNetwork]
+    [currentChain, selectedNetwork],
   );
 
   const restApi = useMemo(() => {
@@ -62,7 +62,7 @@ export const NetworkContextProvider = ({
         setLocation(`/${currentChain.value}?network=${network}`);
       }
     },
-    [currentChain, setLocation]
+    [currentChain, setLocation],
   );
 
   const { data: chainInfo } = useQuery({
@@ -106,7 +106,7 @@ export const NetworkContextProvider = ({
       const uniqueCurrencies = new Set(
         currencies
           .filter((currency): currency is FeeCurrency => !!currency)
-          .map((currency) => JSON.stringify(currency))
+          .map((currency) => JSON.stringify(currency)),
       );
       const chainInfo: ChainInfo = {
         rpc: rpcEndpoint,
@@ -123,7 +123,7 @@ export const NetworkContextProvider = ({
         },
         walletUrlForStaking: networkConfig.walletUrl || undefined,
         currencies: Array.from(uniqueCurrencies, (currencyString) =>
-          JSON.parse(currencyString)
+          JSON.parse(currencyString),
         ),
         features: ["stargate", "ibc-transfer"],
       };

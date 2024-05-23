@@ -23,7 +23,8 @@ interface MakeTextProposalArgs {
   deposit?: string | number;
   denom: string;
 }
-export interface CustomProposal {
+
+interface CustomSpendProposal {
   description: string;
   spend: {
     recipient: string;
@@ -64,7 +65,7 @@ export const makeCommunityPoolSpendProposalMsg = ({
   description: string;
   deposit?: number | string;
 }) => {
-  const proposalData: CustomProposal = {
+  const proposalData: CustomSpendProposal = {
     description,
     spend: {
       recipient,

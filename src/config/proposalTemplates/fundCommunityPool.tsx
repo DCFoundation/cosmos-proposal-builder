@@ -22,7 +22,7 @@ const FundCommunityPool = () => {
 
   const coinWealth = useMemo(
     () => selectCoins(denom!, accountBalances),
-    [accountBalances, denom]
+    [accountBalances, denom],
   );
 
   const signAndBroadcast = useMemo(
@@ -31,9 +31,9 @@ const FundCommunityPool = () => {
         stargateClient || undefined,
         walletAddress,
         explorerUrl || null,
-        denom || null
+        denom || null,
       ),
-    [stargateClient, walletAddress, explorerUrl, denom]
+    [stargateClient, walletAddress, explorerUrl, denom],
   );
 
   const handleProposal = async (e: FormEvent) => {

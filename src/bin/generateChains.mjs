@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
+console.log("generating chains.ts file");
 import permittedChains from "../data/permittedChains.json" assert { type: "json" };
 
 function generateChains() {
@@ -32,10 +32,7 @@ ${chainsExport}`;
     path.resolve(__dirname, "../constants/chains.ts"),
     fileContent
   );
-  //   fs.writeFileSync(
-  //     path.resolve(__dirname, "./constants/chains.ts"),
-  //     fileContent
-  //   );
+  console.warn("File generated successfuly");
 }
 
 generateChains();

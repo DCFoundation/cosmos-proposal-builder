@@ -38,7 +38,7 @@ export const WalletContextProvider = ({
             denom: feeCurrencies[0].coinMinimalDenom,
             amount: Decimal.fromUserInput("50000000", 0),
           },
-        }
+        },
       );
 
       return {

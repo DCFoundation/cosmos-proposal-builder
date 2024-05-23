@@ -40,7 +40,7 @@ const Inter = () => {
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
   const bldCoins = useMemo(
     () => selectBldCoins(accountBalances),
-    [accountBalances]
+    [accountBalances],
   );
 
   const signAndBroadcast = useMemo(
@@ -49,9 +49,9 @@ const Inter = () => {
         stargateClient || undefined,
         walletAddress,
         explorerUrl || null,
-        "uist"
+        "uist",
       ),
-    [stargateClient, walletAddress, explorerUrl]
+    [stargateClient, walletAddress, explorerUrl],
   );
 
   const handlePsmSubmit = async (e: FormEvent) => {
@@ -164,11 +164,11 @@ const Inter = () => {
       };
       const generatedAddVaultJs = generateFromTemplate<AddVaultParams>(
         addVaultJs,
-        templateParams
+        templateParams,
       );
       const generatedAddOracleJs = generateFromTemplate<AddVaultParams>(
         addOracleJs,
-        templateParams
+        templateParams,
       );
 
       const evals: CoreEval[] = [

@@ -14,7 +14,7 @@ const ChainMenu = () => {
   const title = currentChain ? capitalize(currentChain.label) : placeholderText;
   const labelImage = useMemo(
     () => (currentChain ? currentChain.image : undefined),
-    [currentChain]
+    [currentChain],
   );
 
   const items = useMemo(() => {

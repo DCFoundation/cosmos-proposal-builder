@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { ReactNode, useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNetwork } from "../hooks/useNetwork";
 import { useWallet } from "../hooks/useWallet";
@@ -40,7 +40,7 @@ const ProposalsLandingPage = () => {
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
 
   const coinWealth = useMemo(
-    () => selectCoins(stakingDenom!, accountBalances),
+    () => selectCoins(stakingDenom, accountBalances),
     [accountBalances, stakingDenom]
   );
 
@@ -55,66 +55,69 @@ const ProposalsLandingPage = () => {
     [stargateClient, walletAddress, explorerUrl, feeDenom]
   );
 
-  const handleProposal = async (
-    msgType: QueryParams["msgType"],
-    proposalData: ProposalArgs
-  ) => {
-    if (isLoading) {
-      console.error("loading wallet");
-      toast.info(" Wallet still loading");
-    }
-    if (!walletAddress) {
-      console.error(" Wallet address seems to be ", walletAddress);
-      toast.error("Wallet not connected.", { autoClose: 3000 });
-      throw new Error("Wallet not connected");
-    }
-
-    const proposalMsg = createProposalMessage(
-      msgType,
-      proposalData,
-      walletAddress,
-      stakingDenom || ""
-    );
-
-    if (!proposalMsg) throw new Error("Error parsing query or inputs.");
-
-    try {
-      await signAndBroadcast(proposalMsg, "proposal");
-    } catch (e) {
-      console.error("Error submitting proposal:", e);
-      toast.error("Error submitting proposal " + e);
-    }
-  };
-
-  const handleBundle = async (bundleData: BundleFormArgs) => {
-    if (!walletAddress) {
-      throw new Error("Wallet not connected");
-    }
-    if (!isValidBundle(bundleData.bundle)) {
-      throw new Error("Invalid bundle.");
-    }
-    const { compressedBundle, uncompressedSize } = await compressBundle(
-      JSON.parse(bundleData.bundle)
-    );
-    const proposalMsg = makeInstallBundleMsg({
-      compressedBundle,
-      uncompressedSize,
-      submitter: walletAddress,
-    });
-    if (proposalMsg === null) {
-      throw new Error("Error creating proposal message.");
-    }
-    try {
-      const txResponse = await signAndBroadcast(proposalMsg, "bundle");
-      if (txResponse) {
-        const { endoZipBase64Sha512 } = JSON.parse(bundleData.bundle);
-        await watchBundle(endoZipBase64Sha512, txResponse);
+  const handleProposal = useCallback(
+    async (msgType: QueryParams["msgType"], proposalData: ProposalArgs) => {
+      if (isLoading) {
+        console.error("loading wallet");
+        toast.info(" Wallet still loading");
       }
-    } catch (e) {
-      console.error(e);
-      toast.error("Error submitting proposal", { autoClose: 3000 });
-    }
-  };
+      if (!walletAddress) {
+        console.error(" Wallet address seems to be ", walletAddress);
+        toast.error("Wallet not connected.", { autoClose: 3000 });
+        throw new Error("Wallet not connected");
+      }
+
+      const proposalMsg = createProposalMessage(
+        msgType,
+        proposalData,
+        walletAddress,
+        stakingDenom || ""
+      );
+
+      if (!proposalMsg) throw new Error("Error parsing query or inputs.");
+
+      try {
+        await signAndBroadcast(proposalMsg, "proposal");
+      } catch (e) {
+        console.error("Error submitting proposal:", e);
+        toast.error("Error submitting proposal " + e);
+      }
+    },
+    [walletAddress, chainInfo]
+  );
+
+  const handleBundle = useCallback(
+    async (bundleData: BundleFormArgs) => {
+      if (!walletAddress) {
+        throw new Error("Wallet not connected");
+      }
+      if (!isValidBundle(bundleData.bundle)) {
+        throw new Error("Invalid bundle.");
+      }
+      const { compressedBundle, uncompressedSize } = await compressBundle(
+        JSON.parse(bundleData.bundle)
+      );
+      const proposalMsg = makeInstallBundleMsg({
+        compressedBundle,
+        uncompressedSize,
+        submitter: walletAddress,
+      });
+      if (proposalMsg === null) {
+        throw new Error("Error creating proposal message.");
+      }
+      try {
+        const txResponse = await signAndBroadcast(proposalMsg, "bundle");
+        if (txResponse) {
+          const { endoZipBase64Sha512 } = JSON.parse(bundleData.bundle);
+          await watchBundle(endoZipBase64Sha512, txResponse);
+        }
+      } catch (e) {
+        console.error(e);
+        toast.error("Error submitting proposal", { autoClose: 3000 });
+      }
+    },
+    [walletAddress, chainInfo]
+  );
 
   const proposalTabs = useMemo(() => {
     const tabs: {
