@@ -1,0 +1,90 @@
+{
+  "value": "juno",
+  "image": "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/juno.svg",
+  "enabledProposalTypes": {
+    "textProposal": true,
+    "communityPoolSpendProposal": true
+  },
+  "networks": [
+    {
+      "$schema": "../../chain.schema.json",
+      "chainName": "juno",
+      "status": "live",
+      "networkName": "testnet",
+      "prettyName": "Juno Testnet",
+      "chainId": "uni-6",
+      "bech32Prefix": "juno",
+      "daemonName": "junod",
+      "nodeHome": "$HOME/.juno",
+      "keyAlgos": [
+        "secp256k1"
+      ],
+      "slip44": 118,
+      "fees": {
+        "feeTokens": [
+          {
+            "denom": "ujunox",
+            "lowGasPrice": 0.003,
+            "averageGasPrice": 0.0045,
+            "highGasPrice": 0.006
+          }
+        ]
+      },
+      "staking": {
+        "stakingTokens": [
+          {
+            "denom": "ujunox"
+          }
+        ]
+      },
+      "peers": {
+        "seeds": [
+          {
+            "id": "babc3f3f7804933265ec9c40ad94f4da8e9e0017",
+            "address": "testnet-seed.rhinostake.com:12656",
+            "provider": "RHINO"
+          }
+        ],
+        "persistentPeers": [
+          {
+            "id": "c54bf418fb542634495f57a1e36c9bd057d55e1b",
+            "address": "5.161.80.115:26656",
+            "provider": "Reecepbcups"
+          }
+        ]
+      },
+      "apis": {
+        "rpc": [
+          {
+            "address": "https://juno-testnet-rpc.polkachu.com",
+            "provider": "Polkachu"
+          }
+        ],
+        "rest": [
+          {
+            "address": "https://juno-testnet-api.polkachu.com",
+            "provider": "Polkachu"
+          },
+          {
+            "address": "https://juno.api.t.stavr.tech",
+            "provider": "🔥STAVR🔥"
+          }
+        ],
+        "grpc": [
+          {
+            "address": "juno-testnet-grpc.polkachu.com:12690",
+            "provider": "Polkachu"
+          }
+        ]
+      },
+      "explorers": [
+        {
+          "kind": "🔥STAVR🔥",
+          "url": "https://explorer.stavr.tech/Juno-Testnet",
+          "txPage": "https://explorer.stavr.tech/Juno-Testnet/txs/${txHash}",
+          "accountPage": "https://explorer.stavr.tech/Juno-Testnet/account/${accountAddress}"
+        }
+      ]
+    }
+  ]
+}

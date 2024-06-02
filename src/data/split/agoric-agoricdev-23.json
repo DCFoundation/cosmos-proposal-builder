@@ -1,0 +1,78 @@
+{
+  "value": "agoric",
+  "image": "https://raw.githubusercontent.com/cosmos/chain-registry/master/agoric/images/Agoric-logo-color.svg",
+  "enabledProposalTypes": {
+    "textProposal": true,
+    "parameterChangeProposal": true,
+    "communityPoolSpendProposal": true,
+    "softwareUpgradeProposal": true,
+    "installBundle": true,
+    "addPSM": true,
+    "addVault": true,
+    "coreEvalProposal": true
+  },
+  "networks": [
+    {
+      "$schema": "../chain.schema.json",
+      "chainName": "agoric",
+      "website": "https://agoric.com/",
+      "bech32Prefix": "agoric",
+      "networkName": "devnet",
+      "chainId": "agoricdev-23",
+      "gci": "https://devnet.rpc.agoric.net:443/genesis",
+      "peers": [
+        "fb86a0993c694c981a28fa1ebd1fd692f345348b@104.154.56.194:26656"
+      ],
+      "rpcAddrs": [
+        "https://devnet.rpc.agoric.net:443"
+      ],
+      "apiAddrs": [
+        "https://devnet.api.agoric.net:443"
+      ],
+      "seeds": [
+        "0f04c4610b7511a64b8644944b907416db568590@34.41.86.254:26656"
+      ],
+      "walletUrl": "devnet.staking.agoric.app",
+      "slip44": 564,
+      "fees": {
+        "feeTokens": [
+          {
+            "denom": "uist",
+            "fixedMinGasPrice": 0
+          }
+        ]
+      },
+      "staking": {
+        "stakingTokens": [
+          {
+            "denom": "ubld"
+          }
+        ]
+      },
+      "explorers": [
+        {
+          "name": "Agoric devnet Explorer",
+          "url": "https://devnet.explorer.agoric.net/agoric",
+          "txPage": "https://devnet.explorer.agoric.net/agoric/transaction/${txHash}",
+          "accountPage": "https://devnet.explorer.agoric.net/agoric/account/${accountAddress}"
+        }
+      ],
+      "apis": {
+        "rpc": [
+          {
+            "address": "https://devnet.rpc.agoric.net:443"
+          }
+        ],
+        "rest": [
+          {
+            "address": "https://devnet.api.agoric.net:443"
+          }
+        ]
+      },
+      "logoURIs": [
+        "/public/logo/agoric.svg",
+        "/public/logo/agoric.png"
+      ]
+    }
+  ]
+}

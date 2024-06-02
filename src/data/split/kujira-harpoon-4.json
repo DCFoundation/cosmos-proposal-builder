@@ -1,0 +1,73 @@
+{
+  "value": "kujira",
+  "image": "https://raw.githubusercontent.com/cosmos/chain-registry/master/kujira/images/kuji.svg",
+  "enabledProposalTypes": {
+    "textProposal": true,
+    "communityPoolSpendProposal": true
+  },
+  "networks": [
+    {
+      "$schema": "../../chain.schema.json",
+      "chainName": "kujira",
+      "chainId": "harpoon-4",
+      "prettyName": "Kujira Harpoon",
+      "status": "live",
+      "networkName": "testnet",
+      "bech32Prefix": "kujira",
+      "daemonName": "kujirad",
+      "nodeHome": "$HOME/.kujira",
+      "keyAlgos": [
+        "secp256k1"
+      ],
+      "slip44": 118,
+      "fees": {
+        "feeTokens": [
+          {
+            "denom": "ukuji",
+            "fixedMinGasPrice": 0
+          }
+        ]
+      },
+      "codebase": {
+        "gitRepo": "https://github.com/Team-Kujira/core",
+        "recommendedVersion": "v0.4.0",
+        "compatibleVersions": [
+          "v0.4.0"
+        ],
+        "genesis": {
+          "genesisUrl": "https://github.com/Team-Kujira/networks/raw/master/testnet/harpoon-4.json"
+        },
+        "versions": [
+          {
+            "name": "v0.4.0",
+            "recommendedVersion": "v0.4.0",
+            "compatibleVersions": [
+              "v0.4.0"
+            ]
+          }
+        ]
+      },
+      "apis": {
+        "rpc": [
+          {
+            "address": "https://kujira-testnet-rpc.polkachu.com",
+            "provider": "polkachu"
+          }
+        ],
+        "rest": [
+          {
+            "address": "https://kujira-testnet-api.polkachu.com/",
+            "provider": "polkachu"
+          }
+        ]
+      },
+      "explorers": [
+        {
+          "kind": "explorers.guru",
+          "url": "https://kujira.explorers.guru",
+          "txPage": "https://kujira.explorers.guru/transaction/${txHash}"
+        }
+      ]
+    }
+  ]
+}
