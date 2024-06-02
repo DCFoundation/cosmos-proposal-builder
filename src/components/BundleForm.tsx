@@ -42,7 +42,9 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       () => selectStorageCost(swingsetParams),
       [swingsetParams]
     );
-    const accountBalances = useQuery(accountBalancesQuery(api!, walletAddress));
+    const accountBalances = useQuery(
+      accountBalancesQuery(api, walletAddress, !!api && !!walletAddress)
+    );
     const istBalance = useMemo(
       () => selectIstBalance(accountBalances),
       [accountBalances]

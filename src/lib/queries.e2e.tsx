@@ -70,7 +70,7 @@ describe('React Query Hook Tests for RPC Endpoints', () => {
       addrs,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
-        () => useQuery(accountBalancesQuery(api, addrs.provisionPool)),
+        () => useQuery(accountBalancesQuery(api, addrs.provisionPool, true)),
         { wrapper }
       );
 
