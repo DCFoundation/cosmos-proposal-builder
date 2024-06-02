@@ -1,5 +1,5 @@
 export type Coin = {
-  denom: "ubld" | "uist" | string;
+  denom: 'ubld' | 'uist' | string;
   amount: string;
 };
 

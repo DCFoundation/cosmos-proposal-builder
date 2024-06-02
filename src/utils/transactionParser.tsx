@@ -1,4 +1,4 @@
-import { DeliverTxResponse } from "@cosmjs/stargate";
+import { DeliverTxResponse } from '@cosmjs/stargate';
 
 export const getGovUrl = (proposalId: string, explorerUrl: string | null) => {
   if (!explorerUrl || !proposalId) return null;
@@ -10,13 +10,13 @@ export const getTxUrl = (txHash: string, explorerUrl: string | null) => {
 };
 
 export function parseError(error: Error) {
-  if (error.message.includes("does not exist on chain")) {
+  if (error.message.includes('does not exist on chain')) {
     // @todo, prompt provisionWallet
-    return "Account does not exist. Please provision smart wallet.";
+    return 'Account does not exist. Please provision smart wallet.';
   }
-  if (error.message.includes("insufficient funds")) {
+  if (error.message.includes('insufficient funds')) {
     const match = error.message.match(
-      /(\d+)(uist|ubld) is smaller than (\d+)(uist|ubld)/,
+      /(\d+)(uist|ubld) is smaller than (\d+)(uist|ubld)/
     );
     if (match) {
       const available = BigInt(match[1]) / BigInt(1e6);
@@ -28,11 +28,11 @@ export function parseError(error: Error) {
   if (error.message.includes(`key: votingparams, value: {"voting_period":"`)) {
     return "Voting period currently only supports nanoseconds (1e-9). Encoding support for 's', 'm', 'h', 'd' will be added soon.";
   }
-  if (error.message.includes("proposal title cannot be blank")) {
-    return "Proposal title cannot be blank.";
+  if (error.message.includes('proposal title cannot be blank')) {
+    return 'Proposal title cannot be blank.';
   }
-  if (error.message.includes("proposal description cannot be blank")) {
-    return "Proposal description cannot be blank.";
+  if (error.message.includes('proposal description cannot be blank')) {
+    return 'Proposal description cannot be blank.';
   }
 
   return error.message;
@@ -41,8 +41,8 @@ export function parseError(error: Error) {
 export function parseProposal(resp: DeliverTxResponse) {
   const { transactionHash, events } = resp;
   const proposalId = events
-    .find((event) => event.type === "submit_proposal")
-    ?.attributes.find((attr) => attr.key === "proposal_id")?.value;
+    .find((event) => event.type === 'submit_proposal')
+    ?.attributes.find((attr) => attr.key === 'proposal_id')?.value;
 
   return {
     transactionHash,
@@ -54,8 +54,8 @@ export function parseProposal(resp: DeliverTxResponse) {
 export function parseBundle(resp: DeliverTxResponse) {
   const { transactionHash, events } = resp;
   const bundleId = events
-    .find((event) => event.type === "create_bundle")
-    ?.attributes.find((attr) => attr.key === "bundle_id")?.value;
+    .find((event) => event.type === 'create_bundle')
+    ?.attributes.find((attr) => attr.key === 'bundle_id')?.value;
 
   return {
     transactionHash,

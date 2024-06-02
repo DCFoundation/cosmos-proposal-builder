@@ -1,5 +1,9 @@
-import type { UseQueryOptions } from "@tanstack/react-query";
-import type { SwingSetApiResponse, SwingSetParams } from "../types/swingset";
+import type {
+  QueryFunctionContext,
+  QueryKey,
+  UseQueryOptions,
+} from '@tanstack/react-query';
+import type { SwingSetApiResponse, SwingSetParams } from '../types/swingset';
 
 import type {
   BankBalanceResponse,
@@ -12,7 +16,7 @@ import type {
   DenomTraceResponse,
   DenomHashResponse,
   DenomHash,
-} from "../types/bank";
+} from '../types/bank';
 import type {
   GovParamsQueryResponse,
   VotingParams,
@@ -20,12 +24,12 @@ import type {
   TallyParams,
   DistributionParams,
   StakingParams,
-} from "../types/gov";
+} from '../types/gov';
 
 export const swingSetParamsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<SwingSetParams, unknown> => ({
-  queryKey: ["swingSetParams", api],
+  queryKey: ['swingSetParams', api],
   queryFn: async (): Promise<SwingSetParams> => {
     const res = await fetch(`${api}/agoric/swingset/params`);
     const data: SwingSetApiResponse = await res.json();
@@ -34,24 +38,247 @@ export const swingSetParamsQuery = (
   enabled: !!api,
 });
 
-export const accountBalancesQuery = (
-  api: string | undefined,
-  address: string | null,
-): UseQueryOptions<BankBalances, unknown> => ({
-  queryKey: ["accountBalances", api, address],
-  queryFn: async (): Promise<BankBalances> => {
-    const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
-    const data: BankBalanceResponse = await res.json();
-    return data?.balances;
-  },
-  enabled: !!api && !!address,
-  refetchInterval: 30 * 1e3,
-});
+// export const accountBalancesQuery = (
+//   api: string | null | undefined,
+//   address: string | null | undefined
+// ): UseQueryOptions<
+//   BankBalances,
+//   Error,
+//   BankBalances,
+//   [string, string, string]
+// > => {
+//   if (!api || !address) {
+//     console.error(
+//       'Api was provided as ',
+//       api,
+//       ' and address was provided as ',
+//       address
+//     );
+//     throw new Error('API and address must be provided');
+//   }
 
+//   return {
+//     queryKey: ['accountBalances', api, address],
+//     queryFn: async ({
+//       queryKey,
+//     }: QueryFunctionContext<
+//       [string, string, string]
+//     >): Promise<BankBalances> => {
+//       const [_, api, address] = queryKey;
+
+//       const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+//       if (!res.ok) {
+//         throw new Error('Failed to fetch account balances');
+//       }
+//       // return (
+//       //   ({ balances } = (await res.json()) as BankBalanceResponse), balances
+//       // );
+//       const { balances }: BankBalanceResponse = await res.json();
+//       return balances;
+//     },
+
+//     enabled: !!api && !!address,
+//     refetchInterval: 30 * 1e3,
+//   };
+// };
+export const notaccountBalancesQuery = (
+  api: string | null | undefined,
+  address: string | null | undefined
+): UseQueryOptions<
+  BankBalances,
+  Error,
+  BankBalances,
+  [string, string, string]
+> => {
+  if (!api || !address) {
+    console.error(
+      'Api was provided as ',
+      api,
+      ' and address was provided as ',
+      address
+    );
+    throw new Error('API and address must be provided');
+  }
+  return {
+    queryKey: ['accountBsaqeeralsances', api, address],
+    queryFn: async ({
+      queryKey,
+    }: QueryFunctionContext<
+      [string, string, string]
+    >): Promise<BankBalances> => {
+      const [_, api, address] = queryKey;
+      if (!api || !address) {
+        throw new Error('API and address must be provided');
+      }
+
+      const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch account balances');
+      }
+
+      // const data: BankBalanceResponse = await res.json();
+      const { balances }: BankBalanceResponse = await res.json();
+      // return { balances: data.balances };
+      return balances;
+    },
+    enabled: !!api && !!address,
+    refetchInterval: 30 * 1e3,
+  };
+};
+export const anotherbadaccountBalancesQuery = (
+  api: string | null | undefined,
+  address: string | null | undefined
+): UseQueryOptions<
+  BankBalances,
+  Error,
+  BankBalances,
+  [string, string, string]
+> => {
+  return {
+    queryKey: ['accountBsalances', api as string, address as string],
+    queryFn: async ({
+      queryKey,
+    }: QueryFunctionContext<
+      [string, string, string]
+    >): Promise<BankBalances> => {
+      const [_, api, address] = queryKey;
+      if (!api || !address) {
+        throw new Error('API and address must be provided');
+      }
+
+      const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch account balances');
+      }
+
+      const { balances }: BankBalanceResponse = await res.json();
+      return balances;
+    },
+    enabled: !!api && !!address,
+    refetchInterval: 30 * 1e3,
+  };
+};
+export const dissapointmentaccountBalancesQuery = (
+  api: string | null | undefined,
+  address: string | null | undefined
+): UseQueryOptions<BankBalances, Error> => {
+  return {
+    queryKey: ['accountBalancses', api, address] as const,
+    queryFn: async (
+      context: QueryFunctionContext<QueryKey>
+    ): Promise<BankBalances> => {
+      const [, api, address] = context.queryKey as [
+        'accountBalsdfgances',
+        string | null | undefined,
+        string | null | undefined,
+      ];
+      if (!api || !address) {
+        throw new Error('API and address must be provided');
+      }
+
+      const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch account balances');
+      }
+
+      const data: BankBalanceResponse = await res.json();
+      return data.balances;
+    },
+    enabled: !!api && !!address,
+    refetchInterval: 30 * 1e3,
+  };
+};
+export const accountBalancesQuery = (
+  api: string | null | undefined,
+  address: string | null | undefined,
+  enabled: boolean
+): UseQueryOptions<BankBalances, Error> => {
+  return {
+    queryKey: ['accountBalances', api, address] as const,
+    queryFn: async (
+      context: QueryFunctionContext<QueryKey>
+    ): Promise<BankBalances> => {
+      const [, api, address] = context.queryKey;
+      if (!api || !address) {
+        throw new Error('API and address must be provided');
+      }
+
+      const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+      if (!res.ok) {
+        throw new Error('Failed to fetch account balances');
+      }
+
+      const data: BankBalanceResponse = await res.json();
+      return data.balances;
+    },
+    enabled: enabled,
+    refetchInterval: 30 * 1e3,
+  };
+};
+// export const accountBalancesQuery = (restEndpoint: string, address: string) => {
+//   return {
+//     queryKey: ['accountBalances', restEndpoint, address],
+//     queryFn: async (): Promise<BankBalances> => {
+//       if (!restEndpoint || !address) {
+//         throw new Error('API and address must be provided');
+//       }
+//       const response = await fetch(
+//         `${restEndpoint}/cosmos/bank/v1beta1/balances/${address}`
+//       );
+//       if (!response.ok) throw new Error('Failed to fetch account balances');
+//       const data: BankBalanceResponse = await response.json();
+//       return data as BankBalances;
+//     },
+//     enabled: !!restEndpoint && !!address,
+//   };
+// };
+// export const accountBalancesQuery = (
+//   api: string | undefined,
+//   address: string | null
+// ): UseQueryOptions<BankBalances, unknown, BankBalances, string[]> => {
+//   if (!api || !address) {
+//     throw new Error('API and address must be provided');
+//   }
+
+//   return {
+//     queryKey: ['accountBalances', api, address],
+//     queryFn: async (): Promise<BankBalances> => {
+//       const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+//       const data: BankBalanceResponse = await res.json();
+//       return data.balances;
+//     },
+//     enabled: !!api && !!address,
+//     refetchInterval: 30 * 1e3,
+//   };
+// };
+
+// export const accountBalancesQuery = (
+//   api: string | null | undefined,
+//   address: string | null | undefined
+// ): UseQueryOptions<BankBalances, unknown, BankBalances, string[]> => {
+//   if (!api || !address) {
+//     return {
+//       queryKey: ['accountBalances', 'invalid'],
+//       queryFn: async () => [],
+//       enabled: false,
+//     };
+//   }
+
+//   return {
+//     queryKey: ['accountBalances', api, address],
+//     queryFn: async (): Promise<BankBalances> => {
+//       const res = await fetch(`${api}/cosmos/bank/v1beta1/balances/${address}`);
+//       const data: BankBalanceResponse = await res.json();
+//       return data.balances;
+//     },
+//     enabled: !!api && !!address,
+//     refetchInterval: 30 * 1e3,
+//   };
+// };
 export const bankAssetsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<Coin[], unknown> => ({
-  queryKey: ["bankAssets", api],
+  queryKey: ['bankAssets', api],
   queryFn: async (): Promise<Coin[]> => {
     const res = await fetch(`${api}/cosmos/bank/v1beta1/supply`);
     const data: BankSupplyResponse = await res.json();
@@ -62,10 +289,10 @@ export const bankAssetsQuery = (
 
 /** @deprecated do not use, does not return values for agd */
 export const bankAssetsMetadataQuery = (
-  api: string | undefined,
-): UseQueryOptions<BankAssetMetadataResponse["metadatas"], unknown> => ({
-  queryKey: ["bankAssetsMetadata", api],
-  queryFn: async (): Promise<BankAssetMetadataResponse["metadatas"]> => {
+  api: string | undefined
+): UseQueryOptions<BankAssetMetadataResponse['metadatas'], unknown> => ({
+  queryKey: ['bankAssetsMetadata', api],
+  queryFn: async (): Promise<BankAssetMetadataResponse['metadatas']> => {
     const res = await fetch(`${api}/cosmos/bank/v1beta1/denoms_metadata`);
     const data: BankAssetMetadataResponse = await res.json();
     return data?.metadatas;
@@ -74,9 +301,9 @@ export const bankAssetsMetadataQuery = (
 });
 
 export const votingParamsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<VotingParams, unknown> => ({
-  queryKey: ["votingParams", api],
+  queryKey: ['votingParams', api],
   queryFn: async (): Promise<VotingParams> => {
     const res = await fetch(`${api}/cosmos/gov/v1beta1/params/voting`);
     const data: GovParamsQueryResponse = await res.json();
@@ -86,9 +313,9 @@ export const votingParamsQuery = (
 });
 
 export const tallyParamsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<TallyParams, unknown> => ({
-  queryKey: ["tallyParams", api],
+  queryKey: ['tallyParams', api],
   queryFn: async (): Promise<TallyParams> => {
     const res = await fetch(`${api}/cosmos/gov/v1beta1/params/tallying`);
     const data: GovParamsQueryResponse = await res.json();
@@ -98,9 +325,9 @@ export const tallyParamsQuery = (
 });
 
 export const depositParamsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<DepositParams, unknown> => ({
-  queryKey: ["depositParams", api],
+  queryKey: ['depositParams', api],
   queryFn: async (): Promise<DepositParams> => {
     const res = await fetch(`${api}/cosmos/gov/v1beta1/params/deposit`);
     const data: GovParamsQueryResponse = await res.json();
@@ -110,9 +337,9 @@ export const depositParamsQuery = (
 });
 
 export const distributionParamsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<DistributionParams, unknown> => ({
-  queryKey: ["distributionParams", api],
+  queryKey: ['distributionParams', api],
   queryFn: async (): Promise<DistributionParams> => {
     const res = await fetch(`${api}/cosmos/distribution/v1beta1/params`);
     const data: { params: DistributionParams } = await res.json();
@@ -122,9 +349,9 @@ export const distributionParamsQuery = (
 });
 
 export const stakingParamsQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<StakingParams, unknown> => ({
-  queryKey: ["stakingParams", api],
+  queryKey: ['stakingParams', api],
   queryFn: async (): Promise<StakingParams> => {
     const res = await fetch(`${api}/cosmos/staking/v1beta1/params`);
     const data: { params: StakingParams } = await res.json();
@@ -134,9 +361,9 @@ export const stakingParamsQuery = (
 });
 
 export const ibcDenomTracesQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<DenomTrace[], unknown> => ({
-  queryKey: ["ibcDenomTraces", api],
+  queryKey: ['ibcDenomTraces', api],
   queryFn: async (): Promise<DenomTrace[]> => {
     const res = await fetch(`${api}/ibc/apps/transfer/v1/denom_traces`);
     const data: DenomTracesResponse = await res.json();
@@ -147,9 +374,9 @@ export const ibcDenomTracesQuery = (
 
 export const ibcDenomTraceQuery = (
   api: string | undefined,
-  hash: string, // can include or exclude `ibc/`
+  hash: string // can include or exclude `ibc/`
 ): UseQueryOptions<DenomTrace, unknown> => ({
-  queryKey: ["ibcDenomTrace", api, hash],
+  queryKey: ['ibcDenomTrace', api, hash],
   queryFn: async (): Promise<DenomTrace> => {
     const res = await fetch(`${api}/ibc/apps/transfer/v1/denom_traces/${hash}`);
     const data: DenomTraceResponse = await res.json();
@@ -161,29 +388,49 @@ export const ibcDenomTraceQuery = (
 export const ibcDenomHashQuery = (
   api: string | undefined,
   path: string, // i.e., transfer/channel-1
-  baseDenom: string, // i.e., uatom
+  baseDenom: string // i.e., uatom
 ): UseQueryOptions<DenomHash, unknown> => ({
-  queryKey: ["ibcDenomHash", api, path, baseDenom],
+  queryKey: ['ibcDenomHash', api, path, baseDenom],
   queryFn: async (): Promise<DenomHash> => {
     const res = await fetch(
-      `${api}/ibc/apps/transfer/v1/denom_hashes/${path}/${baseDenom}`,
+      `${api}/ibc/apps/transfer/v1/denom_hashes/${path}/${baseDenom}`
     );
     const data: DenomHashResponse = await res.json();
-    return data?.hash?.length ? `ibc/${data.hash}` : "Denom hash not found.";
+    return data?.hash?.length ? `ibc/${data.hash}` : 'Denom hash not found.';
   },
   enabled: !!api,
 });
 
 export const communityPoolQuery = (
-  api: string | undefined,
+  api: string | undefined
 ): UseQueryOptions<unknown, unknown> => ({
-  queryKey: ["communityPool", api],
+  queryKey: ['communityPool', api],
   queryFn: async (): Promise<unknown> => {
     const res = await fetch(
-      `${api}/cosmos/distribution/v1beta1/community_pool`,
+      `${api}/cosmos/distribution/v1beta1/community_pool`
     );
     const data = await res.json();
     return data?.pool;
   },
   enabled: !!api,
 });
+
+// export const chainInfoQuery = (
+//   currentChainItem: ChainItem | null,
+//   currentNetworkname: string | null
+// ) => ({
+//   queryKey: ['chainInfo', currentChainItem?.value, currentNetworkname],
+//   queryFn: async () => {
+//     if (currentChainItem && currentNetworkname) {
+//       const networkConfig = currentChainItem.networks?.find(
+//         (n) => n.networkName === currentNetworkname
+//       );
+//       if (networkConfig) {
+//         return useChainInfo(currentChainItem, currentNetworkname);
+//       }
+//     }
+//     return null;
+//   },
+//   enabled: !!currentChainItem && !!currentNetworkname,
+//   staleTime: 5 * 60 * 1000,
+// });

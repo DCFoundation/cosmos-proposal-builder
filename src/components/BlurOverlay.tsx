@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
 interface BlurOverlayProps {
   isVisible: boolean;
@@ -32,7 +32,7 @@ const BlurOverlay: React.FC<BlurOverlayProps> = ({
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm"
+      className='fixed inset-0 bg-black bg-opacity-50 backdrop-filter backdrop-blur-sm'
       onClick={onOverlayClick}
     />
   );

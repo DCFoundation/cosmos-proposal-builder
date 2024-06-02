@@ -1,24 +1,24 @@
 function escapeTemplateLiterals(code: string) {
-  return code.replace(/\$\{/g, "{{OPEN}}").replace(/\}/g, "{{CLOSE}}");
+  return code.replace(/\$\{/g, '{{OPEN}}').replace(/\}/g, '{{CLOSE}}');
 }
 
 function unescapeTemplateLiterals(code: string) {
-  return code.replace(/{{OPEN}}/g, "${").replace(/{{CLOSE}}/g, "}");
+  return code.replace(/{{OPEN}}/g, '${').replace(/{{CLOSE}}/g, '}');
 }
 
 function escapeBackticksInComments(code: string) {
   // may need improvement for complex cases
-  return code.replace(/(\/\/.*?)(`)/g, "$1\\`");
+  return code.replace(/(\/\/.*?)(`)/g, '$1\\`');
 }
 
 function unescapeBackticksInComments(code: string) {
-  return code.replace(/(\/\/.*?)\\`/g, "$1`");
+  return code.replace(/(\/\/.*?)\\`/g, '$1`');
 }
 
 const prepareArrayForInterpolation = (arr: string[] | number[]) =>
   arr
     .map((item) => `"${item}",\n      `)
-    .join("")
+    .join('')
     .trimEnd();
 
 /**
@@ -32,7 +32,7 @@ export function generateFromTemplate<T extends Record<string, unknown>>(
   template: string,
   values: T extends Record<string, string | number | string[] | number[]>
     ? T
-    : never,
+    : never
 ) {
   template = escapeTemplateLiterals(template);
   template = escapeBackticksInComments(template);
@@ -43,19 +43,19 @@ export function generateFromTemplate<T extends Record<string, unknown>>(
       : values[key];
 
     // replace quoted strings
-    const quoted = new RegExp(`"%%${key}%%"`, "g");
+    const quoted = new RegExp(`"%%${key}%%"`, 'g');
     if (template.match(quoted)) {
       template = template.replace(quoted, `"${formattedValue}"`);
     }
 
     // replace numbers
-    const numbers = new RegExp(`"%%N${key}N%%"`, "g");
+    const numbers = new RegExp(`"%%N${key}N%%"`, 'g');
     if (template.match(numbers)) {
       template = template.replace(numbers, formattedValue as string);
     }
 
     // replace intra-string values with unquoted values
-    const unQuoted = new RegExp(`%%U${key}U%%`, "g");
+    const unQuoted = new RegExp(`%%U${key}U%%`, 'g');
     if (template.match(unQuoted)) {
       template = template.replace(unQuoted, formattedValue as string);
     }

@@ -1,37 +1,48 @@
-import { createContext, ReactNode, useCallback, useMemo } from "react";
-import { useLocation } from "wouter";
-
-import { CHAINS } from "../constants/chains";
-import { ChainItem } from "../types/chain";
+import { createContext, ReactNode, useCallback, useMemo } from 'react';
+import { useLocation } from 'wouter';
+import { useChainRegistries } from '../hooks/useChainRegistry';
 
 export interface ChainContextValue {
-  currentChain: ChainItem | null;
-  setCurrentChain: (chain: string) => void;
+  currentChain: string | null;
+  setCurrentChain: (chain: string, network?: string) => void;
 }
 
-export const chainItemMap: Map<string, ChainItem> = CHAINS.reduce(
-  (map, item) => map.set(item.value, item),
-  new Map<string, ChainItem>(),
-);
 export const ChainContext = createContext<ChainContextValue | null>(null);
 
 export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
   const [location, setLocation] = useLocation();
-  const chainName = location.split("/")[1];
+
+  const {
+    data: chains = [],
+    isLoading: isLoadingChains,
+    isError: chainLoadingError,
+  } = useChainRegistries();
+  const chainName = useMemo(() => {
+    const name = location.split('/')[1];
+    return chains.find((chain) => chain.value === name) ? name : null;
+  }, [location, chains]);
 
   const setCurrentChain = useCallback(
-    (chain: string) => {
-      setLocation(`/${chain}?network=mainnet`);
+    (chain: string, network?: string) => {
+      if (chains.find((c) => c.value === chain)) {
+        setLocation(`/${chain}?network=${network || 'mainnet'}`);
+      }
     },
-    [setLocation],
+    [chains, setLocation]
   );
 
-  const currentChain = useMemo(() => chainItemMap.get(chainName), [chainName]);
+  if (isLoadingChains) {
+    return <div>Loading chain...</div>;
+  }
+
+  if (chainLoadingError) {
+    return <div>Error loading chain...</div>;
+  }
 
   return (
     <ChainContext.Provider
       value={{
-        currentChain: currentChain || null,
+        currentChain: chainName,
         setCurrentChain,
       }}
     >

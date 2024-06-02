@@ -1,4 +1,4 @@
-import type { Coin } from "./bank";
+import type { Coin } from './bank';
 
 export type VotingParams = {
   voting_period: string;

@@ -1,10 +1,10 @@
-import { describe, it, expect, beforeEach, vi, Mock } from "vitest";
-import { makeSignAndBroadcast } from "./signAndBroadcast";
-import { toast } from "react-toastify";
-import { EncodeObject } from "@cosmjs/proto-signing";
-import { makeFeeObject } from "./messageBuilder";
+import { describe, it, expect, beforeEach, vi, Mock } from 'vitest';
+import { makeSignAndBroadcast } from './signAndBroadcast';
+import { toast } from 'react-toastify';
+import { EncodeObject } from '@cosmjs/proto-signing';
+import { makeFeeObject } from './messageBuilder';
 
-vi.mock("react-toastify", () => ({
+vi.mock('react-toastify', () => ({
   toast: {
     error: vi.fn(),
     loading: vi.fn(),
@@ -12,11 +12,11 @@ vi.mock("react-toastify", () => ({
   },
 }));
 
-vi.mock("@paralleldrive/cuid2", () => ({
+vi.mock('@paralleldrive/cuid2', () => ({
   createId: vi.fn(),
 }));
 
-describe("makeSignAndBroadcast Unit Tests", () => {
+describe('makeSignAndBroadcast Unit Tests', () => {
   let mockStargateClient: { simulate: Mock; signAndBroadcast: Mock };
   let walletAddress: string;
   let explorerUrl: string | null;
@@ -30,18 +30,18 @@ describe("makeSignAndBroadcast Unit Tests", () => {
       signAndBroadcast: vi.fn(),
     };
 
-    walletAddress = "agoric12345";
+    walletAddress = 'agoric12345';
     (explorerUrl = null),
       (proposalMsg = {
-        typeUrl: "mock-type-url",
-        value: "mock-value",
+        typeUrl: 'mock-type-url',
+        value: 'mock-value',
       });
-    vi.mock("@paralleldrive/cuid2", () => ({
-      createId: () => "mock-unique-id",
+    vi.mock('@paralleldrive/cuid2', () => ({
+      createId: () => 'mock-unique-id',
     }));
   });
 
-  it("should broadcast a transaction successfully", async () => {
+  it('should broadcast a transaction successfully', async () => {
     const MOCK_GAS = 1000;
     const mockTxResult = {
       code: 0,
@@ -56,32 +56,32 @@ describe("makeSignAndBroadcast Unit Tests", () => {
       mockStargateClient,
       walletAddress,
       explorerUrl,
-      null,
+      null
     );
 
-    const res = await signAndBroadcast(proposalMsg, "proposal");
+    const res = await signAndBroadcast(proposalMsg, 'proposal');
     expect(res).toEqual(mockTxResult);
     expect(mockStargateClient.simulate).toHaveBeenCalledWith(
       walletAddress,
       [proposalMsg],
-      undefined, // memo
+      undefined // memo
     );
     expect(mockStargateClient.signAndBroadcast).toHaveBeenCalledWith(
       walletAddress,
       [proposalMsg],
-      makeFeeObject({ gas: Math.ceil(MOCK_GAS * 1.3) }),
+      makeFeeObject({ gas: Math.ceil(MOCK_GAS * 1.3) })
     );
     expect(toast.update).toHaveBeenCalledWith(
-      "mock-unique-id",
+      'mock-unique-id',
       expect.objectContaining({
-        type: "success",
+        type: 'success',
         render: expect.any(Function),
-      }),
+      })
     );
   });
 
-  it("should throw when broadcasting fails", async () => {
-    const error = new Error("Network error");
+  it('should throw when broadcasting fails', async () => {
+    const error = new Error('Network error');
     mockStargateClient.simulate.mockRejectedValue(error);
 
     const signAndBroadcast = makeSignAndBroadcast(
@@ -89,18 +89,18 @@ describe("makeSignAndBroadcast Unit Tests", () => {
       mockStargateClient,
       walletAddress,
       explorerUrl,
-      null,
+      null
     );
 
-    await expect(signAndBroadcast(proposalMsg, "proposal")).rejects.toThrow(
-      "Network error",
+    await expect(signAndBroadcast(proposalMsg, 'proposal')).rejects.toThrow(
+      'Network error'
     );
     expect(toast.update).toHaveBeenCalledWith(
-      "mock-unique-id",
+      'mock-unique-id',
       expect.objectContaining({
-        type: "error",
-        render: "Network error",
-      }),
+        type: 'error',
+        render: 'Network error',
+      })
     );
   });
 });

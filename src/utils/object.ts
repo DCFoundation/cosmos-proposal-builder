@@ -1,5 +1,5 @@
 export const isObject = (obj: unknown) =>
-  typeof obj === "object" && obj !== null && !Array.isArray(obj);
+  typeof obj === 'object' && obj !== null && !Array.isArray(obj);
 
 export const objectToArray = (obj: Record<string, unknown>) =>
   isObject(obj)

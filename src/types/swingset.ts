@@ -1,31 +1,31 @@
-import type { Coin } from "./bank";
+import type { Coin } from './bank';
 
 export type BeansPerUnit = {
   key:
-    | "blockComputeLimit"
-    | "feeUnit"
-    | "inboundTx"
-    | "message"
-    | "messageByte"
-    | "minFeeDebit"
-    | "vatCreation"
-    | "xsnapComputron"
-    | "storageByte";
+    | 'blockComputeLimit'
+    | 'feeUnit'
+    | 'inboundTx'
+    | 'message'
+    | 'messageByte'
+    | 'minFeeDebit'
+    | 'vatCreation'
+    | 'xsnapComputron'
+    | 'storageByte';
   beans: string; // string representation of a number
 };
 
 type FeeUnitPrice = {
-  denom: "uist" | "ubld";
+  denom: 'uist' | 'ubld';
   amount: string;
 };
 
 export type PowerFlagFee = {
-  power_flag: "SMART_WALLET";
+  power_flag: 'SMART_WALLET';
   fee: Coin[];
 };
 
 type QueueMax = {
-  key: "inbound";
+  key: 'inbound';
   size: number;
 };
 

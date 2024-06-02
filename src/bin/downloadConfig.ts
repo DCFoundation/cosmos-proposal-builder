@@ -1,12 +1,12 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
-import axios from "axios";
-import fs from "fs";
-import path from "path";
+import axios from 'axios';
+import fs from 'fs';
+import path from 'path';
 
-const GIT_REF = "350840e766f7574a120760a13eda4c466413308a";
+const GIT_REF = '350840e766f7574a120760a13eda4c466413308a';
 const RAW_FILE_REPO_URL =
-  "https://raw.githubusercontent.com/cosmos/chain-registry";
-const REPO_URL = "https://api.github.com/repos/cosmos/chain-registry/contents";
+  'https://raw.githubusercontent.com/cosmos/chain-registry';
+const REPO_URL = 'https://api.github.com/repos/cosmos/chain-registry/contents';
 
 type ApiEntry = {
   address: string;
@@ -30,27 +30,27 @@ type ChainConfig = {
 
 const validateChainConfig = (config: any): config is ChainConfig => {
   const requiredEntries: (keyof ChainConfig)[] = [
-    "chainName",
-    "chainId",
-    "networkName",
-    "apis",
+    'chainName',
+    'chainId',
+    'networkName',
+    'apis',
   ];
 
   for (const entry of requiredEntries) {
     if (!(entry in config)) {
       console.error(
-        `Error: Missing required entry '${entry}' in chain config.`,
+        `Error: Missing required entry '${entry}' in chain config.`
       );
       return false;
     }
   }
 
-  const requiredApisEntries: (keyof Apis)[] = ["rpc", "rest", "grpc"];
+  const requiredApisEntries: (keyof Apis)[] = ['rpc', 'rest', 'grpc'];
 
   for (const entry of requiredApisEntries) {
     if (!(entry in config.apis)) {
       console.error(
-        `Error: Missing required entry 'apis.${entry}' in chain config.`,
+        `Error: Missing required entry 'apis.${entry}' in chain config.`
       );
       return false;
     }
@@ -72,13 +72,13 @@ const cleanupObject = (obj: { [key: string]: any }): ChainConfig => {
   // Clean up and convert properties from downloaded JSON object
   for (const key of keys) {
     const camelCaseKey = toCamelCase(key);
-    if (camelCaseKey === "networkType") {
+    if (camelCaseKey === 'networkType') {
       // Special case for networkName
       cleanedObj.networkName = obj[key];
-    } else if (camelCaseKey === "compatibleVersions") {
+    } else if (camelCaseKey === 'compatibleVersions') {
       // Special case for compatibleVersions
       cleanedObj.compatibleVersions = obj[key];
-    } else if (camelCaseKey === "keyAlgos") {
+    } else if (camelCaseKey === 'keyAlgos') {
       // Special case for keyAlgos
       cleanedObj.keyAlgos = obj[key];
     } else if (Array.isArray(obj[key])) {
@@ -91,7 +91,7 @@ const cleanupObject = (obj: { [key: string]: any }): ChainConfig => {
         }
         return camelCaseEntry;
       });
-    } else if (typeof obj[key] === "object" && obj[key] !== null) {
+    } else if (typeof obj[key] === 'object' && obj[key] !== null) {
       cleanedObj[camelCaseKey] = cleanupObject(obj[key]);
     } else {
       cleanedObj[camelCaseKey] = obj[key];
@@ -102,31 +102,31 @@ const cleanupObject = (obj: { [key: string]: any }): ChainConfig => {
 };
 const toCamelCase = (str: string): string => {
   return str.replace(/([-_][a-z])/gi, ($1) => {
-    return $1.toUpperCase().replace("-", "").replace("_", "");
+    return $1.toUpperCase().replace('-', '').replace('_', '');
   });
 };
 
 const isChainConfig = (obj: any): obj is ChainConfig => {
   return (
-    typeof obj === "object" &&
+    typeof obj === 'object' &&
     obj !== null &&
-    "chainName" in obj &&
-    "chainId" in obj &&
-    "networkName" in obj &&
-    "apis" in obj
+    'chainName' in obj &&
+    'chainId' in obj &&
+    'networkName' in obj &&
+    'apis' in obj
   );
 };
 const dw = async (url: string): Promise<any> => {
   try {
     const response = await axios.get(url, {
       headers: {
-        "User-Agent": `ocular/${process.env.npm_package_version}`,
+        'User-Agent': `ocular/${process.env.npm_package_version}`,
       },
     });
     return response.data;
   } catch (error) {
-    console.error("Error fetching data from URL:", url);
-    console.error("Error details:", error);
+    console.error('Error fetching data from URL:', url);
+    console.error('Error details:', error);
     throw error;
   }
 };
@@ -134,18 +134,18 @@ const dw = async (url: string): Promise<any> => {
 //TODO: read these from a josn file - approved.json
 //maintained by dcf - fetch from github repo
 const fetchApprovedChains = async (): Promise<string[]> => {
-  return ["agoric", "cosmoshub", "osmosis", "juno"];
+  return ['agoric', 'cosmoshub', 'osmosis', 'juno'];
 };
 
 const fetchChainConfig = async (
-  chainName: string,
+  chainName: string
 ): Promise<ChainConfig | null> => {
   const url = `${RAW_FILE_REPO_URL}/${GIT_REF}/${chainName}/chain.json`;
   const data: string | object = await dw(url);
 
   let config: ChainConfig;
 
-  if (typeof data === "string") {
+  if (typeof data === 'string') {
     config = JSON.parse(data);
   } else {
     config = cleanupObject(data);
@@ -172,19 +172,19 @@ const getOrCreatedir = async (dir: string) => {
 
 const downloadImage = async (
   url: string,
-  outputPath: string,
+  outputPath: string
 ): Promise<void> => {
   if (!outputPath) {
-    console.error("Error: outputPath is undefined");
+    console.error('Error: outputPath is undefined');
     return;
   }
-  const response = await axios.get(url, { responseType: "stream" });
+  const response = await axios.get(url, { responseType: 'stream' });
   const writer = fs.createWriteStream(outputPath);
   response.data.pipe(writer);
 
   return new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
+    writer.on('finish', resolve);
+    writer.on('error', reject);
   });
 };
 
@@ -196,8 +196,8 @@ const fetchChainImages = async (chainName: string): Promise<string[]> => {
   return data
     .filter(
       (file: any) =>
-        file.type === "file" &&
-        (file.name.endsWith(".png") || file.name.endsWith(".svg")),
+        file.type === 'file' &&
+        (file.name.endsWith('.png') || file.name.endsWith('.svg'))
     )
     .map((file: any) => file.download_url);
 };
@@ -217,12 +217,12 @@ const downloadApprovedChainConfigs = async (): Promise<void> => {
       // Check for undefined values
       if (!chainName || !chainConfig.networkName) {
         console.error(
-          `Error: chainName or networkName is undefined for chain ${chainName}`,
+          `Error: chainName or networkName is undefined for chain ${chainName}`
         );
         continue;
       }
 
-      const configDir = path.join("config", chainName, chainConfig.networkName);
+      const configDir = path.join('config', chainName, chainConfig.networkName);
 
       await getOrCreatedir(configDir);
 
@@ -230,11 +230,11 @@ const downloadApprovedChainConfigs = async (): Promise<void> => {
       fs.writeFileSync(configPath, JSON.stringify(chainConfig, null, 2));
 
       console.log(
-        `Chain configuration for ${chainName} downloaded and saved successfully.`,
+        `Chain configuration for ${chainName} downloaded and saved successfully.`
       );
 
       const imageUrls = await fetchChainImages(chainName);
-      const assetDir = path.join("public", chainName);
+      const assetDir = path.join('public', chainName);
 
       await getOrCreatedir(assetDir);
 
@@ -244,7 +244,7 @@ const downloadApprovedChainConfigs = async (): Promise<void> => {
 
         await downloadImage(imageUrl, outputPath);
         console.log(
-          `Image ${imageName} for ${chainName} downloaded successfully.`,
+          `Image ${imageName} for ${chainName} downloaded successfully.`
         );
       });
 
@@ -259,10 +259,10 @@ const main = async () => {
   try {
     await downloadApprovedChainConfigs();
     console.log(
-      "Approved chain configurations and assets downloaded successfully.",
+      'Approved chain configurations and assets downloaded successfully.'
     );
   } catch (error) {
-    console.error("Error downloading chain configurations:", error);
+    console.error('Error downloading chain configurations:', error);
   }
 };
 

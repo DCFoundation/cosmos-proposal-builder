@@ -1,37 +1,37 @@
-import type { UseQueryResult } from "@tanstack/react-query";
-import type { SwingSetParams } from "../types/swingset";
-import type { BankBalances, DenomTrace } from "../types/bank";
-import { TallyParams, VotingParams, DepositParams } from "../types/gov";
-import { objectToArray } from "../utils/object";
+import type { UseQueryResult } from '@tanstack/react-query';
+import type { SwingSetParams } from '../types/swingset';
+import type { BankBalances, DenomTrace } from '../types/bank';
+import { TallyParams, VotingParams, DepositParams } from '../types/gov';
+import { objectToArray } from '../utils/object';
 
 export type SelectorFn<T, R> = (
-  query: UseQueryResult<T, unknown>,
+  query: UseQueryResult<T, unknown>
 ) => R | undefined;
 
 export const selectStorageCost = (
-  query: UseQueryResult<SwingSetParams, unknown>,
+  query: UseQueryResult<SwingSetParams, unknown>
 ) => {
   const { isLoading, data } = query;
   if (isLoading || !data) return undefined;
-  const storageByte = data?.beans_per_unit.find((x) => x.key === "storageByte");
-  const feeUnit = data?.beans_per_unit.find((x) => x.key === "feeUnit");
+  const storageByte = data?.beans_per_unit.find((x) => x.key === 'storageByte');
+  const feeUnit = data?.beans_per_unit.find((x) => x.key === 'feeUnit');
   return storageByte && feeUnit
     ? Number(storageByte.beans) / Number(feeUnit.beans)
     : undefined;
 };
 
 export const selectBeansPerUnit = (
-  query: UseQueryResult<SwingSetParams, unknown>,
+  query: UseQueryResult<SwingSetParams, unknown>
 ) => {
   if (!query?.data) return undefined;
   return query.data?.beans_per_unit;
 };
 
 export const selectIstBalance = (
-  query: UseQueryResult<BankBalances, unknown>,
+  query: UseQueryResult<BankBalances, unknown>
 ) => {
   if (!query?.data) return undefined;
-  const itm = (query.data as BankBalances).find((x) => x.denom === "uist");
+  const itm = (query.data as BankBalances).find((x) => x.denom === 'uist');
   return itm ? BigInt(itm.amount) : undefined;
 };
 
@@ -43,21 +43,21 @@ export const selectIstBalance = (
 // };
 
 export const selectVotingParams = (
-  query: UseQueryResult<VotingParams, unknown>,
+  query: UseQueryResult<VotingParams, unknown>
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
 };
 
 export const selectTallyParams = (
-  query: UseQueryResult<TallyParams, unknown>,
+  query: UseQueryResult<TallyParams, unknown>
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
 };
 
 export const selectDepsoitParams = (
-  query: UseQueryResult<DepositParams, unknown>,
+  query: UseQueryResult<DepositParams, unknown>
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
@@ -65,14 +65,14 @@ export const selectDepsoitParams = (
 
 /** filter bank assets, so only ibc/* assets are returned */
 export const selectIbcAssets = (
-  query: UseQueryResult<BankBalances, unknown>,
+  query: UseQueryResult<BankBalances, unknown>
 ) => {
   if (!query?.data) return undefined;
-  return (query.data as BankBalances).filter((x) => x.denom.startsWith("ibc"));
+  return (query.data as BankBalances).filter((x) => x.denom.startsWith('ibc'));
 };
 
 export const selectSinglePathDenomTraces = (
-  query: UseQueryResult<DenomTrace[], unknown>,
+  query: UseQueryResult<DenomTrace[], unknown>
 ) => {
   if (!query?.data) return undefined;
   function hasOnePath(trace: DenomTrace): boolean {
@@ -83,13 +83,29 @@ export const selectSinglePathDenomTraces = (
 };
 
 /** denom eg 'uatom' */
+
+// export const selectCoins = (
+//   denom: string | undefined,
+//   query: UseQueryResult<BankBalances, unknown>
+// ) => {
+//   if (!denom) return undefined;
+//   if (!query.data) return undefined;
+//   return query.data.filter((x) => x.denom === denom);
+// };
 export const selectCoins = (
   denom: string | undefined,
-  query: UseQueryResult<BankBalances, unknown>,
+  balances: BankBalances | undefined
 ) => {
-  if (!denom) return undefined;
-  if (!query?.data) return undefined;
-  return (query.data as BankBalances).filter((x) => x.denom === denom);
+  if (!denom || !balances) return undefined;
+  return balances.filter((x) => x.denom === denom);
 };
+// export const selectCoins = (
+//   denom: string | undefined,
+//   query: UseQueryResult<BankBalances, unknown>
+// ) => {
+//   if (!denom) return undefined;
+//   if (!query?.data) return undefined;
+//   return (query.data as BankBalances).filter((x) => x.denom === denom);
+// };
 
-export const selectBldCoins = selectCoins.bind(null, "ubld");
+export const selectBldCoins = selectCoins.bind(null, 'ubld');

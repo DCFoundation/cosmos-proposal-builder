@@ -52,72 +52,7 @@
         ]
       },
       "description": "A decentralized ecosystem for protocols, builders and web3 users seeking sustainable FinTech.",
-      "peers": {
-        "seeds": [
-          {
-            "id": "ade4d8bc8cbe014af6ebdf3cb7b1e9ad36f412c0",
-            "address": "seeds.polkachu.com:11856",
-            "provider": "Polkachu"
-          },
-          {
-            "id": "20e1000e88125698264454a884812746c2eb4807",
-            "address": "seeds.lavenderfive.com:11856",
-            "provider": "Lavender.Five Nodes 🐝"
-          },
-          {
-            "id": "322abfd7c0bcdf8a3d98ccb46ae2572bae0e8301",
-            "address": "seed-kujira.starsquid.io:15602",
-            "provider": "Starsquid"
-          },
-          {
-            "id": "824fa337b806bd48ce9505d74ba3e5adea80da93",
-            "address": "seeds.goldenratiostaking.net:1628",
-            "provider": "Golden Ratio Staking"
-          },
-          {
-            "id": "ebc272824924ea1a27ea3183dd0b9ba713494f83",
-            "address": "kujira-mainnet-seed.autostake.com:26796",
-            "provider": "AutoStake 🛡️ Slash Protected"
-          },
-          {
-            "id": "400f3d9e30b69e78a7fb891f60d76fa3c73f0ecc",
-            "address": "kujira.rpc.kjnodes.com:11359",
-            "provider": "kjnodes"
-          },
-          {
-            "id": "8542cd7e6bf9d260fef543bc49e59be5a3fa9074",
-            "address": "seed.publicnode.com:26656",
-            "provider": "Allnodes ⚡️ Nodes & Staking"
-          },
-          {
-            "id": "c28827cb96c14c905b127b92065a3fb4cd77d7f6",
-            "address": "seeds.whispernode.com:11856",
-            "provider": "WhisperNode 🤐"
-          },
-          {
-            "id": "654ba97f74254965a80c0fac0f277f6f6e5506b6",
-            "address": "seed-node.mms.team:29656",
-            "provider": "MMS"
-          },
-          {
-            "id": "10ed1e176d874c8bb3c7c065685d2da6a4b86475",
-            "address": "seed-kujira.ibs.team:16678",
-            "provider": "Inter Blockchain Services"
-          }
-        ],
-        "persistentPeers": [
-          {
-            "id": "ebc272824924ea1a27ea3183dd0b9ba713494f83",
-            "address": "kujira-mainnet-peer.autostake.com:26796",
-            "provider": "AutoStake 🛡️ Slash Protected"
-          },
-          {
-            "id": "c1a740841a6dc0b56730e975b1a4aa2d8c73b204",
-            "address": "peer-kujira.mms.team:29656",
-            "provider": "MMS"
-          }
-        ]
-      },
+
       "apis": {
         "rpc": [
           {
@@ -330,18 +265,10 @@
           }
         ]
       },
-      "codebase": {
-        "gitRepo": "https://github.com/Team-Kujira/core",
-        "recommendedVersion": "v0.4.0",
-        "compatibleVersions": ["v0.4.0"],
-        "genesis": {
-          "genesisUrl": "https://github.com/Team-Kujira/networks/raw/master/testnet/harpoon-4.json"
-        },
-        "versions": [
+      "staking": {
+        "stakingTokens": [
           {
-            "name": "v0.4.0",
-            "recommendedVersion": "v0.4.0",
-            "compatibleVersions": ["v0.4.0"]
+            "denom": "ukuji"
           }
         ]
       },

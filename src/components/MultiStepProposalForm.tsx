@@ -6,9 +6,9 @@ import {
   ReactNode,
   useState,
   useMemo,
-} from "react";
-import { Button } from "./Button";
-import { Stepper } from "./Stepper";
+} from 'react';
+import { Button } from './Button';
+import { Stepper } from './Stepper';
 
 interface ProposalFormProps {
   title: string;
@@ -32,7 +32,7 @@ const MultiStepProposalForm = forwardRef<
   useImperativeHandle(ref, () => ({
     data: () => {
       if (formRef?.current) return new FormData(formRef.current);
-      throw new Error("Error reading form data.");
+      throw new Error('Error reading form data.');
     },
     reset: () => {
       formRef.current?.reset();
@@ -41,7 +41,7 @@ const MultiStepProposalForm = forwardRef<
 
   const isFinalStep = useMemo(
     () => currentStep === tabs.length - 1,
-    [currentStep, tabs.length],
+    [currentStep, tabs.length]
   );
 
   const onSubmit = (e: FormEvent) => {
@@ -52,24 +52,24 @@ const MultiStepProposalForm = forwardRef<
   };
 
   return (
-    <form ref={formRef} className="" onSubmit={onSubmit}>
-      <h2 className="text-[28px] font-semibold text-blue">{title}</h2>
-      <p className="text-sm font-medium text-blue">{description}</p>
+    <form ref={formRef} className='' onSubmit={onSubmit}>
+      <h2 className='text-[28px] font-semibold text-blue'>{title}</h2>
+      <p className='text-sm font-medium text-blue'>{description}</p>
 
-      <div className="mt-6">
+      <div className='mt-6'>
         <Stepper
           tabs={tabs}
           currentStep={currentStep}
           onChange={setCurrentStep}
         />
       </div>
-      <div className="mt-6 flex items-center justify-end gap-x-32">
+      <div className='mt-6 flex items-center justify-end gap-x-32'>
         <Button
-          type="submit"
+          type='submit'
           Icon={null}
-          text={isFinalStep ? "Sign & Submit" : "Continue"}
-          theme="red"
-          layoutStyle="flex w-1/4"
+          text={isFinalStep ? 'Sign & Submit' : 'Continue'}
+          theme='red'
+          layoutStyle='flex w-1/4'
         />
       </div>
     </form>

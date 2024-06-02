@@ -5,20 +5,20 @@ import {
   useImperativeHandle,
   useMemo,
   useState,
-} from "react";
-import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
-import { useQuery } from "@tanstack/react-query";
-import { navigate, useSearch } from "wouter/use-location";
-import qs from "query-string";
-import isEqual from "lodash.isequal";
-import { updateSearchString } from "../utils/updateSearchString";
-import { EditableTable, RowValue } from "./EditableTable";
-import { ParamsTypeSelector } from "./ParamsTypeSelector";
-import { BeansPerUnit } from "../types/swingset";
-import type { FormValue, ParameterChangeTypeOption } from "../types/form";
-import { toast } from "react-toastify";
-import { NetworkDropdown } from "./NetworkDropdown.tsx";
-import { useNetwork } from "../hooks/useNetwork.ts";
+} from 'react';
+import type { ParamChange } from 'cosmjs-types/cosmos/params/v1beta1/params';
+import { useQuery } from '@tanstack/react-query';
+import { navigate, useSearch } from 'wouter/use-location';
+import qs from 'query-string';
+import isEqual from 'lodash.isequal';
+import { updateSearchString } from '../utils/updateSearchString';
+import { EditableTable, RowValue } from './EditableTable';
+import { ParamsTypeSelector } from './ParamsTypeSelector';
+import { BeansPerUnit } from '../types/swingset';
+import type { FormValue, ParameterChangeTypeOption } from '../types/form';
+import { toast } from 'react-toastify';
+import { NetworkDropdown } from './NetworkDropdown.tsx';
+import { useNetwork } from '../hooks/useNetwork.ts';
 
 type ParameterChangeFormMethods = {
   getChanges: () => ParamChange[];
@@ -30,7 +30,7 @@ type ParameterChangeFormProps<T, R extends FormValue[] | undefined> = {
 
 function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   { options }: ParameterChangeFormProps<T, R>,
-  ref: React.ForwardedRef<ParameterChangeFormMethods>,
+  ref: React.ForwardedRef<ParameterChangeFormMethods>
 ) {
   const { paramType } = qs.parse(useSearch());
   const { api } = useNetwork();
@@ -40,7 +40,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 
   const currentParams = useMemo(
     () => match.selector(paramsQuery),
-    [paramsQuery, match],
+    [paramsQuery, match]
   );
 
   useEffect(() => {
@@ -56,15 +56,15 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   const handleFormTypeChange = (val: ParameterChangeTypeOption<T, R>) => {
     setStagedParams(null);
     if (!api) {
-      toast.error("Please select a network!", { autoClose: 3000 });
+      toast.error('Please select a network!', { autoClose: 3000 });
     }
     navigate(updateSearchString({ paramType: val.key }));
   };
 
   const feeUnit = useMemo(() => {
-    if (currentParams && match.transformColumn === "ist") {
+    if (currentParams && match.transformColumn === 'ist') {
       const param = (currentParams as unknown as BeansPerUnit[]).find(
-        (x: BeansPerUnit) => x.key === "feeUnit",
+        (x: BeansPerUnit) => x.key === 'feeUnit'
       );
       return param ? Number(param.beans) : null;
     }
@@ -76,14 +76,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
       if (feeUnit) return Number(value) / feeUnit;
       return value;
     },
-    [feeUnit],
+    [feeUnit]
   );
   const fromIst = useCallback(
     (value: string) => {
       if (feeUnit) return String(Number(value) * feeUnit);
       return value;
     },
-    [feeUnit],
+    [feeUnit]
   );
 
   useImperativeHandle(ref, () => ({
@@ -92,15 +92,15 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     },
     getChanges: () => {
       if (!stagedParams) {
-        toast.error("Please select a network!", { autoClose: 3000 });
-        throw new Error("No params");
+        toast.error('Please select a network!', { autoClose: 3000 });
+        throw new Error('No params');
       }
       if (isEqual(stagedParams, currentParams)) {
-        toast.error("No parameter changes to submit!", { autoClose: 3000 });
-        throw new Error("No changes to submit.");
+        toast.error('No parameter changes to submit!', { autoClose: 3000 });
+        throw new Error('No changes to submit.');
       }
       const changes = match.submitFn(stagedParams);
-      if (!changes) throw new Error("Error formatting changes");
+      if (!changes) throw new Error('Error formatting changes');
       return changes;
     },
   }));
@@ -109,7 +109,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     if (!stagedParams) return;
     const newParams = [...stagedParams];
     let newVal: string;
-    if (match.transformColumn === "ist") {
+    if (match.transformColumn === 'ist') {
       newVal = fromIst(value);
     } else {
       newVal = value;
@@ -118,7 +118,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
       if (candidate === key) {
         newParams[ix] = {
           key,
-          [match.valueKey || "value"]: newVal,
+          [match.valueKey || 'value']: newVal,
         };
       }
     });
@@ -127,14 +127,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 
   return (
     <>
-      <div className="grid grid-cols-1">
+      <div className='grid grid-cols-1'>
         <div>
-          <label htmlFor="title" className="text-sm font-medium text-blue">
+          <label htmlFor='title' className='text-sm font-medium text-blue'>
             Parameter Change Type
           </label>
         </div>
-        <div className="pt-[10px]">
-          <div className="flex">
+        <div className='pt-[10px]'>
+          <div className='flex'>
             {api && (
               <ParamsTypeSelector
                 paramOptions={options}
@@ -148,23 +148,23 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         </div>
       </div>
       {api && (
-        <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-4 sm:py-6 mt-6">
+        <div className='sm:grid sm:grid-cols-1 sm:items-start sm:gap-4 sm:py-6 mt-6'>
           <label
-            htmlFor="title"
-            className="block text-sm font-medium text-blue"
+            htmlFor='title'
+            className='block text-sm font-medium text-blue'
           >
             {match.title}
           </label>
-          <div className={"w-full"}>
+          <div className={'w-full'}>
             <EditableTable
               headers={match.headers as string[]}
               rows={stagedParams as unknown as RowValue[]}
               handleValueChanged={handleValueChanged}
               transformInput={
-                match.transformColumn === "ist" ? toIst : undefined
+                match.transformColumn === 'ist' ? toIst : undefined
               }
-              valueKey={match.valueKey || ("value" as string)}
-              inputType={match.inputType || "string"}
+              valueKey={match.valueKey || ('value' as string)}
+              inputType={match.inputType || 'string'}
             />
           </div>
         </div>
@@ -174,11 +174,11 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
 }
 
 const ParameterChangeFormSection = forwardRef(
-  ParameterChangeFormSectionBase,
+  ParameterChangeFormSectionBase
 ) as <T, R extends FormValue[] | undefined>(
   props: ParameterChangeFormProps<T, R> & {
     ref?: React.ForwardedRef<ParameterChangeFormMethods>;
-  },
+  }
 ) => ReturnType<typeof ParameterChangeFormSectionBase>;
 
 export { ParameterChangeFormSection };

@@ -4,9 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node src/bin/generateChains.mjs",
     "build": "tsc && vite build",
-    "dev": "yarn prebuild && vite",
+    "dev": " vite",
     "start:docker": "docker-compose up -d",
     "agd": "docker-compose exec agd agd",
     "list-proposals": "yarn run --silent agd query gov proposals -o json | jq -c '.proposals[] | [.proposal_id,.voting_end_time,.status]'",
@@ -19,7 +18,8 @@
     "test:e2e": "vitest e2e",
     "test:coverage": "vitest run --coverage",
     "test:watch": "vitest --watch",
-    "ts:check": "tsc --noEmit"
+    "ts:check": "tsc --noEmit",
+    "prepare": "npx husky install"
   },
   "dependencies": {
     "@agoric/casting": "^0.4.3-u13.0",
@@ -66,6 +66,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.3",
     "happy-dom": "^12.9.1",
+    "husky": "^9.0.11",
     "postcss": "^8.4.28",
     "postinstall-postinstall": "^2.1.0",
     "prettier": "^3.1.1",

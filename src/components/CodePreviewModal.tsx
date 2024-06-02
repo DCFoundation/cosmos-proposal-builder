@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { EyeIcon } from "@heroicons/react/24/solid";
-import { Modal } from "./Modal";
-import { CodeHighlight, CodeHighlightProps } from "./CodeHighlight";
-import { IconButton } from "./IconButton";
+import { useState } from 'react';
+import { EyeIcon } from '@heroicons/react/24/solid';
+import { Modal } from './Modal';
+import { CodeHighlight, CodeHighlightProps } from './CodeHighlight';
+import { IconButton } from './IconButton';
 
 interface CodePreviewModalProps extends CodeHighlightProps {
   modalTitle: string;
@@ -18,7 +18,7 @@ const CodePreviewModal = ({
     <>
       <IconButton
         Icon={EyeIcon}
-        label="Preview"
+        label='Preview'
         onClick={() => setShowModal(true)}
       />
       <Modal

@@ -1,7 +1,7 @@
-import { useQueries, UseQueryResult } from "@tanstack/react-query";
-import { DepositParams, VotingParams } from "../types/gov";
-import { depositParamsQuery, votingParamsQuery } from "../lib/queries";
-import { Coin } from "../types/bank";
+import { useQueries, UseQueryResult } from '@tanstack/react-query';
+import { DepositParams, VotingParams } from '../types/gov';
+import { depositParamsQuery, votingParamsQuery } from '../lib/queries';
+import { Coin } from '../types/bank';
 
 export const useDepositParams = (api: string | undefined) => {
   const { minDeposit, votingPeriod } = useQueries({
@@ -10,7 +10,7 @@ export const useDepositParams = (api: string | undefined) => {
       results: [
         UseQueryResult<DepositParams, unknown>,
         UseQueryResult<VotingParams, unknown>,
-      ],
+      ]
     ): { minDeposit: Coin[] | undefined; votingPeriod: string | undefined } => {
       const [deposit, voting] = results;
       return {

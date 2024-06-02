@@ -4,6 +4,7 @@ export type ChainItem = {
   href: string;
   parent?: string;
   image?: string;
+  // suggestEndpoints?: string;
   enabledProposalTypes: {
     textProposal?: boolean;
     parameterChangeProposal?: boolean;
@@ -14,17 +15,18 @@ export type ChainItem = {
     addVault?: boolean;
     coreEvalProposal?: boolean;
   };
-  networks: NetworkConfig[];
+  networks?: NetworkConfig[]; // only chains with a parent can have networks empty network
 };
 
 export interface NetworkConfig {
+  suggestEndpoints?: string;
   chainName: string;
   chainId: string;
   networkName: string;
   slip44: number;
   fees: FeeEntry;
   bech32Prefix: string;
-  apis: Apis;
+  apis?: Apis;
   staking?: StakeCurrencyEntry;
   explorers?: ExplorerEntry[];
   walletUrl?: string;

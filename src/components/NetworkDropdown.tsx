@@ -1,16 +1,15 @@
-import { useMemo } from "react";
-import { capitalize } from "../utils/capitalize";
-import { DropdownMenu } from "./DropdownMenu";
-import { useNetwork } from "../hooks/useNetwork";
-import { useWallet } from "../hooks/useWallet";
-import { useChain } from "../hooks/useChain";
+import { useMemo } from 'react';
+import { capitalize } from '../utils/capitalize';
+import { DropdownMenu } from './DropdownMenu';
+import { useNetwork } from '../hooks/useNetwork';
+import { useWallet } from '../hooks/useWallet';
+import { useChain } from '../hooks/useChain';
 
-const placeholderText = "Select Network";
+const placeholderText = 'Select Network';
 
 const NetworkDropdown = () => {
   const { currentNetworkName, chainNetworkNames, setCurrentNetworkName } =
     useNetwork();
-
   const { currentChain } = useChain();
   const {
     isLoading: isLoadingWallet,
@@ -24,24 +23,21 @@ const NetworkDropdown = () => {
 
   const items = useMemo(() => {
     if (currentChain && chainNetworkNames) {
-      return [
-        ...chainNetworkNames.map((network) => ({
-          label: capitalize(network),
-          value: network,
-          onClick: () => {
-            setCurrentNetworkName(network);
-          },
-        })),
-      ];
+      return chainNetworkNames.map((network) => ({
+        label: capitalize(network),
+        onClick: () => {
+          setCurrentNetworkName(network);
+        },
+      }));
     }
-    return [{ label: "Loading...", value: "" }];
+    return [{ label: 'Loading...', onClick: () => {} }];
   }, [currentChain, chainNetworkNames, setCurrentNetworkName]);
 
   const status = useMemo(() => {
-    if (isLoadingWallet) return "loading";
-    if (stargateClient && currentChain && currentNetworkName) return "active";
-    if (!walletAddress || !currentChain) return "default";
-    return "error";
+    if (isLoadingWallet) return 'loading';
+    if (stargateClient && currentChain && currentNetworkName) return 'active';
+    if (!walletAddress || !currentChain) return 'default';
+    return 'error';
   }, [
     isLoadingWallet,
     currentChain,

@@ -1,46 +1,77 @@
-import { useMemo, useRef, FormEvent } from "react";
-import { toast } from "react-toastify";
-import type { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
-import { MultiStepProposalForm } from "../../components/MultiStepProposalForm";
-import { Tabs } from "../../components/Tabs";
-import { useNetwork } from "../../hooks/useNetwork";
-import { useWallet } from "../../hooks/useWallet";
-import { makeCoreEvalProposalMsg } from "../../lib/messageBuilder";
-import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
-import { PSMParameterInputs } from "../../config/inter/components/PSMParameterInputs";
-import { VaultParameterInputs } from "../../config/inter/components/VaultParameterInputs";
-import { GovDetails } from "../../components/GovDetails";
-import { capitalize, firstLetterIsUpperCase } from "../../utils/capitalize";
-import { psmJS, psmPermit } from "./addPSM";
+import { useMemo, useRef, FormEvent } from 'react';
+import { toast } from 'react-toastify';
+import type { CoreEval } from '@agoric/cosmic-proto/swingset/swingset.js';
+import { MultiStepProposalForm } from '../../components/MultiStepProposalForm';
+import { Tabs } from '../../components/Tabs';
+import { useNetwork } from '../../hooks/useNetwork';
+import { useWallet } from '../../hooks/useWallet';
+import { makeCoreEvalProposalMsg } from '../../lib/messageBuilder';
+import { makeSignAndBroadcast } from '../../lib/signAndBroadcast';
+import { PSMParameterInputs } from '../../config/inter/components/PSMParameterInputs';
+import { VaultParameterInputs } from '../../config/inter/components/VaultParameterInputs';
+import { GovDetails } from '../../components/GovDetails';
+import { capitalize, firstLetterIsUpperCase } from '../../utils/capitalize';
+import { psmJS, psmPermit } from './addPSM';
 import {
   addVaultJs,
   addVaultPermit,
   addOracleJs,
   addOraclePermit,
-} from "./addVault";
-import { generateFromTemplate } from "./generateFromTemplate";
-import { InterLearnMore } from "./components/InterLearnMore";
+} from './addVault';
+import { generateFromTemplate } from './generateFromTemplate';
+import { InterLearnMore } from './components/InterLearnMore';
 import {
   EMERYNET_ORACLE_OPERATORS,
   MAINNET_ORACLE_OPERATORS,
-} from "./addVault/constants";
-import { useQuery } from "@tanstack/react-query";
-import { accountBalancesQuery } from "../../lib/queries.ts";
-import { selectBldCoins } from "../../lib/selectors.ts";
-import { AlertBox } from "../../components/AlertBox.tsx";
+} from './addVault/constants';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+import { accountBalancesQuery } from '../../lib/queries.ts';
+import { selectCoins } from '../../lib/selectors.ts';
+import { AlertBox } from '../../components/AlertBox.tsx';
+import { BankBalances } from '../../types/bank.ts';
 
 //TODO define enabled proposals for inter as a workaround
 const Inter = () => {
-  const { currentNetworkName: netName, api, networkConfig } = useNetwork();
-  const { walletAddress, stargateClient } = useWallet();
+  const {
+    currentNetworkName: netName,
+    chainInfo,
+    networkConfig,
+    isLoading: isLoadingNetwork,
+  } = useNetwork();
+  const {
+    walletAddress,
+    stargateClient,
+    isLoading: isLoadingWallet,
+  } = useWallet();
   const psmFormRef = useRef<HTMLFormElement>(null);
   const vaultFormRef = useRef<HTMLFormElement>(null);
 
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
-  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
+  // const accountBalances = useQuery(
+  //   accountBalancesQuery(api || undefined, walletAddress)
+  // );
+  // const accountBalances = useQuery({
+  //   queryKey: ['accountBalances', api, walletAddress],
+  //   queryFn: accountBalancesQuery,
+  //   enabled: !!api && !!walletAddress,
+  // });
+
+  const accountBalancesEnabled = !!chainInfo?.rest && !!walletAddress;
+  const accountBalancesQueryOptions = accountBalancesQuery(
+    chainInfo?.rest,
+    walletAddress,
+    accountBalancesEnabled
+  );
+  const {
+    data: accountBalances,
+    isLoading: isAccountBalancesLoading,
+  }: UseQueryResult<BankBalances, Error> = useQuery(
+    accountBalancesQueryOptions
+  );
+
   const bldCoins = useMemo(
-    () => selectBldCoins(accountBalances),
-    [accountBalances],
+    () => selectCoins('ubld', accountBalances),
+    [accountBalances]
   );
 
   const signAndBroadcast = useMemo(
@@ -49,9 +80,9 @@ const Inter = () => {
         stargateClient || undefined,
         walletAddress,
         explorerUrl || null,
-        "uist",
+        'uist'
       ),
-    [stargateClient, walletAddress, explorerUrl],
+    [stargateClient, walletAddress, explorerUrl]
   );
 
   const handlePsmSubmit = async (e: FormEvent) => {
@@ -59,29 +90,29 @@ const Inter = () => {
     const formData = psmFormRef.current?.data();
 
     if (!walletAddress) {
-      toast.error("Wallet not connected.", { autoClose: 3000 });
+      toast.error('Wallet not connected.', { autoClose: 3000 });
       return;
     }
 
     if (formData) {
-      const denom = formData.get("denom") as string;
-      const decimalPlaces = formData.get("decimalPlaces") as string;
-      const keyword = formData.get("keyword") as string;
-      const proposedName = formData.get("proposedName") as string;
-      if (!denom || !denom.startsWith("ibc/")) {
-        toast.error("Invalid IBC Denom.", { autoClose: 3000 });
+      const denom = formData.get('denom') as string;
+      const decimalPlaces = formData.get('decimalPlaces') as string;
+      const keyword = formData.get('keyword') as string;
+      const proposedName = formData.get('proposedName') as string;
+      if (!denom || !denom.startsWith('ibc/')) {
+        toast.error('Invalid IBC Denom.', { autoClose: 3000 });
         return;
       }
       if (!keyword || !firstLetterIsUpperCase(keyword)) {
-        toast.error("Invalid Issuer Keyword.", { autoClose: 3000 });
+        toast.error('Invalid Issuer Keyword.', { autoClose: 3000 });
         return;
       }
       if (isNaN(parseInt(decimalPlaces))) {
-        toast.error("Invalid Decimal Places.", { autoClose: 3000 });
+        toast.error('Invalid Decimal Places.', { autoClose: 3000 });
         return;
       }
       if (!proposedName) {
-        toast.error("Proposed Name not provided.", { autoClose: 3000 });
+        toast.error('Proposed Name not provided.', { autoClose: 3000 });
         return;
       }
 
@@ -96,9 +127,9 @@ const Inter = () => {
         { jsonPermits: psmPermit, jsCode: generatedAddPsm },
       ];
 
-      const title = (formData.get("title") as string) || "";
-      const description = (formData.get("description") as string) || "";
-      const depositBld = (formData.get("deposit") as string) || "";
+      const title = (formData.get('title') as string) || '';
+      const description = (formData.get('description') as string) || '';
+      const depositBld = (formData.get('deposit') as string) || '';
       const deposit = Number(depositBld) * 1_000_000;
 
       const proposalMsg = makeCoreEvalProposalMsg({
@@ -111,7 +142,7 @@ const Inter = () => {
       });
 
       try {
-        await signAndBroadcast(proposalMsg, "proposal");
+        await signAndBroadcast(proposalMsg, 'proposal');
         psmFormRef.current?.reset();
       } catch (e) {
         console.error(e);
@@ -124,29 +155,29 @@ const Inter = () => {
     const formData = vaultFormRef.current?.data();
 
     if (!walletAddress) {
-      toast.error("Wallet not connected.", { autoClose: 3000 });
+      toast.error('Wallet not connected.', { autoClose: 3000 });
       return;
     }
     if (!netName) {
-      toast.error("Network not selected.", { autoClose: 3000 });
+      toast.error('Network not selected.', { autoClose: 3000 });
       return;
     }
 
     if (formData) {
-      const denom = formData.get("denom") as string;
-      const decimalPlaces = formData.get("decimalPlaces") as string;
-      const issuerName = formData.get("issuerName") as string;
+      const denom = formData.get('denom') as string;
+      const decimalPlaces = formData.get('decimalPlaces') as string;
+      const issuerName = formData.get('issuerName') as string;
 
-      if (!denom || !denom.startsWith("ibc/")) {
-        toast.error("Invalid IBC Denom.", { autoClose: 3000 });
+      if (!denom || !denom.startsWith('ibc/')) {
+        toast.error('Invalid IBC Denom.', { autoClose: 3000 });
         return;
       }
       if (isNaN(parseInt(decimalPlaces))) {
-        toast.error("Invalid Decimal Places.", { autoClose: 3000 });
+        toast.error('Invalid Decimal Places.', { autoClose: 3000 });
         return;
       }
       if (!issuerName) {
-        toast.error("Issuer Name not provided.", { autoClose: 3000 });
+        toast.error('Issuer Name not provided.', { autoClose: 3000 });
         return;
       }
 
@@ -158,17 +189,17 @@ const Inter = () => {
         oracleBrand: issuerName,
         proposedName: issuerName,
         oracleAddresses:
-          netName === "mainnet"
+          netName === 'mainnet'
             ? MAINNET_ORACLE_OPERATORS
             : EMERYNET_ORACLE_OPERATORS,
       };
       const generatedAddVaultJs = generateFromTemplate<AddVaultParams>(
         addVaultJs,
-        templateParams,
+        templateParams
       );
       const generatedAddOracleJs = generateFromTemplate<AddVaultParams>(
         addOracleJs,
-        templateParams,
+        templateParams
       );
 
       const evals: CoreEval[] = [
@@ -176,9 +207,9 @@ const Inter = () => {
         { jsonPermits: addVaultPermit, jsCode: generatedAddVaultJs },
       ];
 
-      const title = (formData.get("title") as string) || "";
-      const description = (formData.get("description") as string) || "";
-      const depositBld = (formData.get("deposit") as string) || "";
+      const title = (formData.get('title') as string) || '';
+      const description = (formData.get('description') as string) || '';
+      const depositBld = (formData.get('deposit') as string) || '';
       const deposit = Number(depositBld) * 1_000_000;
 
       const proposalMsg = makeCoreEvalProposalMsg({
@@ -191,13 +222,16 @@ const Inter = () => {
       });
 
       try {
-        await signAndBroadcast(proposalMsg, "proposal");
+        await signAndBroadcast(proposalMsg, 'proposal');
         vaultFormRef.current?.reset();
       } catch (e) {
         console.error(e);
       }
     }
   };
+  if (isLoadingNetwork || isLoadingWallet || isAccountBalancesLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -205,14 +239,14 @@ const Inter = () => {
       <Tabs
         tabs={[
           {
-            title: "Add PSM",
-            msgType: "addPSM",
+            title: 'Add PSM',
+            msgType: 'addPSM',
             content: (
               <MultiStepProposalForm
                 ref={psmFormRef}
                 handleSubmit={handlePsmSubmit}
                 titleDescOnly={true}
-                title="Add PSM"
+                title='Add PSM'
                 description={
                   <>
                     The PSM (Parity Stability Module) is a smart contract that
@@ -222,13 +256,13 @@ const Inter = () => {
                 }
                 tabs={[
                   {
-                    title: "Asset Details",
+                    title: 'Asset Details',
                     content: <PSMParameterInputs />,
                   },
                   {
-                    title: "Proposal Details",
+                    title: 'Proposal Details',
                     content: (
-                      <GovDetails governanceForumLink="https://community.agoric.com/tags/c/inter-protocol/5/psm" />
+                      <GovDetails governanceForumLink='https://community.agoric.com/tags/c/inter-protocol/5/psm' />
                     ),
                   },
                 ]}
@@ -236,14 +270,14 @@ const Inter = () => {
             ),
           },
           {
-            title: "Add Vault Collateral Type",
-            msgType: "addVault",
+            title: 'Add Vault Collateral Type',
+            msgType: 'addVault',
             content: (
               <MultiStepProposalForm
                 ref={vaultFormRef}
                 handleSubmit={handleVaultSubmit}
                 titleDescOnly={false}
-                title="Add Vault Collateral Type"
+                title='Add Vault Collateral Type'
                 description={
                   <>
                     Vaults allow users to mint IST by using their assets as
@@ -253,13 +287,13 @@ const Inter = () => {
                 }
                 tabs={[
                   {
-                    title: "Asset Details",
+                    title: 'Asset Details',
                     content: <VaultParameterInputs />,
                   },
                   {
-                    title: "Proposal Details",
+                    title: 'Proposal Details',
                     content: (
-                      <GovDetails governanceForumLink="https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30" />
+                      <GovDetails governanceForumLink='https://community.agoric.com/c/inter-protocol/vaults-collateral-discussion/30' />
                     ),
                   },
                 ]}

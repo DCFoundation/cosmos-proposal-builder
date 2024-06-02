@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 export const memoryLocation =
-  (path = "/") =>
+  (path = '/') =>
   () =>
     useState(path);

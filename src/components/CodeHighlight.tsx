@@ -1,10 +1,10 @@
-import { useEffect } from "react";
-import Prism from "prismjs";
-import { classNames } from "../utils/classNames";
+import { useEffect } from 'react';
+import Prism from 'prismjs';
+import { classNames } from '../utils/classNames';
 
 export interface CodeHighlightProps {
   content: string;
-  prismTag: "lang-json" | "lang-javascript" | string;
+  prismTag: 'lang-json' | 'lang-javascript' | string;
 }
 
 const CodeHighlight = ({ content, prismTag }: CodeHighlightProps) => {
@@ -14,7 +14,7 @@ const CodeHighlight = ({ content, prismTag }: CodeHighlightProps) => {
   }, []);
 
   return (
-    <pre className="language-javascript">
+    <pre className='language-javascript'>
       <code className={classNames(prismTag)}>{content}</code>
     </pre>
   );

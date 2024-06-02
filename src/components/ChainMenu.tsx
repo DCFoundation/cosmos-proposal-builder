@@ -1,39 +1,54 @@
-import { useMemo } from "react";
-import { capitalize } from "../utils/capitalize";
-import { DropdownMenu } from "./DropdownMenu";
-import { useWallet } from "../hooks/useWallet";
-import { useChain } from "../hooks/useChain";
-import { CHAINS } from "../constants/chains";
+import { useMemo } from 'react';
+import { capitalize } from '../utils/capitalize';
+import { DropdownMenu } from './DropdownMenu';
+import { useWallet } from '../hooks/useWallet';
+import { useChain } from '../hooks/useChain';
+import { useNetwork } from '../hooks/useNetwork';
+import { useChainRegistries } from '../hooks/useChainRegistry';
+// import { useChainRegistries } from '../omit/useOldChainRegistry';
 
-const placeholderText = "Select Chain";
+const placeholderText = 'Select Chain';
+
+// const fetchChains = async (): Promise<ChainItem[]> => {
+//   const loadedChains = await Promise.all(
+//     Object.entries(CHAINS).map(async ([chainName, promise]) => {
+//       const chain = await promise();
+//       return { ...chain, value: chainName };
+//     })
+//   );
+//   return loadedChains;
+// };
 
 const ChainMenu = () => {
-  const { currentChain, setCurrentChain } = useChain();
   const { isLoading: isLoadingWallet, walletAddress } = useWallet();
+  const { setCurrentChain } = useChain();
+  const { currentChain } = useNetwork();
 
-  const title = currentChain ? capitalize(currentChain.label) : placeholderText;
+  const { data: chains = [], isLoading: isLoadingChains } =
+    useChainRegistries();
+
+  const title = currentChain ? capitalize(currentChain.value) : placeholderText;
   const labelImage = useMemo(
     () => (currentChain ? currentChain.image : undefined),
-    [currentChain],
+    [currentChain]
   );
 
   const items = useMemo(() => {
-    return CHAINS.map(({ label, value, image }) => ({
+    return chains.map(({ label, value, image }) => ({
       label,
-      value,
       image,
       onClick: () => {
         setCurrentChain(value);
       },
     }));
-  }, [setCurrentChain]);
+  }, [chains, setCurrentChain]);
 
   const status = useMemo(() => {
-    if (isLoadingWallet) return "loading";
-    if (walletAddress && currentChain) return "active";
-    if (!walletAddress) return "default";
-    return "error";
-  }, [isLoadingWallet, walletAddress, currentChain]);
+    if (isLoadingWallet || isLoadingChains) return 'loading';
+    if (walletAddress && currentChain) return 'active';
+    if (!walletAddress) return 'default';
+    return 'error';
+  }, [isLoadingWallet, isLoadingChains, walletAddress, currentChain]);
 
   return (
     <DropdownMenu

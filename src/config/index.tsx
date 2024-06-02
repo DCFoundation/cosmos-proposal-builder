@@ -1,99 +1,135 @@
-import { ReactNode, useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useNetwork } from "../hooks/useNetwork";
-import { useWallet } from "../hooks/useWallet";
-import { useWatchBundle } from "../hooks/useWatchBundle";
-import { accountBalancesQuery } from "../lib/queries";
-import { selectCoins } from "../lib/selectors";
-import { makeSignAndBroadcast } from "../lib/signAndBroadcast";
-import { ProposalArgs, ProposalForm } from "../components/ProposalForm";
-import { BundleForm, BundleFormArgs } from "../components/BundleForm";
-import { Code } from "../components/inline";
-import { FundCommunityPool } from "./proposalTemplates/fundCommunityPool";
-import { Tabs } from "../components/Tabs";
-import { isValidBundle } from "../utils/validate";
-import { compressBundle } from "../lib/compression";
-import { AlertBox } from "../components/AlertBox";
-import { createProposalMessage } from "../utils/createProposalMessage";
-import { toast } from "react-toastify";
-import { makeInstallBundleMsg } from "../lib/messageBuilder";
-import { useChain } from "../hooks/useChain";
+import { useCallback } from 'react';
+import { useQuery, UseQueryResult } from '@tanstack/react-query';
+// import { useNetwork } from '../hooks/useNetwork';
+import { useWallet } from '../hooks/useWallet';
+import { useWatchBundle } from '../hooks/useWatchBundle';
+import { accountBalancesQuery } from '../lib/queries';
+import { ProposalArgs, ProposalForm } from '../components/ProposalForm';
+import { BundleForm, BundleFormArgs } from '../components/BundleForm';
+import { Tabs } from '../components/Tabs';
+import { isValidBundle } from '../utils/validate';
+import { compressBundle } from '../lib/compression';
+import { createProposalMessage } from '../utils/createProposalMessage';
+import { toast } from 'react-toastify';
+import { makeInstallBundleMsg } from '../lib/messageBuilder';
+import {
+  useCoinWealth,
+  usePermittedProposals,
+  useSignAndBroadcast,
+} from '../omit/usePermittedProposals';
+import { AlertBox } from '../components/AlertBox';
+import { useNetwork } from '../hooks/useNetwork';
+import { BankBalances } from '../types/bank';
+// import { useChain } from '../hooks/useChain';
+import { useProposals } from '../hooks/useProposals';
 
 const ProposalsLandingPage = () => {
-  const { currentChain } = useChain();
-  const { networkConfig, api, chainInfo } = useNetwork();
-  const { walletAddress, stargateClient, isLoading } = useWallet();
-  const stakingDenom = networkConfig?.staking?.stakingTokens[0].denom;
-  const feeDenom = networkConfig?.fees.feeTokens[0].denom;
-  const explorerUrl = networkConfig?.explorers?.[0]?.url;
-  const permittedProposals = useMemo(() => {
-    return !currentChain
-      ? null
-      : (Object.entries(currentChain.enabledProposalTypes)
-          .filter(([_, value]) => value === true)
-          .map(([key]) => key) as QueryParams["msgType"][]);
-  }, [currentChain]);
+  // const { currentChain } = useChain();
+  const {
+    networkConfig,
+    chainInfo,
+    isLoading: isLoadingNetwork,
+    currentChain: currentChainItem,
+    error: networkError,
+  } = useNetwork();
+  // const {} =  use
+  // const {
+  //   currentChainItem,
+  //   networkConfig,
+  //   chainNetworkNames,
+  //   isLoading: isLoadingNetwork,
+  //   error: networkError,
+  // } = useNetworkData(currentChain, 'networkName');
+  // const {
+  //   data: chainInfo,
+  //   isLoading: isChainInfoLoading,
+  //   error: chainInfoError,
+  // } = useChainInfo(networkConfig);
 
+  const {
+    walletAddress,
+    stargateClient,
+    isLoading: isLoadingWallet,
+    connectWallet,
+  } = useWallet();
+
+  const stakingDenom = networkConfig?.staking?.stakingTokens[0]?.denom;
+  const feeDenom = networkConfig?.fees?.feeTokens[0]?.denom;
+  const explorerUrl = networkConfig?.explorers?.[0]?.url;
+
+  const permittedProposals = usePermittedProposals(currentChainItem);
   const watchBundle = useWatchBundle(chainInfo?.rpc, {
     clipboard: window.navigator.clipboard,
   });
-  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
 
-  const coinWealth = useMemo(
-    () => selectCoins(stakingDenom, accountBalances),
-    [accountBalances, stakingDenom]
+  const accountBalancesEnabled = !!chainInfo?.rest && !!walletAddress;
+  const accountBalancesQueryOptions = accountBalancesQuery(
+    chainInfo?.rest,
+    walletAddress,
+    accountBalancesEnabled
+  );
+  const {
+    data: accountBalances,
+    isLoading: isAccountBalancesLoading,
+  }: UseQueryResult<BankBalances, Error> = useQuery(
+    accountBalancesQueryOptions
   );
 
-  const signAndBroadcast = useMemo(
-    () =>
-      makeSignAndBroadcast(
-        stargateClient || undefined,
-        walletAddress,
-        explorerUrl || null,
-        feeDenom || null
-      ),
-    [stargateClient, walletAddress, explorerUrl, feeDenom]
+  const coinWealth = useCoinWealth(stakingDenom, accountBalances);
+  const signAndBroadcast = useSignAndBroadcast(
+    stargateClient || undefined,
+    walletAddress,
+    explorerUrl || null,
+    feeDenom || null
   );
 
   const handleProposal = useCallback(
-    async (msgType: QueryParams["msgType"], proposalData: ProposalArgs) => {
-      if (isLoading) {
-        console.error("loading wallet");
-        toast.info(" Wallet still loading");
-      }
+    async (msgType: QueryParams['msgType'], proposalData: ProposalArgs) => {
       if (!walletAddress) {
-        console.error(" Wallet address seems to be ", walletAddress);
-        toast.error("Wallet not connected.", { autoClose: 3000 });
-        throw new Error("Wallet not connected");
+        toast.error('Wallet not connected. Connecting...');
+        try {
+          await connectWallet();
+        } catch (e) {
+          toast.error(`Failed to connect wallet: ${e}`);
+          return;
+        }
       }
 
       const proposalMsg = createProposalMessage(
         msgType,
         proposalData,
-        walletAddress,
-        stakingDenom || ""
+        walletAddress as string,
+        stakingDenom as string
       );
 
-      if (!proposalMsg) throw new Error("Error parsing query or inputs.");
+      if (!proposalMsg) {
+        toast.error('Error creating proposal message');
+        return;
+      }
 
       try {
-        await signAndBroadcast(proposalMsg, "proposal");
+        await signAndBroadcast(proposalMsg, 'proposal');
+        toast.success('Proposal submitted successfully');
       } catch (e) {
-        console.error("Error submitting proposal:", e);
-        toast.error("Error submitting proposal " + e);
+        console.error('Error submitting proposal:', e);
+        toast.error(`Error submitting proposal: ${e}`);
       }
     },
-    [walletAddress, chainInfo]
+    [walletAddress, stakingDenom, signAndBroadcast, connectWallet]
   );
 
   const handleBundle = useCallback(
     async (bundleData: BundleFormArgs) => {
       if (!walletAddress) {
-        throw new Error("Wallet not connected");
+        toast.error('Wallet not connected');
+        return;
       }
+
       if (!isValidBundle(bundleData.bundle)) {
-        throw new Error("Invalid bundle.");
+        toast.error('Invalid bundle.');
+        return;
       }
+
       const { compressedBundle, uncompressedSize } = await compressBundle(
         JSON.parse(bundleData.bundle)
       );
@@ -102,168 +138,74 @@ const ProposalsLandingPage = () => {
         uncompressedSize,
         submitter: walletAddress,
       });
-      if (proposalMsg === null) {
-        throw new Error("Error creating proposal message.");
+
+      if (!proposalMsg) {
+        toast.error('Error creating bundle proposal message');
+        return;
       }
+
       try {
-        const txResponse = await signAndBroadcast(proposalMsg, "bundle");
+        const txResponse = await signAndBroadcast(proposalMsg, 'bundle');
         if (txResponse) {
           const { endoZipBase64Sha512 } = JSON.parse(bundleData.bundle);
           await watchBundle(endoZipBase64Sha512, txResponse);
+          toast.success('Bundle submitted successfully');
         }
       } catch (e) {
-        console.error(e);
-        toast.error("Error submitting proposal", { autoClose: 3000 });
+        console.error('Error submitting bundle:', e);
+        toast.error(`Error submitting bundle: ${e}`);
       }
     },
-    [walletAddress, chainInfo]
+    [walletAddress, signAndBroadcast, watchBundle]
   );
 
-  const proposalTabs = useMemo(() => {
-    const tabs: {
-      title: string;
-      msgType: QueryParams["msgType"];
-      content: ReactNode;
-    }[] = [
-      {
-        title: "Text Proposal",
-        msgType: "textProposal",
-        content: (
-          <ProposalForm
-            handleSubmit={async (data) =>
-              await handleProposal("textProposal", data)
-            }
-            titleDescOnly={true}
-            title="Text Proposal"
-            msgType="textProposal"
-            governanceForumLink="https://community.agoric.com/c/governance/signaling-proposals/17"
-            description={
-              <>
-                This is a governance proposal that can be used for signaling
-                support or agreement on a certain topic or idea. Text proposals
-                do not contain any code, and do not directly enact changes after
-                a passing vote.
-              </>
-            }
-          />
-        ),
-      },
-      {
-        title: "CoreEval Proposal",
-        msgType: "coreEvalProposal",
-        content: (
-          <ProposalForm
-            handleSubmit={async (data) =>
-              await handleProposal("coreEvalProposal", data)
-            }
-            titleDescOnly={false}
-            title="CoreEval Proposal"
-            msgType="coreEvalProposal"
-            governanceForumLink="https://community.agoric.com/c/governance/core-eval/31"
-            description={
-              <>
-                This is a governance proposal that executes code after a passing
-                vote. The JSON Permit grants{" "}
-                <a
-                  className="cursor-pointer hover:text-gray-900 underline"
-                  href="https://docs.agoric.com/guides/coreeval/permissions.html"
-                >
-                  capabilities
-                </a>{" "}
-                and the JS Script can start or update a contract. These files
-                can be generated with the <Code>agoric run</Code> command. For
-                more details, see the{" "}
-                <a
-                  className="cursor-pointer hover:text-gray-900 underline"
-                  href="https://docs.agoric.com/guides/coreeval/"
-                >
-                  official docs
-                </a>
-                .
-              </>
-            }
-          />
-        ),
-      },
-      {
-        title: "Install Bundle",
-        msgType: "installBundle",
-        content: (
-          <BundleForm
-            title="Install Bundle"
-            handleSubmit={handleBundle}
-            description={
-              <>
-                The install bundle message deploys and installs an external
-                bundle generated during the <Code>agoric run</Code> process. The
-                resulting installation can be referenced in a{" "}
-                <a
-                  className="cursor-pointer hover:text-gray-900 underline"
-                  href="https://docs.agoric.com/guides/coreeval/"
-                >
-                  CoreEval proposal
-                </a>{" "}
-                that starts or updates a contract.
-              </>
-            }
-          />
-        ),
-      },
-      {
-        title: "Parameter Change Proposal",
-        msgType: "parameterChangeProposal",
-        content: (
-          <ProposalForm
-            title="Parameter Change Proposal"
-            handleSubmit={(data) =>
-              handleProposal("parameterChangeProposal", data)
-            }
-            description="This is a governance proposal to change chain configuration parameters."
-            governanceForumLink="https://community.agoric.com/c/governance/parameter-changes/16"
-            msgType="parameterChangeProposal"
-          />
-        ),
-      },
-      {
-        title: "Community Spend Proposal",
-        msgType: "communityPoolSpendProposal",
-        content: (
-          <ProposalForm
-            title="Community Spend Proposal"
-            handleSubmit={async (data) =>
-              await handleProposal("communityPoolSpendProposal", data)
-            }
-            description={
-              <>
-                This governance proposal to spend funds from the community pool.
-                The community pool is funded by a portion of the transaction
-                fees on the Agoric chain. The proposal must include the
-                recipient address and the amount to be sent.
-              </>
-            }
-            msgType="communityPoolSpendProposal"
-            governanceForumLink="https://community.agoric.com/c/governance/community-fund/14"
-          />
-        ),
-      },
-      {
-        title: "Fund Community Pool",
-        msgType: "fundCommunityPool",
-        content: <FundCommunityPool />,
-      },
-    ];
-
-    return tabs.filter(
-      (tab) =>
-        permittedProposals?.includes(tab.msgType as QueryParams["msgType"])
-    );
-  }, [permittedProposals]);
+  const {
+    data: proposalTabs,
+    isLoading: isProposalsLoading,
+    error: proposalsError,
+  } = useProposals(permittedProposals || []);
 
   return (
-    <>
+    <div>
+      {(isLoadingNetwork ||
+        isLoadingWallet ||
+        isAccountBalancesLoading ||
+        isProposalsLoading) && (
+        <div>Loading network, wallet, balances, or proposals...</div>
+      )}
+      {networkError && <div>Error: {networkError.message}</div>}
+      {proposalsError && <div>Error: {proposalsError.message}</div>}
       <AlertBox coins={coinWealth || undefined} />
-      <Tabs tabs={proposalTabs} />
-    </>
+
+      {proposalTabs ? (
+        <Tabs
+          tabs={proposalTabs.map((tab) => ({
+            ...tab,
+            content:
+              tab.msgType === 'installBundle' ? (
+                <BundleForm
+                  title={tab.title}
+                  handleSubmit={handleBundle}
+                  description={tab.description}
+                />
+              ) : (
+                <ProposalForm
+                  handleSubmit={(data) =>
+                    handleProposal(tab.msgType, data).catch(console.error)
+                  }
+                  titleDescOnly={tab.msgType === 'textProposal'}
+                  title={tab.title}
+                  msgType={tab.msgType}
+                  governanceForumLink={tab.governanceForumLink}
+                  description={tab.description}
+                />
+              ),
+          }))}
+        />
+      ) : (
+        <div>Loading proposals...</div>
+      )}
+    </div>
   );
 };
 

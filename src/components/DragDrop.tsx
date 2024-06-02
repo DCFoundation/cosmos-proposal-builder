@@ -4,13 +4,13 @@ import {
   DragEvent,
   InputHTMLAttributes,
   ReactNode,
-} from "react";
-import { classNames } from "../utils/classNames";
+} from 'react';
+import { classNames } from '../utils/classNames';
 
 export interface DragDropProps {
   onFilesAdded: (files: FileList) => void;
   multiple?: boolean;
-  accept?: InputHTMLAttributes<HTMLInputElement>["accept"];
+  accept?: InputHTMLAttributes<HTMLInputElement>['accept'];
   label: string;
   subtitle?: string;
   afterEl?: ReactNode;
@@ -70,33 +70,33 @@ const DragDrop: React.FC<DragDropProps> = ({
       onDrop={handleDrop}
       onClick={handleClick}
       className={classNames(
-        "flex justify-center rounded-lg border border-dashed border-semigray p-5",
-        isDragging ? "border-teal-600 bg-gray-300/10" : "",
+        'flex justify-center rounded-lg border border-dashed border-semigray p-5',
+        isDragging ? 'border-teal-600 bg-gray-300/10' : ''
       )}
     >
-      <div className="text-center">
+      <div className='text-center'>
         <svg
           className={`mx-auto`}
-          xmlns="http://www.w3.org/2000/svg"
-          width="34"
-          height="34"
-          viewBox="0 0 34 34"
-          fill="none"
+          xmlns='http://www.w3.org/2000/svg'
+          width='34'
+          height='34'
+          viewBox='0 0 34 34'
+          fill='none'
         >
           <path
-            d="M24.0833 24.0833L31.1666 17L24.0833 9.91667M9.91665 9.91667L2.83331 17L9.91665 24.0833M19.8333 4.25L14.1666 29.75"
-            stroke="#D3482C"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            d='M24.0833 24.0833L31.1666 17L24.0833 9.91667M9.91665 9.91667L2.83331 17L9.91665 24.0833M19.8333 4.25L14.1666 29.75'
+            stroke='#D3482C'
+            strokeWidth='2'
+            strokeLinecap='round'
+            strokeLinejoin='round'
           />
         </svg>
 
-        <div className="mt-4 flex flex-wrap text-sm text-gray-600">
+        <div className='mt-4 flex flex-wrap text-sm text-gray-600'>
           <div className={`basis-full`}>
             <label
               htmlFor={label}
-              className="relative cursor-pointer rounded-md bg-white font-semibold text-teal-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-600 focus-within:ring-offset-2 hover:text-teal-500"
+              className='relative cursor-pointer rounded-md bg-white font-semibold text-teal-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-teal-600 focus-within:ring-offset-2 hover:text-teal-500'
             >
               <div className={`flex flex-wrap`}>
                 <div className={`basis-full`}>
@@ -106,10 +106,10 @@ const DragDrop: React.FC<DragDropProps> = ({
                   <input
                     id={label}
                     ref={fileInputRef}
-                    type="file"
+                    type='file'
                     multiple={!!multiple}
                     accept={accept}
-                    className="sr-only"
+                    className='sr-only'
                     onChange={handleFileChange}
                   />
                 </div>
@@ -117,11 +117,11 @@ const DragDrop: React.FC<DragDropProps> = ({
             </label>
           </div>
           <div className={`basis-full`}>
-            <p className="text-semiDarkGray">or drag and drop</p>
+            <p className='text-semiDarkGray'>or drag and drop</p>
           </div>
         </div>
         {subtitle ? (
-          <p className="text-xs text-midGray mt-[10px]">{subtitle}</p>
+          <p className='text-xs text-midGray mt-[10px]'>{subtitle}</p>
         ) : null}
         {afterEl}
       </div>

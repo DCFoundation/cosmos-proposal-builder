@@ -1,9 +1,9 @@
-import type { ReactNode } from "react";
+import type { ReactNode } from 'react';
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
-} from "@tanstack/react-query";
+} from '@tanstack/react-query';
 import {
   accountBalancesQuery,
   swingSetParamsQuery,
@@ -16,8 +16,8 @@ import {
   stakingParamsQuery,
   ibcDenomTracesQuery,
   ibcDenomHashQuery,
-} from "./queries";
-import { renderHook } from "@testing-library/react-hooks";
+} from './queries';
+import { renderHook } from '@testing-library/react-hooks';
 
 interface QueryTestContext {
   api: string;
@@ -31,21 +31,21 @@ beforeEach<QueryTestContext>(async (context) => {
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
   context.wrapper = wrapper;
-  context.api = "http://localhost:1317";
+  context.api = 'http://localhost:1317';
   context.addrs = {
-    provisionPool: "agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346",
+    provisionPool: 'agoric1megzytg65cyrgzs6fvzxgrcqvwwl7ugpt62346',
   };
 });
 
-describe("React Query Hook Tests for RPC Endpoints", () => {
-  describe("swingSetParams Query", () => {
+describe('React Query Hook Tests for RPC Endpoints', () => {
+  describe('swingSetParams Query', () => {
     it("should return data in a shape we're expecting", async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(swingSetParamsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -63,74 +63,74 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("accountBalancesQuery Query", () => {
-    it("should return a uist balance > 0 for provisionPool addr", async ({
+  describe('accountBalancesQuery Query', () => {
+    it('should return a uist balance > 0 for provisionPool addr', async ({
       api,
       wrapper,
       addrs,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(accountBalancesQuery(api, addrs.provisionPool)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
       expect(result.current.data).toBeDefined();
-      const istBalance = result.current.data?.find((x) => x.denom === "uist");
+      const istBalance = result.current.data?.find((x) => x.denom === 'uist');
       expect(istBalance).toBeDefined();
       expect(Number(istBalance?.amount ?? 0)).toBeGreaterThan(1);
     });
   });
 
-  describe("bankAssetsQuery Query", () => {
-    it("should return balances for ubld, uist, and ibc/*", async ({
+  describe('bankAssetsQuery Query', () => {
+    it('should return balances for ubld, uist, and ibc/*', async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(bankAssetsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
       expect(result.current.data).toBeDefined();
 
-      const ubld = result.current.data?.find((x) => x.denom === "ubld");
-      const uist = result.current.data?.find((x) => x.denom === "uist");
+      const ubld = result.current.data?.find((x) => x.denom === 'ubld');
+      const uist = result.current.data?.find((x) => x.denom === 'uist');
       expect(Number(ubld?.amount ?? 0)).toBeGreaterThan(1);
       expect(Number(uist?.amount ?? 0)).toBeGreaterThan(1);
 
       const ibcTokens = result.current.data?.filter((x) =>
-        x.denom.startsWith("ibc/"),
+        x.denom.startsWith('ibc/')
       );
       expect(ibcTokens?.length).toBeGreaterThan(1);
     });
   });
 
-  describe("bankAssetsMetadataQuery Query", () => {
-    it("does not return any data for agd", async ({
+  describe('bankAssetsMetadataQuery Query', () => {
+    it('does not return any data for agd', async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(bankAssetsMetadataQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
       expect(result.current.data).toBeDefined();
-      expect(result.current.data).toMatchInlineSnapshot("[]");
+      expect(result.current.data).toMatchInlineSnapshot('[]');
     });
   });
 
-  describe("votingParamsQuery Query", () => {
+  describe('votingParamsQuery Query', () => {
     it("should return data in a shape we're expecting", async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(votingParamsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -143,14 +143,14 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("tallyParamsQuery Query", () => {
-    it("should return quorum, threshold, veto_threshold", async ({
+  describe('tallyParamsQuery Query', () => {
+    it('should return quorum, threshold, veto_threshold', async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(tallyParamsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -165,14 +165,14 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("depositParamsQuery Query", () => {
-    it("should return max_deposit_period, min_deposit: Coins[]", async ({
+  describe('depositParamsQuery Query', () => {
+    it('should return max_deposit_period, min_deposit: Coins[]', async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(depositParamsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -191,14 +191,14 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("distributionParamsQuery Query", () => {
+  describe('distributionParamsQuery Query', () => {
     it("should return data in a shape we're expecting", async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(distributionParamsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -214,14 +214,14 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("stakingParamsQuery Query", () => {
+  describe('stakingParamsQuery Query', () => {
     it("should return data in a shape we're expecting", async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(stakingParamsQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -238,11 +238,11 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
     });
   });
 
-  describe("ibcDenomTracesQuery Query", () => {
-    it("should return data", async ({ api, wrapper }: QueryTestContext) => {
+  describe('ibcDenomTracesQuery Query', () => {
+    it('should return data', async ({ api, wrapper }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
         () => useQuery(ibcDenomTracesQuery(api)),
-        { wrapper },
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -250,18 +250,18 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       // XXX not implemented in agoric-3-proposals
       // see https://github.com/DCFoundation/cosmos-proposal-builder/pull/27#discussion_r1443527639
       // should be [{ "path": "transfer/channel-0", "base_denom": "uatom"}]
-      expect(result.current.data).toMatchInlineSnapshot("[]");
+      expect(result.current.data).toMatchInlineSnapshot('[]');
     });
   });
 
-  describe("ibcDenomHashQuery Query", () => {
-    it("should return a hash for ATOM", async ({
+  describe('ibcDenomHashQuery Query', () => {
+    it('should return a hash for ATOM', async ({
       api,
       wrapper,
     }: QueryTestContext) => {
       const { result, waitFor } = renderHook(
-        () => useQuery(ibcDenomHashQuery(api, "transfer/channel-0", "uatom")),
-        { wrapper },
+        () => useQuery(ibcDenomHashQuery(api, 'transfer/channel-0', 'uatom')),
+        { wrapper }
       );
 
       await waitFor(() => result.current.isSuccess);
@@ -269,7 +269,7 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
       // XXX not implemented in agoric-3-proposals
       // see https://github.com/DCFoundation/cosmos-proposal-builder/pull/27#discussion_r1443527639
       expect(result.current.data).toMatchInlineSnapshot(
-        '"Denom hash not found."',
+        '"Denom hash not found."'
       );
     });
   });

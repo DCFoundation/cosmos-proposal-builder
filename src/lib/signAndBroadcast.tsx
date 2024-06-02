@@ -1,11 +1,11 @@
-import { assertIsDeliverTxSuccess, DeliverTxResponse } from "@cosmjs/stargate";
-import type { SigningStargateClient } from "@cosmjs/stargate";
-import type { EncodeObject } from "@cosmjs/proto-signing";
-import { createId } from "@paralleldrive/cuid2";
-import { toast } from "react-toastify";
-import { makeFeeObject } from "./messageBuilder";
-import { parseError } from "../utils/transactionParser";
-import { TxToastMessage } from "../components/TxToastMessage";
+import { assertIsDeliverTxSuccess, DeliverTxResponse } from '@cosmjs/stargate';
+import type { SigningStargateClient } from '@cosmjs/stargate';
+import type { EncodeObject } from '@cosmjs/proto-signing';
+import { createId } from '@paralleldrive/cuid2';
+import { toast } from 'react-toastify';
+import { makeFeeObject } from './messageBuilder';
+import { parseError } from '../utils/transactionParser';
+import { TxToastMessage } from '../components/TxToastMessage';
 
 /**
  * By default, Keplr overrides the transaction fee on the signing page
@@ -24,33 +24,34 @@ window.keplr &&
  * Some chains require a minimum fee amount to be set
  * 1000 is arbitrary number that worke on chains tested so far
  */
-const FEE_AMOUNT = "1000";
+const FEE_AMOUNT = '1000';
 
 export const makeSignAndBroadcast =
   (
     stargateClient: SigningStargateClient | undefined,
     walletAddress: string | null,
     explorerUrl: string | null,
-    feeDenom: string | null,
+    feeDenom: string | null
   ) =>
   async (
     proposalMsg: EncodeObject,
-    type: "bundle" | "proposal" = "proposal",
+    type: 'bundle' | 'proposal' = 'proposal'
   ) => {
-    if (!stargateClient) {
-      throw new Error("stargateClient not initialzed");
-    }
-    if (!walletAddress) throw new Error("wallet not connected");
+    console.error('O submit address is ', walletAddress);
+    if (!walletAddress) throw new Error('wallet not connected');
     const toastId = createId();
-    toast.loading("Broadcasting transaction...", {
+    toast.loading('Broadcasting transaction...', {
       toastId,
     });
+    if (!stargateClient) {
+      throw new Error('stargateClient not initialzed');
+    }
     let txResult: DeliverTxResponse | undefined;
     try {
       const estimate = await stargateClient.simulate(
         walletAddress,
         [proposalMsg],
-        undefined,
+        undefined
       );
       const adjustment = 1.3;
       const gas = Math.ceil(estimate * adjustment);
@@ -61,13 +62,13 @@ export const makeSignAndBroadcast =
           gas,
           denom: feeDenom || undefined,
           amount: FEE_AMOUNT,
-        }),
+        })
       );
       assertIsDeliverTxSuccess(txResult);
     } catch (e) {
       toast.update(toastId, {
         render: parseError(e as Error),
-        type: "error",
+        type: 'error',
         isLoading: false,
         autoClose: 10000,
       });
@@ -83,7 +84,7 @@ export const makeSignAndBroadcast =
             type={type}
           />
         ),
-        type: "success",
+        type: 'success',
         isLoading: false,
       });
       return txResult;

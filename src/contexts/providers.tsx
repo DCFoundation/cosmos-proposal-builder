@@ -1,9 +1,9 @@
-import { FC, PropsWithChildren } from "react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ChainContextProvider } from "./chain";
-import { NetworkContextProvider } from "./network";
-import { WalletContextProvider } from "./wallet";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { FC, PropsWithChildren } from 'react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ChainContextProvider } from './chain';
+import { NetworkContextProvider } from './network';
+import { WalletContextProvider } from './wallet';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const queryClient = new QueryClient();
 
