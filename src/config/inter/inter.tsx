@@ -27,10 +27,9 @@ import {
 import { useQuery, UseQueryResult } from '@tanstack/react-query';
 import { accountBalancesQuery } from '../../lib/queries.ts';
 import { selectCoins } from '../../lib/selectors.ts';
-import { AlertBox } from '../../components/AlertBox.tsx';
 import { BankBalances } from '../../types/bank.ts';
+import { AlertBox } from '../../components/AlertBox.tsx';
 
-//TODO define enabled proposals for inter as a workaround
 const Inter = () => {
   const {
     currentNetworkName: netName,
@@ -47,14 +46,6 @@ const Inter = () => {
   const vaultFormRef = useRef<HTMLFormElement>(null);
 
   const explorerUrl = networkConfig?.explorers?.[0]?.url;
-  // const accountBalances = useQuery(
-  //   accountBalancesQuery(api || undefined, walletAddress)
-  // );
-  // const accountBalances = useQuery({
-  //   queryKey: ['accountBalances', api, walletAddress],
-  //   queryFn: accountBalancesQuery,
-  //   enabled: !!api && !!walletAddress,
-  // });
 
   const accountBalancesEnabled = !!chainInfo?.rest && !!walletAddress;
   const accountBalancesQueryOptions = accountBalancesQuery(

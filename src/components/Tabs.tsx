@@ -121,7 +121,7 @@ const Tabs = ({ tabs }: TabsProps) => {
               </div>
 
               <div
-                className={`fixed md:relative bg-white z-20 ${
+                className={`fixed w-full md:relative bg-white z-20 ${
                   open
                     ? 'bottom-[80px] md:bottom-auto'
                     : 'bottom-[-9999px] md:bottom-auto'

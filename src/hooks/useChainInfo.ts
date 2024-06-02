@@ -4,6 +4,9 @@ import { useNetworkConfig, useRestApi, useRpcEntry } from './useChainRegistry';
 import { UseQueryResult } from '@tanstack/react-query';
 import { generateBech32Config } from '../utils/generateBech32Config';
 import { makeCurrency } from '../utils/makeCurrency';
+import { BankBalances } from '../types/bank';
+import { useMemo } from 'react';
+import { selectCoins } from '../lib/selectors';
 
 export const useChainInfo = (
   chainName: string,
@@ -79,4 +82,14 @@ export const useChainInfo = (
       restQuery.error ||
       null,
   } as UseQueryResult<ChainInfo | null>;
+};
+
+export const useCoinWealth = (
+  stakingDenom: string | undefined,
+  accountBalances: BankBalances | undefined
+) => {
+  return useMemo(
+    () => selectCoins(stakingDenom, accountBalances),
+    [accountBalances, stakingDenom]
+  );
 };

@@ -12,16 +12,14 @@ import { compressBundle } from '../lib/compression';
 import { createProposalMessage } from '../utils/createProposalMessage';
 import { toast } from 'react-toastify';
 import { makeInstallBundleMsg } from '../lib/messageBuilder';
-import {
-  useCoinWealth,
-  usePermittedProposals,
-  useSignAndBroadcast,
-} from '../omit/usePermittedProposals';
+
 import { AlertBox } from '../components/AlertBox';
 import { useNetwork } from '../hooks/useNetwork';
 import { BankBalances } from '../types/bank';
 // import { useChain } from '../hooks/useChain';
-import { useProposals } from '../hooks/useProposals';
+import { usePermittedProposals, useProposals } from '../hooks/useProposals';
+import { useCoinWealth } from '../hooks/useChainInfo';
+import { useSignAndBroadcast } from '../hooks/useSignAndBroadcast';
 
 const ProposalsLandingPage = () => {
   // const { currentChain } = useChain();
