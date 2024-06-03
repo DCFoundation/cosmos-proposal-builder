@@ -28,14 +28,11 @@ const extractNetworks = (registry: RegistryItem): NetworkConfig[] =>
   registry.networks || [];
 
 const PERMITTED_CHAINS_URL =
-  'https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/jeff/community-spend/src/data/permittedChains.json';
+  'https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/multichain/src/data/permittedChains.json';
 const fetchPermittedChains = async () => {
   return fetchJSON(PERMITTED_CHAINS_URL);
 };
 
-// export const usePermittedChains = () => {
-//   return useOptimizedQuery(['permittedChains'], fetchPermittedChains, {});
-// };
 export const usePermittedChains = (): UseQueryResult<string[], Error> => {
   return useOptimizedQuery(['permittedChains'], fetchPermittedChains, {});
 };
@@ -44,7 +41,7 @@ export const fetchChainRegistry = async (
   name: string
 ): Promise<RegistryItem> => {
   const response = await fetch(
-    `https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/jeff/community-spend/src/data/chains/${name}.json`
+    `https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/multichain/src/data/chains/${name}.json`
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch chain registry for ${name}`);
@@ -110,7 +107,7 @@ const fetchNetworkConfig = async (
   networkName: string
 ): Promise<NetworkConfig | null> => {
   const response = await fetch(
-    `https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/jeff/community-spend/src/data/chains/${chainName}.json`
+    `https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/multichain/src/data/chains/${chainName}.json`
   );
   if (!response.ok) {
     throw new Error(`Failed to fetch chain registry for ${chainName}`);
