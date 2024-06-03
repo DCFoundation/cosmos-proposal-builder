@@ -21,22 +21,8 @@ import { usePermittedProposals, useProposals } from '../hooks/useProposals';
 import { useCoinWealth } from '../hooks/useChainInfo';
 import { useSignAndBroadcast } from '../hooks/useSignAndBroadcast';
 import { createId } from '@paralleldrive/cuid2';
+import { handleLoadingToast } from './toastHandler';
 
-const handleLoadingToast = (
-  isLoading: boolean,
-  message: string,
-  toastId: string
-) => {
-  if (isLoading) {
-    if (!toast.isActive(toastId)) {
-      toast.loading(message, { toastId });
-    }
-  } else {
-    if (toast.isActive(toastId)) {
-      toast.dismiss(toastId);
-    }
-  }
-};
 const networkToastId = createId();
 const walletToastId = createId();
 const accountBalancesToastId = createId();
@@ -193,7 +179,7 @@ const ProposalsLandingPage = () => {
     <div>
       {networkError && <div>Error: {networkError.message}</div>}
       {proposalsError && <div>Error: {proposalsError.message}</div>}
-      <AlertBox coins={coinWealth || undefined} />
+      <AlertBox coins={coinWealth} />
 
       {proposalTabs ? (
         <Tabs

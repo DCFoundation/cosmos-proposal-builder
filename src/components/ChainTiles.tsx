@@ -25,7 +25,7 @@ const ChainTiles = () => {
 
   const openDialogMutation = useMutation<RegistryItem[], Error, RegistryItem>({
     mutationFn: (chain: RegistryItem) => {
-      const childChains = chains.filter(
+      const childrenChains = chains.filter(
         (c: RegistryItem) => c.parent === chain.value
       );
       const parentChain = chains.find(
@@ -33,8 +33,8 @@ const ChainTiles = () => {
       );
       return Promise.resolve(
         parentChain
-          ? [chain, ...childChains, parentChain]
-          : [chain, ...childChains]
+          ? [chain, ...childrenChains, parentChain]
+          : [chain, ...childrenChains]
       );
     },
   });
@@ -47,7 +47,6 @@ const ChainTiles = () => {
   };
   const handleDialogClose = () => {
     openDialogMutation.reset();
-    // queryClient.invalidateQueries('dialog' as InvalidateQueryFilters);
   };
   const handleDialogSelect = (chainName: string) => {
     handleDialogClose();

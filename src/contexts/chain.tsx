@@ -17,6 +17,7 @@ export const ChainContextProvider = ({ children }: { children: ReactNode }) => {
     isLoading: isLoadingChains,
     isError: chainLoadingError,
   } = useChainRegistries();
+
   const chainName = useMemo(() => {
     const name = location.split('/')[1];
     return chains.find((chain) => chain.value === name) ? name : null;

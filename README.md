@@ -105,6 +105,9 @@ yarn add-chain  ${CHAIN_NAME}
 
 example usage
 
-```yarn add-chain  agoric && yarn permit-chain agoric
+```
+Add and permit chain: yarn add-chain  agoric && yarn permit-chain agoric
+
+then: git commit and push. New chain will be available in the UI with default proposal types enabled
 
 ```

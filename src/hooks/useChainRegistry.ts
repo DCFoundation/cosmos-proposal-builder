@@ -8,6 +8,10 @@ import {
 import { useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { useChainInfo } from './useChainInfo';
+import {
+  CHAIN_DATA_URL,
+  PERMITTED_CHAINS_URL,
+} from '../constants/registryPath';
 
 interface SuggestEnPointsResponse {
   rpcAddrs: string[];
@@ -27,8 +31,6 @@ const fetchJSON = async (url: string) => {
 const extractNetworks = (registry: RegistryItem): NetworkConfig[] =>
   registry.networks || [];
 
-const PERMITTED_CHAINS_URL =
-  'https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/multichain/src/data/permittedChains.json';
 const fetchPermittedChains = async () => {
   return fetchJSON(PERMITTED_CHAINS_URL);
 };
@@ -37,28 +39,63 @@ export const usePermittedChains = (): UseQueryResult<string[], Error> => {
   return useOptimizedQuery(['permittedChains'], fetchPermittedChains, {});
 };
 
+//TODO add default image URL. Currently using agoric logo
+// export const fetchChainRegistry = async (
+//   name: string
+// ): Promise<RegistryItem> => {
+//   const registry = await fetchJSON(`${CHAIN_DATA_URL}/${name}.json`);
+
+//   const registryItem = {
+//     label: `${capitalize(registry.value)}`,
+//     value: registry.value,
+//     href: `/${registry.value}`,
+//     parent: registry.parent,
+//     image: registry.image || 'https://placehold.it/320x150',
+//     enabledProposalTypes: registry.enabledProposalTypes,
+//     networks: registry.networks ?? [],
+//   };
+
+//   const parentRegistry =
+//     hasParent(registry) &&
+//     (await fetchJSON(`${CHAIN_DATA_URL}/${registry.parent}.json`));
+
+//   registryItem.networks = [
+//     ...registryItem.networks,
+//     ...parentRegistry.networks,
+//   ];
+//   return registryItem;
+// };
+
 export const fetchChainRegistry = async (
   name: string
 ): Promise<RegistryItem> => {
-  const response = await fetch(
-    `https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/multichain/src/data/chains/${name}.json`
-  );
-  if (!response.ok) {
-    throw new Error(`Failed to fetch chain registry for ${name}`);
-  }
-  const registry = await response.json();
-  return {
+  const registry = await fetchJSON(`${CHAIN_DATA_URL}/${name}.json`);
+
+  const registryItem = {
     label: `${capitalize(registry.value)}`,
     value: registry.value,
     href: `/${registry.value}`,
     parent: registry.parent,
-    image:
-      registry.image ||
-      'https://raw.githubusercontent.com/cosmos/chain-registry/master/agoric/images/Agoric-logo-color.svg',
+    image: registry.image || 'https://placehold.it/320x150',
     enabledProposalTypes: registry.enabledProposalTypes,
-    networks: registry.networks,
+    networks: registry.networks ?? [],
   };
+
+  if (hasParent(registry)) {
+    const parentRegistry = await fetchJSON(
+      `${CHAIN_DATA_URL}/${registry.parent}.json`
+    );
+    if (parentRegistry && parentRegistry.networks) {
+      registryItem.networks = [
+        ...registryItem.networks,
+        ...parentRegistry.networks,
+      ];
+    }
+  }
+
+  return registryItem;
 };
+
 export const useChainRegistry = (name: string): UseQueryResult<ChainItem> => {
   return useOptimizedQuery(
     ['chainRegistry', name],
@@ -88,6 +125,8 @@ export const useNetworks = (
   );
 };
 
+const hasParent = (chainItem: ChainItem) => !!chainItem.parent;
+
 export const useNetworkEntries = (
   chainName: string,
   networkName: string
@@ -106,32 +145,16 @@ const fetchNetworkConfig = async (
   chainName: string,
   networkName: string
 ): Promise<NetworkConfig | null> => {
-  const response = await fetch(
-    `https://raw.githubusercontent.com/gacogo/cosmos-proposal-builder/multichain/src/data/chains/${chainName}.json`
-  );
-  if (!response.ok) {
-    throw new Error(`Failed to fetch chain registry for ${chainName}`);
-  }
-  const registry = await response.json();
-  const networkConfig = registry.networks.find(
+  const registry = await fetchChainRegistry(chainName);
+  // const parentRegistry =
+  //   hasParent(registry) && (await fetchChainRegistry(registry.parent!));
+  // if (parentRegistry) registry.networks = [...parentRegistry.networks!];
+  const networkConfig = registry.networks?.find(
     (net: NetworkConfig) => net.networkName === networkName
   );
   return networkConfig || null;
 };
 
-// export const useNetworkConfig = (
-//   chainName: string,
-//   networkName: string
-// ): UseQueryResult<NetworkConfig | null> => {
-//   return useOptimizedQuery(
-//     ['networkConfig', chainName, networkName],
-//     ({ queryKey }) => {
-//       const [, chainName, networkName] = queryKey as [string, string, string];
-//       return fetchNetworkConfig(chainName, networkName);
-//     },
-//     { enabled: !!chainName && !!networkName }
-//   );
-// };
 export const useNetworkConfig = (
   chainName: string,
   networkName: string
