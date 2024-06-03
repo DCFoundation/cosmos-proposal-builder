@@ -312,7 +312,6 @@
       "$schema": "../chain.schema.json",
       "chainName": "agoric",
       "networkName": "local",
-      "suggestEndpoints": "https://local.agoric.net/network-config",
       "chainId": "agoriclocal",
       "website": "https://agoric.com/",
       "bech32Prefix": "agoric",
@@ -337,8 +336,8 @@
         ]
       },
       "apis": {
-        "rest": [{ "address": "https://localnet.api.agoric.net:443" }],
-        "rpc": [{ "address": "https://localnet.rpc.agoric.net:443" }]
+        "rest": [{ "address": "http://localhost:1317" }],
+        "rpc": [{ "address": "http://localhost:26657" }]
       }
     }
   ]
