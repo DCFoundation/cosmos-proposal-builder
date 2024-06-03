@@ -20,7 +20,27 @@ import { BankBalances } from '../types/bank';
 import { usePermittedProposals, useProposals } from '../hooks/useProposals';
 import { useCoinWealth } from '../hooks/useChainInfo';
 import { useSignAndBroadcast } from '../hooks/useSignAndBroadcast';
+import { createId } from '@paralleldrive/cuid2';
 
+const handleLoadingToast = (
+  isLoading: boolean,
+  message: string,
+  toastId: string
+) => {
+  if (isLoading) {
+    if (!toast.isActive(toastId)) {
+      toast.loading(message, { toastId });
+    }
+  } else {
+    if (toast.isActive(toastId)) {
+      toast.dismiss(toastId);
+    }
+  }
+};
+const networkToastId = createId();
+const walletToastId = createId();
+const accountBalancesToastId = createId();
+const proposalsToastId = createId();
 const ProposalsLandingPage = () => {
   // const { currentChain } = useChain();
   const {
@@ -30,19 +50,6 @@ const ProposalsLandingPage = () => {
     currentChain: currentChainItem,
     error: networkError,
   } = useNetwork();
-  // const {} =  use
-  // const {
-  //   currentChainItem,
-  //   networkConfig,
-  //   chainNetworkNames,
-  //   isLoading: isLoadingNetwork,
-  //   error: networkError,
-  // } = useNetworkData(currentChain, 'networkName');
-  // const {
-  //   data: chainInfo,
-  //   isLoading: isChainInfoLoading,
-  //   error: chainInfoError,
-  // } = useChainInfo(networkConfig);
 
   const {
     walletAddress,
@@ -162,15 +169,28 @@ const ProposalsLandingPage = () => {
     isLoading: isProposalsLoading,
     error: proposalsError,
   } = useProposals(permittedProposals || []);
-
+  {
+    handleLoadingToast(isLoadingNetwork, 'Loading network...', networkToastId);
+  }
+  {
+    handleLoadingToast(isLoadingWallet, 'Loading wallet...', walletToastId);
+  }
+  {
+    handleLoadingToast(
+      isAccountBalancesLoading,
+      'Loading account balances...',
+      accountBalancesToastId
+    );
+  }
+  {
+    handleLoadingToast(
+      isProposalsLoading,
+      'Loading proposals...',
+      proposalsToastId
+    );
+  }
   return (
     <div>
-      {(isLoadingNetwork ||
-        isLoadingWallet ||
-        isAccountBalancesLoading ||
-        isProposalsLoading) && (
-        <div>Loading network, wallet, balances, or proposals...</div>
-      )}
       {networkError && <div>Error: {networkError.message}</div>}
       {proposalsError && <div>Error: {proposalsError.message}</div>}
       <AlertBox coins={coinWealth || undefined} />

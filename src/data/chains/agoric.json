@@ -14,7 +14,7 @@
   "networks": [
     {
       "$schema": "../chain.schema.json",
-      "suggestEndpoints": "https://mainnet.agoric.net/network-config",
+      "suggestEndpoints": "https://main.agoric.net/network-config",
       "chainName": "agoric",
       "status": "live",
       "networkName": "mainnet",

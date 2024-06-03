@@ -43,8 +43,8 @@ export const useOptimizedMutation = <TData, TError, TVariables>(
   return useMutation<TData, TError, TVariables>({
     mutationFn,
     onError: (error) => {
-      console.error('Mutation error:', error);
-      toast.error('Mutation error: ' + error);
+      console.error(error);
+      toast.error(`${error}`, { autoClose: 3000 });
       options?.onError?.(error);
     },
     ...options,
