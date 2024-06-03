@@ -207,9 +207,9 @@ const downloadChainConfig = async (chainName) => {
       return;
     }
 
-    const configDir = path.join('public', 'chainConfig', chainName);
+    const configDir = path.join('src', 'data', 'chains');
     await getOrCreateDir(configDir);
-    const configPath = path.join(configDir, 'chain.json');
+    const configPath = path.join(configDir, `${chainName}.json`);
 
     if (fs.existsSync(configPath)) {
       const existingConfig = JSON.parse(fs.readFileSync(configPath, 'utf8'));
