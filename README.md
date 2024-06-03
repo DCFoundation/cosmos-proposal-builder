@@ -51,15 +51,15 @@ We use a simulation of `agoric-3` for our tests. To start the simulation, run th
 docker run -p 1317:1317 -p 26657:26657 ghcr.io/agoric/agoric-3-proposals:main
 ```
 
-_The `-p` flags expose the API and RPC ports to localhost._  
+_The `-p` flags expose the API and RPC ports to localhost._
 
-If you are on Apple Silicon, please ensure Rosetta is __*disabled*__ and include the platform option:
+If you are on Apple Silicon, please ensure Rosetta is **_disabled_** and include the platform option:
 
 ```bash
 docker run -p 1317:1317 -p 26657:26657 --platform=linux/amd64 ghcr.io/agoric/agoric-3-proposals:main
 ```
 
-####  2. Run the Tests
+#### 2. Run the Tests
 
 With the simulated environment running, execute the end-to-end tests:
 
@@ -89,3 +89,22 @@ yarn test:e2e
 
 - React, TypeScript, Vite, Tailwind
 - @cosmjs, @agoric/cosmic-proto
+
+## Add chain
+
+```
+yarn add-chain  ${CHAIN_NAME}
+
+```
+
+## Permit chain
+
+```yarn permit-chain  ${CHAIN_NAME}
+
+```
+
+example usage
+
+```yarn add-chain  agoric && yarn permit-chain agoric
+
+```
