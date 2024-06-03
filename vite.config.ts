@@ -12,15 +12,4 @@ export default defineConfig({
     // modified import('vitest/dist/config.js').defaultInclude
     include: '**/*.{e2e,spec}.?(c|m)[jt]s?(x)',
   },
-  // define: {
-  //   CHAIN: JSON.stringify([
-  //     {
-  //       name: 'Agoric',
-  //       networks: ['mainnet'],
-  //     },
-  //   ]),
-  // },
-  server: {
-    hmr: true,
-  },
 });
