@@ -237,17 +237,14 @@ const getOrCreateDir = async (dir) => {
 };
 
 const main = async () => {
-  try {
-    const args = process.argv.slice(2);
-    if (args.length === 1) {
-      const chainName = args[0];
-      await downloadChainConfig(chainName);
-    } else {
-      console.error('Usage: make <chainName>');
-    }
-  } catch (error) {
-    console.error('Error downloading chain configurations:', error);
+  // try {
+  const chainName = process.env.chain;
+  if (!chainName) {
+    console.error('Chain name not provided.');
+    return;
   }
+
+  await downloadChainConfig(chainName);
 };
 
 main().catch(console.error);

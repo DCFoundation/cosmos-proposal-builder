@@ -6,6 +6,8 @@
   "scripts": {
     "build": "tsc && vite build",
     "dev": " vite",
+    "add-chain": "./scripts/add-chain.sh",
+    "permit-chain": "./scripts/permit-chain.sh",
     "start:docker": "docker-compose up -d",
     "agd": "docker-compose exec agd agd",
     "list-proposals": "yarn run --silent agd query gov proposals -o json | jq -c '.proposals[] | [.proposal_id,.voting_end_time,.status]'",

@@ -1,1 +1,11 @@
-["agoric", "juno", "kujira", "cosmoshub", "inter", "osmosis", "akash"]
+[
+  "agoric",
+  "juno",
+  "kujira",
+  "cosmoshub",
+  "inter",
+  "osmosis",
+  "akash",
+  "aura",
+  "akiro"
+]
