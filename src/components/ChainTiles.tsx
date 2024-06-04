@@ -2,7 +2,8 @@ import { useMemo } from 'react';
 import { useChain } from '../hooks/useChain';
 // import { RegistryItem, useChainRegistries } from '../omit/useOldChainRegistry';
 import { useMutation } from '@tanstack/react-query';
-import { RegistryItem, useChainRegistries } from '../hooks/useChainRegistry';
+import { useChainRegistries } from '../hooks/useChainRegistry';
+import { RegistryItem } from '../lib/chainConfigUtils';
 
 const selectChainTitle = 'Cosmos Proposal Builder';
 const selectChainDescription =

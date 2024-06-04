@@ -1,12 +1,13 @@
 import { ChainInfo } from '@keplr-wallet/types';
 import { useOptimizedQuery } from './useCacheOptimizedQueries';
-import { useNetworkConfig, useRestApi, useRpcEntry } from './useChainRegistry';
+import { useNetworkConfig } from './useChainRegistry';
 import { UseQueryResult } from '@tanstack/react-query';
 import { generateBech32Config } from '../utils/generateBech32Config';
 import { makeCurrency } from '../utils/makeCurrency';
 import { BankBalances } from '../types/bank';
 import { useMemo } from 'react';
 import { selectCoins } from '../lib/selectors';
+import { useRestApi, useRpcEntry } from './useEndpoints';
 
 export const useChainInfo = (
   chainName: string,

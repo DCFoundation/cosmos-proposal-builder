@@ -22,7 +22,7 @@ window.keplr &&
 
 /**
  * Some chains require a minimum fee amount to be set
- * 1000 is arbitrary number that worke on chains tested so far
+ * 1000 is arbitrary number that worked on chains tested so far
  */
 const FEE_AMOUNT = '1000';
 

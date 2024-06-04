@@ -1,9 +1,0 @@
-{
-  "value": "inter",
-  "parent": "agoric",
-  "image": "https://raw.githubusercontent.com/Inter-Protocol/dapp-inter/main/public/IST.png",
-  "enabledProposalTypes": {
-    "addPSM": true,
-    "addVault": true
-  }
-}
