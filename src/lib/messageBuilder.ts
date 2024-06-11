@@ -1,18 +1,57 @@
-import { CoreEvalProposal } from "@agoric/cosmic-proto/swingset/swingset.js";
-import { MsgInstallBundle } from "@agoric/cosmic-proto/swingset/msgs.js";
-import { StdFee } from "@cosmjs/amino";
-import { fromBech32 } from "@cosmjs/encoding";
-import { coins, Registry } from "@cosmjs/proto-signing";
-import { defaultRegistryTypes } from "@cosmjs/stargate";
-import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
-import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
-import { Any } from "cosmjs-types/google/protobuf/any";
-import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
+import { CoreEvalProposal } from '@agoric/cosmic-proto/swingset/swingset.js';
+import { MsgInstallBundle } from '@agoric/cosmic-proto/swingset/msgs.js';
+import { StdFee } from '@cosmjs/amino';
+import { fromBech32 } from '@cosmjs/encoding';
+import { coins, Registry } from '@cosmjs/proto-signing';
+import { defaultRegistryTypes } from '@cosmjs/stargate';
+import { TextProposal } from 'cosmjs-types/cosmos/gov/v1beta1/gov';
+import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params';
+import { Any } from 'cosmjs-types/google/protobuf/any';
+import type { ParamChange } from 'cosmjs-types/cosmos/params/v1beta1/params';
+import { CommunityPoolSpendProposal } from 'cosmjs-types/cosmos/distribution/v1beta1/distribution';
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
-  ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
+  ['/agoric.swingset.MsgInstallBundle', MsgInstallBundle],
 ]);
+
+export const makeCommunityPoolSpendProposalMsg = ({
+  proposer,
+  recipient,
+  amount,
+  title,
+  description,
+  deposit,
+}: {
+  proposer: string;
+  recipient: string;
+  amount: string;
+  title: string;
+  description: string;
+  deposit?: number | string;
+}) => {
+  const communityPoolSpendProposal: CommunityPoolSpendProposal = {
+    title,
+    description,
+    recipient,
+    amount: coins(amount, 'ubld'),
+  };
+  const msgSubmitProposal = {
+    typeUrl: '/cosmos.gov.v1beta1.MsgSubmitProposal',
+    value: {
+      content: {
+        typeUrl: '/cosmos.distribution.v1beta1.CommunityPoolSpendProposal',
+        value: CommunityPoolSpendProposal.encode(
+          communityPoolSpendProposal,
+        ).finish(),
+      },
+      proposer: proposer,
+      ...(deposit &&
+        Number(deposit) && { initialDeposit: coins(deposit, 'ubld') }),
+    },
+  };
+  return msgSubmitProposal;
+};
 
 interface MakeTextProposalArgs {
   title: string;
@@ -27,10 +66,10 @@ export const makeTextProposalMsg = ({
   proposer,
   deposit,
 }: MakeTextProposalArgs) => ({
-  typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+  typeUrl: '/cosmos.gov.v1beta1.MsgSubmitProposal',
   value: {
     content: Any.fromPartial({
-      typeUrl: "/cosmos.gov.v1beta1.TextProposal",
+      typeUrl: '/cosmos.gov.v1beta1.TextProposal',
       value: Uint8Array.from(
         TextProposal.encode(
           TextProposal.fromPartial({
@@ -42,7 +81,7 @@ export const makeTextProposalMsg = ({
     }),
     proposer,
     ...(deposit &&
-      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
+      Number(deposit) && { initialDeposit: coins(deposit, 'ubld') }),
   },
 });
 
@@ -53,10 +92,10 @@ export const makeCoreEvalProposalMsg = ({
   proposer,
   deposit,
 }: CoreEvalProposal & { proposer: string; deposit?: string | number }) => ({
-  typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+  typeUrl: '/cosmos.gov.v1beta1.MsgSubmitProposal',
   value: {
     content: Any.fromPartial({
-      typeUrl: "/agoric.swingset.CoreEvalProposal",
+      typeUrl: '/agoric.swingset.CoreEvalProposal',
       value: Uint8Array.from(
         CoreEvalProposal.encode(
           CoreEvalProposal.fromPartial({
@@ -69,7 +108,7 @@ export const makeCoreEvalProposalMsg = ({
     }),
     proposer,
     ...(deposit &&
-      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
+      Number(deposit) && { initialDeposit: coins(deposit, 'ubld') }),
   },
 });
 
@@ -88,10 +127,10 @@ export const makeParamChangeProposalMsg = ({
   proposer,
   deposit = 1000000,
 }: ParamChangeArgs) => ({
-  typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+  typeUrl: '/cosmos.gov.v1beta1.MsgSubmitProposal',
   value: {
     content: Any.fromPartial({
-      typeUrl: "/cosmos.params.v1beta1.ParameterChangeProposal",
+      typeUrl: '/cosmos.params.v1beta1.ParameterChangeProposal',
       value: Uint8Array.from(
         ParameterChangeProposal.encode(
           ParameterChangeProposal.fromPartial({
@@ -104,7 +143,7 @@ export const makeParamChangeProposalMsg = ({
     }),
     proposer,
     ...(deposit &&
-      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
+      Number(deposit) && { initialDeposit: coins(deposit, 'ubld') }),
   },
 });
 
@@ -119,7 +158,7 @@ export const makeInstallBundleMsg = ({
   uncompressedSize,
   submitter,
 }: MsgInstallArgs) => ({
-  typeUrl: "/agoric.swingset.MsgInstallBundle",
+  typeUrl: '/agoric.swingset.MsgInstallBundle',
   value: {
     compressedBundle,
     uncompressedSize,
@@ -135,6 +174,6 @@ interface MakeFeeObjectArgs {
 
 export const makeFeeObject = ({ denom, amount, gas }: MakeFeeObjectArgs) =>
   ({
-    amount: coins(amount || 0, denom || "uist"),
-    gas: gas ? String(gas) : "auto",
+    amount: coins(amount || 0, denom || 'uist'),
+    gas: gas ? String(gas) : 'auto',
   }) as StdFee;
