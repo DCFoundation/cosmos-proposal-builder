@@ -1,5 +1,5 @@
-import { NetName } from './contexts/network';
-import { Keplr } from '@keplr-wallet/types';
+import { NetName } from "./contexts/network";
+import { Keplr } from "@keplr-wallet/types";
 
 declare global {
   interface Window {
@@ -17,13 +17,13 @@ declare global {
   interface QueryParams {
     network: NetName;
     msgType:
-      | 'coreEvalProposal'
-      | 'textProposal'
-      | 'installBundle'
-      | 'parameterChangeProposal'
-      | 'addPSM'
-      | 'addVault'
-      | 'communityPoolSpendProposal';
+      | "coreEvalProposal"
+      | "textProposal"
+      | "installBundle"
+      | "parameterChangeProposal"
+      | "addPSM"
+      | "addVault"
+      | "communityPoolSpendProposal";
     paramType: string;
   }
 

@@ -29,10 +29,10 @@ describe("Agoric Config", () => {
       "Community Pool Spend",
     ]);
   });
- 
-  vi.mock('../../hooks/useWallet', () => ({
+
+  vi.mock("../../hooks/useWallet", () => ({
     useWallet: vi.fn(() => ({
-      walletAddress: 'agoric12se',
+      walletAddress: "agoric12se",
       stargateClient: {
         simulate: vi.fn(),
         signAndBroadcast: vi.fn(),
@@ -40,11 +40,10 @@ describe("Agoric Config", () => {
     })),
   }));
 
-  vi.mock('../../lib/signAndBroadcast', () => ({
+  vi.mock("../../lib/signAndBroadcast", () => ({
     makeSignAndBroadcast: vi.fn(),
   }));
   it(" renders comm spend proposal form", async () => {
-
     // const mockTxResult = {
     //   code: 0,
     //   events: [],
@@ -53,9 +52,10 @@ describe("Agoric Config", () => {
 
     render(
       <Router hook={memoryLocation("/agoric")}>
-      <ContextProviders>
-        <App />
-        </ContextProviders>,
+        <ContextProviders>
+          <App />
+        </ContextProviders>
+        ,
       </Router>,
     );
     const communityPoolSpendTab = await screen.findByRole("tab", {
@@ -63,7 +63,6 @@ describe("Agoric Config", () => {
     });
     fireEvent.click(communityPoolSpendTab);
 
-  
     const recipientField = await screen.findByLabelText("Recipient");
     expect(recipientField).toBeTruthy();
 
@@ -83,8 +82,5 @@ describe("Agoric Config", () => {
     //   'agoric12se',
     //   expect.any(String), // netName
     // );
-  
-
-
   });
 });
