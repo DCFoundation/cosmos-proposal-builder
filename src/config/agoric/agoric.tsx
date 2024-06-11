@@ -293,7 +293,7 @@ const Agoric = () => {
             ),
           },
           {
-            title: 'Community Pool Spend Proposal',
+            title: 'Community Pool Spend',
             msgType: 'communityPoolSpendProposal',
             content: (
               <ProposalForm
