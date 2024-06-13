@@ -44,11 +44,6 @@ describe("Agoric Config", () => {
     makeSignAndBroadcast: vi.fn(),
   }));
   it(" renders comm spend proposal form", async () => {
-    // const mockTxResult = {
-    //   code: 0,
-    //   events: [],
-    // };
-    // makeSignAndBroadcast(vi.fn().mockResolvedValue(mockTxResult));
 
     render(
       <Router hook={memoryLocation("/agoric")}>
