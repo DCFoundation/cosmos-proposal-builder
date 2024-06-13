@@ -67,15 +67,5 @@ describe("Agoric Config", () => {
     fireEvent.change(recipientField, { target: { value: "agoric12se" } });
     fireEvent.change(amountField, { target: { value: "1000000" } });
 
-    // const submitButton = await screen.findByRole("button", {
-    //   name: "Sign & Submit",
-    // });
-    // fireEvent.click(submitButton);
-
-    // expect(makeSignAndBroadcast).toHaveBeenCalledWith(
-    //   expect.any(Object), // stargateClient mock
-    //   'agoric12se',
-    //   expect.any(String), // netName
-    // );
   });
 });
