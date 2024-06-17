@@ -22,7 +22,8 @@ declare global {
       | "installBundle"
       | "parameterChangeProposal"
       | "addPSM"
-      | "addVault";
+      | "addVault"
+      | "communityPoolSpendProposal";
     paramType: string;
   }
 

@@ -8,11 +8,50 @@ import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
+import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
 ]);
+
+export const makeCommunityPoolSpendProposalMsg = ({
+  proposer,
+  recipient,
+  amount,
+  title,
+  description,
+  deposit,
+}: {
+  proposer: string;
+  recipient: string;
+  amount: string;
+  title: string;
+  description: string;
+  deposit?: number | string;
+}) => {
+  const communityPoolSpendProposal: CommunityPoolSpendProposal = {
+    title,
+    description,
+    recipient,
+    amount: coins(amount, "ubld"),
+  };
+  const msgSubmitProposal = {
+    typeUrl: "/cosmos.gov.v1beta1.MsgSubmitProposal",
+    value: {
+      content: {
+        typeUrl: "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal",
+        value: CommunityPoolSpendProposal.encode(
+          communityPoolSpendProposal,
+        ).finish(),
+      },
+      proposer: proposer,
+      ...(deposit &&
+        Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
+    },
+  };
+  return msgSubmitProposal;
+};
 
 interface MakeTextProposalArgs {
   title: string;

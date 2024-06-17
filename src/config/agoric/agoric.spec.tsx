@@ -1,5 +1,5 @@
 import "../../installSesLockdown";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Router } from "wouter";
 import App from "../../App";
 import { ContextProviders } from "../../contexts/providers";
@@ -26,6 +26,46 @@ describe("Agoric Config", () => {
       "CoreEval Proposal",
       "Install Bundle",
       "Parameter Change Proposal",
+      "Community Pool Spend",
     ]);
+  });
+
+  vi.mock("../../hooks/useWallet", () => ({
+    useWallet: vi.fn(() => ({
+      walletAddress: "agoric12se",
+      stargateClient: {
+        simulate: vi.fn(),
+        signAndBroadcast: vi.fn(),
+      },
+    })),
+  }));
+
+  vi.mock("../../lib/signAndBroadcast", () => ({
+    makeSignAndBroadcast: vi.fn(),
+  }));
+  it(" renders comm spend proposal form", async () => {
+
+    render(
+      <Router hook={memoryLocation("/agoric")}>
+        <ContextProviders>
+          <App />
+        </ContextProviders>
+        ,
+      </Router>,
+    );
+    const communityPoolSpendTab = await screen.findByRole("tab", {
+      name: "Community Pool Spend",
+    });
+    fireEvent.click(communityPoolSpendTab);
+
+    const recipientField = await screen.findByLabelText("Recipient");
+    expect(recipientField).toBeTruthy();
+
+    const amountField = await screen.findByLabelText("Amount");
+    expect(amountField).toBeTruthy();
+
+    fireEvent.change(recipientField, { target: { value: "agoric12se" } });
+    fireEvent.change(amountField, { target: { value: "1000000" } });
+
   });
 });

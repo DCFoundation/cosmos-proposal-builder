@@ -32,7 +32,12 @@ export type SelectorReturnType = ReturnType<
 export type ProposalDetail =
   | { msgType: "textProposal" }
   | { msgType: "coreEvalProposal"; evals: CoreEval[] }
-  | { msgType: "parameterChangeProposal"; changes: ParamChange[] };
+  | { msgType: "parameterChangeProposal"; changes: ParamChange[] }
+  | {
+      msgType: "communityPoolSpendProposal";
+      recipient: string;
+      amount: string;
+    };
 
 interface ProposalFormProps {
   title: string;
@@ -84,6 +89,10 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
             const changes = paramChangeRef.current?.getChanges();
             if (!Array.isArray(changes)) throw new Error("No changes");
             return handleSubmit({ ...args, msgType, changes });
+          } else if (msgType === "communityPoolSpendProposal") {
+            const recipient = (formData.get("recipient") as string) || "";
+            const amount = (formData.get("amount") as string) || "";
+            return handleSubmit({ ...args, msgType, recipient, amount });
           }
         }
       }
@@ -113,7 +122,35 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
               <TitleDescriptionInputs
                 communityForumLink={governanceForumLink}
               />
+              {msgType === "communityPoolSpendProposal" ? (
+                <div className="grid grid-cols-2 gap-[10px] pt-[20px]">
+                  <label
+                    htmlFor="recipient"
+                    className="text-sm font-medium text-blue"
+                  >
+                    Recipient
+                  </label>
+                  <input
+                    type="text"
+                    id="recipient"
+                    name="recipient"
+                    className="col-span-2 mt-0"
+                  />
 
+                  <label
+                    htmlFor="amount"
+                    className="text-sm font-medium text-blue"
+                  >
+                    Amount
+                  </label>
+                  <input
+                    type="text"
+                    id="amount"
+                    name="amount"
+                    className="col-span-2 mt-0"
+                  />
+                </div>
+              ) : null}
               {msgType === "coreEvalProposal" ? (
                 <div className="grid grid-cols-2 gap-[10px] pt-[20px]">
                   <label

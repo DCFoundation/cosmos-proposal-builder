@@ -12,6 +12,7 @@ import {
   makeTextProposalMsg,
   makeInstallBundleMsg,
   makeParamChangeProposalMsg,
+  makeCommunityPoolSpendProposalMsg,
 } from "../../lib/messageBuilder";
 import { isValidBundle } from "../../utils/validate";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
@@ -98,6 +99,17 @@ const Agoric = () => {
           proposer: walletAddress,
         });
       }
+
+      if (msgType === "communityPoolSpendProposal") {
+        if (!("recipient" in vals) || !("amount" in vals)) {
+          throw new Error("Missing recipient or amount");
+        }
+        proposalMsg = makeCommunityPoolSpendProposalMsg({
+          ...vals,
+          proposer: walletAddress,
+        });
+      }
+
       if (msgType === "parameterChangeProposal") {
         if (vals.msgType !== "parameterChangeProposal") return;
         proposalMsg = makeParamChangeProposalMsg({
@@ -277,6 +289,19 @@ const Agoric = () => {
                 governanceForumLink="https://community.agoric.com/c/governance/parameter-changes/16"
                 msgType="parameterChangeProposal"
                 // XXX paramOptions should be passed in as prop
+              />
+            ),
+          },
+          {
+            title: "Community Pool Spend",
+            msgType: "communityPoolSpendProposal",
+            content: (
+              <ProposalForm
+                title="Community Pool Spend Proposal"
+                handleSubmit={handleProposal("communityPoolSpendProposal")}
+                description="This is a governance proposal to spend funds from the community pool."
+                governanceForumLink="https://community.agoric.com/c/governance/community-pool-spend-proposals/15"
+                msgType="communityPoolSpendProposal"
               />
             ),
           },
