@@ -44,7 +44,6 @@ describe("Agoric Config", () => {
     makeSignAndBroadcast: vi.fn(),
   }));
   it(" renders comm spend proposal form", async () => {
-
     render(
       <Router hook={memoryLocation("/agoric")}>
         <ContextProviders>
@@ -66,6 +65,5 @@ describe("Agoric Config", () => {
 
     fireEvent.change(recipientField, { target: { value: "agoric12se" } });
     fireEvent.change(amountField, { target: { value: "1000000" } });
-
   });
 });
