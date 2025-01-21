@@ -1,5 +1,17 @@
 function escapeTemplateLiterals(code: string) {
-  return code.replace(/\$\{/g, "{{OPEN}}").replace(/\}/g, "{{CLOSE}}");
+  // Find all our template patterns
+  const patterns = code.match(/%%[NU]?\{[^}]+\}[NU]?%%/g) || [];
+
+  // Replace only the template patterns
+  let result = code;
+  patterns.forEach((pattern) => {
+    const escaped = pattern
+      .replace(/\$/g, "{{OPEN}}")
+      .replace(/\}/g, "{{CLOSE}}");
+    result = result.replace(pattern, escaped);
+  });
+
+  return result;
 }
 
 function unescapeTemplateLiterals(code: string) {
