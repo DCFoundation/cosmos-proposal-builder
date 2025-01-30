@@ -3,7 +3,7 @@
 
 const manifestBundleRef = {
   bundleID:
-    "b1-c676347a9ebe38af9bcfb6e18616e7faeff31b5ce5cee8e600a0e880587ce733c7ee2afcf01dd2e782c1a57ceb861a262ad96747b8962c055a17090c5609afc5"
+    "b1-3ac516e8bb37fa0d6d493176649fab362c32b395bc614647aafbbd07b22f35c587c3bc8c6bcaa1a7f7e3606aa10ef695dda037532ce90818cf9d0fa4b2999c21"
 };
 const getManifestCall = harden([
   "getManifestForAddAssetToVault",
@@ -22,7 +22,7 @@ const getManifestCall = harden([
     },
     interestRateValue: undefined,
     scaledPriceAuthorityRef: {
-      bundleID: "b1-affe49a2fd32d6f7a7453790f704fbb4e0180e9cba21439f46016c5add3378987a42ac3d540ec587321de52eadc98a19ff72354e1d058744315efced2b11494d",
+      bundleID: "b1-f8e2677e8dede9ccf194f31e8ed3183649fcb97cf22a17cb6b99883f27f38e3035bb3bf1d101ee008a9f6625de70b992cda94bd80f8ce5df1b812ace7cc2192e",
     },
   },
 ]);

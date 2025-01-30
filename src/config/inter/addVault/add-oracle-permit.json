@@ -11,22 +11,20 @@
     "priceAuthority": "priceFeed",
     "priceAuthorityAdmin": "priceFeed",
     "startGovernedUpgradable": "priceFeed",
-    "vatAdminSvc": "makeCoreProposalBehavior",
-    "zoe": "makeCoreProposalBehavior"
+    "zoe": "priceFeed",
+    "vatAdminSvc": "makeCoreProposalBehavior"
   },
-  "installation": {},
   "instance": {
     "produce": "priceFeed"
   },
-  "namedVat": {
-    "consume": {
-      "agoricNames": "agoricNames"
-    }
-  },
+  "namedVat":  true,
   "oracleBrand": {
     "produce": "priceFeed"
   },
   "evaluateBundleCap": "makeCoreProposalBehavior",
+  "installation": {
+    "produce": "makeCoreProposalBehavior"
+  },
   "modules": {
     "utils": {
       "runModuleBehaviors": "makeCoreProposalBehavior"

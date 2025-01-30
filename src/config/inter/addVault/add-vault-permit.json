@@ -20,7 +20,8 @@
     "consume": {
       "mintHolder": true,
       "scaledPriceAuthority": true
-    }
+    },
+    "produce": true
   },
   "instance": {
     "produce": true,
