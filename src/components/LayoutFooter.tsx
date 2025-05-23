@@ -4,10 +4,10 @@ const LayoutFooter = () => {
   return (
     <footer className={`layout-footer px-4 py-5`}>
       <div className={"flex items-center justify-center"}>
-        <div className={"basis-full md:basis-auto md:hidden"}>
+        <div className={"basis-full"}>
           <Footer />
         </div>
-        <div className={"basis-full md:basis-auto"}>
+        <div className={"basis-full"}>
           <div className={`flex justify-end items-center`}>
             <div
               className={
