@@ -12,8 +12,8 @@ import { Button } from "./Button";
 import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { ParameterChangeFormSection } from "./ParameterChangeForm";
 import { DepositSection } from "./DepositSection";
-import { paramOptions } from "../config/agoric/params";
-import type { ParameterChangeTypeOption } from "../types/form";
+import { paramDescriptors } from "../config/agoric/params";
+import type { ParameterChangeTypeDescriptor } from "../types/form";
 import { TitleDescriptionInputs } from "./TitleDescriptionInputs";
 
 type BaseProposalArgs = {
@@ -24,9 +24,9 @@ type BaseProposalArgs = {
 
 export type ProposalArgs = BaseProposalArgs & ProposalDetail;
 
-export type QueryType = ReturnType<(typeof paramOptions)[number]["query"]>;
+export type QueryType = ReturnType<(typeof paramDescriptors)[number]["query"]>;
 export type SelectorReturnType = ReturnType<
-  (typeof paramOptions)[number]["selector"]
+  (typeof paramDescriptors)[number]["selector"]
 >;
 
 export type ProposalDetail =
@@ -110,8 +110,8 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
               {msgType === "parameterChangeProposal" ? (
                 <ParameterChangeFormSection<QueryType, SelectorReturnType>
                   ref={paramChangeRef}
-                  options={
-                    paramOptions as unknown as ParameterChangeTypeOption<
+                  paramDescriptors={
+                    paramDescriptors as unknown as ParameterChangeTypeDescriptor<
                       QueryType,
                       SelectorReturnType
                     >[]

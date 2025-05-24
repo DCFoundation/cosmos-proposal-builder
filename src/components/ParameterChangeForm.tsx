@@ -16,7 +16,7 @@ import { updateSearchString } from "../utils/updateSearchString";
 import { EditableTable, RowValue } from "./EditableTable";
 import { ParamsTypeSelector } from "./ParamsTypeSelector";
 import { BeansPerUnit } from "../types/swingset";
-import type { FormValue, ParameterChangeTypeOption } from "../types/form";
+import type { FormValue, ParameterChangeTypeDescriptor } from "../types/form";
 import { toast } from "react-toastify";
 import { NetworkDropdown } from "./NetworkDropdown.tsx";
 
@@ -25,22 +25,23 @@ type ParameterChangeFormMethods = {
 };
 
 type ParameterChangeFormProps<T, R extends FormValue[] | undefined> = {
-  options: ParameterChangeTypeOption<T, R>[];
+  paramDescriptors: ParameterChangeTypeDescriptor<T, R>[];
 };
 
 function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
-  { options }: ParameterChangeFormProps<T, R>,
+  { paramDescriptors }: ParameterChangeFormProps<T, R>,
   ref: React.ForwardedRef<ParameterChangeFormMethods>,
 ) {
   const { paramType } = qs.parse(useSearch());
   const { api } = useNetwork();
-  const match = options.find((x) => x.key === paramType) ?? options[0];
+  const activeParamDesc =
+    paramDescriptors.find((x) => x.key === paramType) ?? paramDescriptors[0];
   const [stagedParams, setStagedParams] = useState<FormValue[] | null>(null);
-  const paramsQuery = useQuery(match.query(api));
+  const paramsQuery = useQuery(activeParamDesc.query(api));
 
   const currentParams = useMemo(
-    () => match.selector(paramsQuery),
-    [paramsQuery, match],
+    () => activeParamDesc.selector(paramsQuery),
+    [paramsQuery, activeParamDesc],
   );
 
   useEffect(() => {
@@ -53,7 +54,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     setStagedParams(null);
   }, [api]);
 
-  const handleFormTypeChange = (val: ParameterChangeTypeOption<T, R>) => {
+  const handleFormTypeChange = (val: ParameterChangeTypeDescriptor<T, R>) => {
     setStagedParams(null);
     if (!api) {
       toast.error("Please select a network!", { autoClose: 3000 });
@@ -62,14 +63,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   };
 
   const feeUnit = useMemo(() => {
-    if (currentParams && match.transformColumn === "ist") {
+    if (currentParams && activeParamDesc.transformColumn === "ist") {
       const param = (currentParams as unknown as BeansPerUnit[]).find(
         (x: BeansPerUnit) => x.key === "feeUnit",
       );
       return param ? Number(param.beans) : null;
     }
     return null;
-  }, [currentParams, match]);
+  }, [currentParams, activeParamDesc]);
 
   const toIst = useCallback(
     (value: string) => {
@@ -99,7 +100,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         toast.error("No parameter changes to submit!", { autoClose: 3000 });
         throw new Error("No changes to submit.");
       }
-      const changes = match.submitFn(stagedParams);
+      const changes = activeParamDesc.submitFn(stagedParams);
       if (!changes) throw new Error("Error formatting changes");
       return changes;
     },
@@ -109,7 +110,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     if (!stagedParams) return;
     const newParams = [...stagedParams];
     let newVal: string;
-    if (match.transformColumn === "ist") {
+    if (activeParamDesc.transformColumn === "ist") {
       newVal = fromIst(value);
     } else {
       newVal = value;
@@ -118,7 +119,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
       if (candidate === key) {
         newParams[ix] = {
           key,
-          [match.valueKey || "value"]: newVal,
+          [activeParamDesc.valueKey || "value"]: newVal,
         };
       }
     });
@@ -137,9 +138,11 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
           <div className="flex">
             {api && (
               <ParamsTypeSelector
-                paramOptions={options}
+                paramDescriptors={paramDescriptors}
                 onChange={handleFormTypeChange}
-                initialSelected={match as ParameterChangeTypeOption<T, R>}
+                initialSelected={
+                  activeParamDesc as ParameterChangeTypeDescriptor<T, R>
+                }
               />
             )}
 
@@ -153,18 +156,18 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
             htmlFor="title"
             className="block text-sm font-medium text-blue"
           >
-            {match.title}
+            {activeParamDesc.title}
           </label>
           <div className={"w-full"}>
             <EditableTable
-              headers={match.headers as string[]}
+              headers={activeParamDesc.headers as string[]}
               rows={stagedParams as unknown as RowValue[]}
               handleValueChanged={handleValueChanged}
               transformInput={
-                match.transformColumn === "ist" ? toIst : undefined
+                activeParamDesc.transformColumn === "ist" ? toIst : undefined
               }
-              valueKey={match.valueKey || ("value" as string)}
-              inputType={match.inputType || "string"}
+              valueKey={activeParamDesc.valueKey || ("value" as string)}
+              inputType={activeParamDesc.inputType || "string"}
             />
           </div>
         </div>

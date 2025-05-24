@@ -2,23 +2,23 @@ import { ReactNode, Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { CheckIcon, ChevronDownIcon } from "@heroicons/react/20/solid";
 import { classNames } from "../utils/classNames";
-import type { FormValue, ParameterChangeTypeOption } from "../types/form";
+import type { FormValue, ParameterChangeTypeDescriptor } from "../types/form";
 
 interface ParamsTypeSelectorProps<T, R extends FormValue[] | undefined> {
-  paramOptions: ParameterChangeTypeOption<T, R>[];
-  initialSelected: ParameterChangeTypeOption<T, R>;
-  onChange: (val: ParameterChangeTypeOption<T, R>) => void;
+  paramDescriptors: ParameterChangeTypeDescriptor<T, R>[];
+  initialSelected: ParameterChangeTypeDescriptor<T, R>;
+  onChange: (val: ParameterChangeTypeDescriptor<T, R>) => void;
 }
 
 const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
-  paramOptions,
+  paramDescriptors,
   initialSelected,
   onChange,
 }: ParamsTypeSelectorProps<T, R>): ReactNode => {
   const [selected, setSelected] =
-    useState<ParameterChangeTypeOption<T, R>>(initialSelected);
+    useState<ParameterChangeTypeDescriptor<T, R>>(initialSelected);
 
-  const handleChange = (newSelection: ParameterChangeTypeOption<T, R>) => {
+  const handleChange = (newSelection: ParameterChangeTypeDescriptor<T, R>) => {
     setSelected(newSelection);
     if (onChange && typeof onChange === "function") {
       onChange(newSelection);
@@ -52,16 +52,16 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
               leaveTo="opacity-0"
             >
               <Listbox.Options className="absolute right-0 z-10 mt-2 w-72 origin-top-right divide-gray-200 overflow-hidden rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-                {paramOptions.map((option) => (
+                {paramDescriptors.map((paramDesc) => (
                   <Listbox.Option
-                    key={option.key}
+                    key={paramDesc.key}
                     className={({ active }) =>
                       classNames(
                         active ? "bg-red text-white" : "text-gray-900",
                         "cursor-default select-none p-4 text-sm",
                       )
                     }
-                    value={option}
+                    value={paramDesc}
                   >
                     {({ selected, active }) => (
                       <div
@@ -78,7 +78,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                                 : "font-normal"
                             }
                           >
-                            {option.title}
+                            {paramDesc.title}
                           </p>
                           {selected ? (
                             <span
@@ -97,7 +97,7 @@ const ParamsTypeSelector = <T, R extends FormValue[] | undefined>({
                             "mt-2",
                           )}
                         >
-                          {option.description}
+                          {paramDesc.description}
                         </p>
                       </div>
                     )}

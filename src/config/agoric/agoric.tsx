@@ -288,7 +288,7 @@ const Agoric = () => {
                 description="This is a governance proposal to change chain configuration parameters."
                 governanceForumLink="https://community.agoric.com/c/governance/parameter-changes/16"
                 msgType="parameterChangeProposal"
-                // XXX paramOptions should be passed in as prop
+                // XXX paramDescriptors should be passed in as prop
               />
             ),
           },

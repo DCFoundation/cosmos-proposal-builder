@@ -3,7 +3,10 @@ import type { UseQueryResult } from "@tanstack/react-query";
 
 export type FormValue = { key: string; [value: string]: unknown };
 
-export type ParameterChangeTypeOption<T, R extends FormValue[] | undefined> = {
+export type ParameterChangeTypeDescriptor<
+  T,
+  R extends FormValue[] | undefined,
+> = {
   title: string;
   description: string;
   subspace: string;

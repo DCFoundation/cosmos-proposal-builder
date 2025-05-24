@@ -1,4 +1,4 @@
-import type { ParameterChangeTypeOption } from "../../types/form";
+import type { ParameterChangeTypeDescriptor } from "../../types/form";
 import {
   swingSetParamsQuery,
   tallyParamsQuery,
@@ -23,7 +23,7 @@ export type SelectorReturnType =
   | ReturnType<typeof selectTallyParams>
   | ReturnType<typeof selectVotingParams>;
 
-export const paramOptions = [
+export const paramDescriptors = [
   {
     title: "SwingSet Bean Params",
     description:
@@ -43,7 +43,7 @@ export const paramOptions = [
         value: JSON.stringify(values),
       },
     ],
-  } as ParameterChangeTypeOption<
+  } as ParameterChangeTypeDescriptor<
     SwingSetParams,
     ReturnType<typeof selectBeansPerUnit>
   >,
@@ -67,7 +67,7 @@ export const paramOptions = [
         ),
       },
     ],
-  } as ParameterChangeTypeOption<
+  } as ParameterChangeTypeDescriptor<
     TallyParams,
     ReturnType<typeof selectTallyParams>
   >,
@@ -91,7 +91,7 @@ export const paramOptions = [
         ),
       },
     ],
-  } as ParameterChangeTypeOption<
+  } as ParameterChangeTypeDescriptor<
     VotingParams,
     ReturnType<typeof selectVotingParams>
   >,
