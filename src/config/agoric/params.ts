@@ -9,6 +9,8 @@ import {
   selectTallyParams,
   selectVotingParams,
 } from "../../lib/selectors";
+import type { Coin } from "../../types/bank";
+import { scaleToDenomBase, scaleFromDenomBase } from "../../utils/coin";
 import { arrayToObject } from "../../utils/object";
 import { SwingSetParams } from "../../types/swingset";
 import { TallyParams, VotingParams } from "../../types/gov";
@@ -32,10 +34,43 @@ export const paramDescriptors = [
     key: "beans_per_unit",
     valueKey: "beans",
     transformColumn: "ist",
-    headers: ["Key", "Beans", "IST"],
+    headers: ["Key", "Beans"],
     inputType: "number",
     query: swingSetParamsQuery,
     selector: selectBeansPerUnit,
+    getTransformation: (query) => {
+      const { isLoading, data } = query;
+      if (isLoading || !data) return undefined;
+
+      const feeUnitCoin = data.fee_unit_price?.[0] as Coin | undefined;
+      const beansPerFeeUnitRecord = data.beans_per_unit.find(
+        (x) => x.key === "feeUnit",
+      );
+      if (!feeUnitCoin || !beansPerFeeUnitRecord) return undefined;
+
+      const feeUnitAmount = Number(feeUnitCoin.amount);
+      const beansPerFeeUnit = Number(beansPerFeeUnitRecord.beans);
+      const [_amount, transformedLabel] = scaleToDenomBase(feeUnitCoin);
+      const transformValue = (beans: string) => {
+        const input = [
+          (Number(beans) / beansPerFeeUnit) * feeUnitAmount,
+          feeUnitCoin.denom,
+        ] as [number, string];
+        const scaled = scaleToDenomBase(input);
+        return scaled[0];
+      };
+      const untransformValue = (transformed: string | number) => {
+        const asDenomBase =
+          (Number(transformed) / feeUnitAmount) * beansPerFeeUnit;
+        const beans = scaleFromDenomBase(
+          asDenomBase,
+          transformedLabel,
+          feeUnitCoin.denom,
+        );
+        return Math.round(beans);
+      };
+      return { transformedLabel, transformValue, untransformValue };
+    },
     submitFn: (values) => [
       {
         subspace: "swingset",

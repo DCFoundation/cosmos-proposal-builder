@@ -9,7 +9,8 @@ interface EditableTableProps {
   handleValueChanged: (key: string, value: string) => void;
   rows: RowValue[];
   headers: string[];
-  transformInput?: (value: string) => string | number;
+  transformedLabel?: string;
+  transformValue?: (value: string) => string | number;
   valueKey: string;
   inputType?: HTMLInputElement["type"];
 }
@@ -22,7 +23,8 @@ const EditableTable = ({
   handleValueChanged,
   rows,
   headers,
-  transformInput,
+  transformedLabel,
+  transformValue,
   valueKey = "value",
   inputType = "number",
 }: EditableTableProps) => {
@@ -58,11 +60,15 @@ const EditableTable = ({
       }
     };
 
-  const shouldTransform = typeof transformInput === "function";
+  const shouldTransform = typeof transformValue === "function";
+
+  const resolvedHeaders = shouldTransform
+    ? [...headers, transformedLabel ?? (headers.at(-1) as string)]
+    : headers;
 
   const renderRow = (row: RowValue) => {
-    const transformedInput = shouldTransform
-      ? transformInput(row[valueKey])
+    const projectedValue = shouldTransform
+      ? transformValue(row[valueKey])
       : row[valueKey];
 
     return (
@@ -93,7 +99,7 @@ const EditableTable = ({
         >
           <div style={{ width: "100%", height: "100%" }}>
             {editingKey !== row.key ? (
-              transformedInput
+              projectedValue
             ) : (
               <input
                 ref={(el) => (inputRefs.current[row.key] = el)}
@@ -103,12 +109,12 @@ const EditableTable = ({
                 //min="1e-12" // @todo, should be one bean (feeUnit)
                 step={
                   inputType === "number"
-                    ? stepFromValue(transformedInput)
+                    ? stepFromValue(projectedValue)
                     : undefined
                 }
                 name={row.key}
                 id={row.key}
-                defaultValue={transformedInput}
+                defaultValue={projectedValue}
                 className="block w-full h-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-teal-600 sm:max-w-sm sm:text-sm sm:leading-6"
               />
             )}
@@ -151,7 +157,7 @@ const EditableTable = ({
             >
               <thead className={`bg-light3 rounded-md`}>
                 <tr className={"divide-x divide-light3"}>
-                  {headers?.map(renderThead)}
+                  {resolvedHeaders?.map(renderThead)}
                   <th scope="col" className="relative py-2.5 pr-3">
                     <span className="sr-only">Edit</span>
                   </th>

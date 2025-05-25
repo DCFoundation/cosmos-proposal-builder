@@ -1,6 +1,5 @@
 import {
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -15,8 +14,11 @@ import { useNetwork } from "../hooks/useNetwork";
 import { updateSearchString } from "../utils/updateSearchString";
 import { EditableTable, RowValue } from "./EditableTable";
 import { ParamsTypeSelector } from "./ParamsTypeSelector";
-import { BeansPerUnit } from "../types/swingset";
-import type { FormValue, ParameterChangeTypeDescriptor } from "../types/form";
+import type {
+  FormValue,
+  ParameterChangeTypeDescriptor,
+  ValueTransformation,
+} from "../types/form";
 import { toast } from "react-toastify";
 import { NetworkDropdown } from "./NetworkDropdown.tsx";
 
@@ -44,6 +46,13 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     [paramsQuery, activeParamDesc],
   );
 
+  const { transformValue, untransformValue, transformedLabel } = useMemo(
+    () =>
+      activeParamDesc.getTransformation?.(paramsQuery) ??
+      ({} as ValueTransformation<string, string | number>),
+    [paramsQuery, activeParamDesc],
+  );
+
   useEffect(() => {
     if (!stagedParams && currentParams) {
       setStagedParams(currentParams);
@@ -61,31 +70,6 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     }
     navigate(updateSearchString({ paramType: val.key }));
   };
-
-  const feeUnit = useMemo(() => {
-    if (currentParams && activeParamDesc.transformColumn === "ist") {
-      const param = (currentParams as unknown as BeansPerUnit[]).find(
-        (x: BeansPerUnit) => x.key === "feeUnit",
-      );
-      return param ? Number(param.beans) : null;
-    }
-    return null;
-  }, [currentParams, activeParamDesc]);
-
-  const toIst = useCallback(
-    (value: string) => {
-      if (feeUnit) return Number(value) / feeUnit;
-      return value;
-    },
-    [feeUnit],
-  );
-  const fromIst = useCallback(
-    (value: string) => {
-      if (feeUnit) return String(Number(value) * feeUnit);
-      return value;
-    },
-    [feeUnit],
-  );
 
   useImperativeHandle(ref, () => ({
     reset: () => {
@@ -109,12 +93,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   const handleValueChanged = (key: string, value: string) => {
     if (!stagedParams) return;
     const newParams = [...stagedParams];
-    let newVal: string;
-    if (activeParamDesc.transformColumn === "ist") {
-      newVal = fromIst(value);
-    } else {
-      newVal = value;
-    }
+    const newVal = untransformValue ? untransformValue(value) : value;
     newParams.forEach(({ key: candidate }, ix) => {
       if (candidate === key) {
         newParams[ix] = {
@@ -161,11 +140,10 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
           <div className={"w-full"}>
             <EditableTable
               headers={activeParamDesc.headers as string[]}
+              transformedLabel={transformedLabel}
               rows={stagedParams as unknown as RowValue[]}
               handleValueChanged={handleValueChanged}
-              transformInput={
-                activeParamDesc.transformColumn === "ist" ? toIst : undefined
-              }
+              transformValue={transformValue}
               valueKey={activeParamDesc.valueKey || ("value" as string)}
               inputType={activeParamDesc.inputType || "string"}
             />
