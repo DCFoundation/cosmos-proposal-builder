@@ -2,6 +2,15 @@ import type { Coin } from "../types/bank";
 
 export const Unit6 = 1_000_000;
 
+export const coinIsGTE = (left: Coin, right: Coin) => {
+  if (left.denom !== right.denom) {
+    throw Error(`Cannot compare ${left.denom} to ${right.denom}`);
+  }
+  const leftAmount = BigInt(left.amount);
+  const rightAmount = BigInt(right.amount);
+  return leftAmount >= rightAmount;
+};
+
 export const scaleToDenomBase = (
   coin: Coin | [amount: number, denom: string],
 ): [amount: number, denom: string] => {
@@ -38,7 +47,4 @@ export const renderCoin = (coin: Coin) => {
 };
 
 export const renderCoins = (coins: Coin[]) =>
-  coins.length > 0 ? coins.map(renderCoin).join(",") : "empty";
-
-export const coinsUnit = (coins: Coin[] | undefined) =>
-  coins && coins.length === 1 ? Number(coins[0].amount) / Unit6 : NaN;
+  coins.length > 0 ? coins.map(renderCoin).join(" or ") : "empty";

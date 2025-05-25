@@ -8,8 +8,8 @@ import {
   votingParamsQuery,
 } from "../lib/queries";
 import type { DepositParams, VotingParams } from "../types/gov";
-import { selectBldCoins } from "../lib/selectors";
-import { renderCoins, coinsUnit } from "../utils/coin";
+import { selectCoinBalance } from "../lib/selectors";
+import { renderCoin, renderCoins, scaleToDenomBase } from "../utils/coin";
 import moment from "moment";
 import { WalletConnectButton } from "./WalletConnectButton.tsx";
 import { NetworkDropdown } from "./NetworkDropdown.tsx";
@@ -35,11 +35,22 @@ export const DepositSection: React.FC<unknown> = () => {
     },
   });
 
-  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
-  const bldCoins = useMemo(
-    () => selectBldCoins(accountBalances),
-    [accountBalances],
+  // TODO: Let the user pick from all `minDeposit` denoms rather than
+  // locking in on the first one.
+  const depositDenom = useMemo(() => minDeposit?.[0]?.denom, [minDeposit]);
+  const scaledMinDeposit = useMemo(
+    () => (minDeposit ? scaleToDenomBase(minDeposit[0]) : undefined),
+    [minDeposit],
   );
+  const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
+  const denomBalance = useMemo(
+    () =>
+      depositDenom
+        ? selectCoinBalance(accountBalances, depositDenom)
+        : undefined,
+    [accountBalances, depositDenom],
+  );
+
   const renderTime = (time: string | undefined) => {
     const onlyNumberTime = String(time).slice(0, -1);
     const duration = moment.duration(onlyNumberTime, "seconds");
@@ -60,7 +71,7 @@ export const DepositSection: React.FC<unknown> = () => {
   return (
     <div className="sm:grid sm:grid-cols-1 sm:items-start sm:gap-1.5 sm:py-3">
       <label htmlFor="description" className="text-sm font-medium text-blue">
-        Deposit
+        Deposit {scaledMinDeposit ? scaledMinDeposit[1] : ""}
       </label>
       <div className="">
         <input
@@ -70,7 +81,7 @@ export const DepositSection: React.FC<unknown> = () => {
           name="deposit"
           id="deposit"
           ref={depositRef}
-          defaultValue={minDeposit ? coinsUnit(minDeposit) : ""}
+          defaultValue={scaledMinDeposit ? scaledMinDeposit[0] : ""}
           className="block w-full rounded-md border-0 py-3 text-gray-900 shadow-sm ring-1 ring-inset ring-light placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-red max-w-[250px]"
         />
 
@@ -141,9 +152,9 @@ export const DepositSection: React.FC<unknown> = () => {
                 <div className={"basis-auto"}>
                   <span>
                     Current balance:{" "}
-                    {bldCoins && (
+                    {denomBalance && (
                       <span className="font-semibold">
-                        {renderCoins(bldCoins)}
+                        {renderCoin(denomBalance)}
                       </span>
                     )}
                   </span>

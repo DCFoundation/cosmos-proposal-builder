@@ -15,7 +15,7 @@ import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
 import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
 
-import { selectStorageCost, selectIstBalance } from "../lib/selectors";
+import { selectStorageCost, selectCoinBalance } from "../lib/selectors";
 import { useWallet } from "../hooks/useWallet";
 
 export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
@@ -43,10 +43,6 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       [swingsetParams],
     );
     const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
-    const istBalance = useMemo(
-      () => selectIstBalance(accountBalances),
-      [accountBalances],
-    );
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -58,16 +54,21 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
 
     const onSubmit = (e: FormEvent) => {
       e.preventDefault();
-      const cost = codeInputRef.current?.getBundleCost?.();
       if (!bundle) {
         toast.error("Bundle JSON not provided.", { autoClose: 3000 });
-      } else if (cost && cost > Number(istBalance) / 10 ** 6) {
+        return;
+      }
+      const cost = codeInputRef.current?.getBundleCost?.();
+      const balance = cost
+        ? selectCoinBalance(accountBalances, cost[1])
+        : undefined;
+      if (cost?.[0] && (!balance || Number(balance.amount) < cost[0])) {
         toast.error("Insufficient funds to install bundle.", {
           autoClose: 3000,
         });
-      } else {
-        handleSubmit({ bundle });
+        return;
       }
+      handleSubmit({ bundle });
     };
 
     return (
@@ -94,7 +95,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
                     onContentChange={setBundle}
                     subtitle=".json files permitted"
                     costPerByte={costPerByte}
-                    istBalance={istBalance}
+                    accountBalances={accountBalances?.data}
                   />
                 </div>
               </div>
