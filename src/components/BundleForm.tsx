@@ -15,7 +15,12 @@ import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
 import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
 
-import { selectStorageCost, selectIstBalance } from "../lib/selectors";
+import {
+  selectStorageCost,
+  selectIstBalance,
+  selectBldBalance,
+  selectStorageCostDenom,
+} from "../lib/selectors";
 import { useWallet } from "../hooks/useWallet";
 
 export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
@@ -47,6 +52,16 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       () => selectIstBalance(accountBalances),
       [accountBalances],
     );
+    const bldBalance = useMemo(
+      () => selectBldBalance(accountBalances),
+      [accountBalances],
+    );
+    const storageCostDenom = useMemo(
+      () => selectStorageCostDenom(swingsetParams),
+      [swingsetParams],
+    );
+
+    const feeBalance = storageCostDenom === "uist" ? istBalance : bldBalance;
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -61,7 +76,7 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       const cost = codeInputRef.current?.getBundleCost?.();
       if (!bundle) {
         toast.error("Bundle JSON not provided.", { autoClose: 3000 });
-      } else if (cost && cost > Number(istBalance) / 10 ** 6) {
+      } else if (cost && cost > Number(feeBalance) / 10 ** 6) {
         toast.error("Insufficient funds to install bundle.", {
           autoClose: 3000,
         });
@@ -94,7 +109,10 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
                     onContentChange={setBundle}
                     subtitle=".json files permitted"
                     costPerByte={costPerByte}
-                    istBalance={istBalance}
+                    feeBalance={feeBalance}
+                    feeDenomDisplayName={
+                      storageCostDenom === "uist" ? "IST" : "BLD"
+                    }
                   />
                 </div>
               </div>

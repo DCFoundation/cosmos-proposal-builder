@@ -14,7 +14,8 @@ interface CodeInputProps {
   prismTag: string;
   subtitle: DragDropProps["subtitle"];
   costPerByte?: number;
-  istBalance?: bigint;
+  feeBalance?: bigint;
+  feeDenomDisplayName?: string;
 }
 
 interface FileState {
@@ -37,7 +38,8 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
       prismTag,
       subtitle,
       costPerByte,
-      istBalance,
+      feeBalance,
+      feeDenomDisplayName,
     },
     ref,
   ) => {
@@ -75,11 +77,11 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
     }, [costPerByte, size]);
 
     const remainingCost = useMemo(() => {
-      if (istBalance && bundleCost) {
-        return Math.max(bundleCost - Number(istBalance) / 10 ** 6, 0);
+      if (feeBalance && bundleCost) {
+        return Math.max(bundleCost - Number(feeBalance) / 10 ** 6, 0);
       }
       return bundleCost;
-    }, [bundleCost, istBalance]);
+    }, [bundleCost, feeBalance]);
 
     return (
       <div className="flex flex-col">
@@ -93,7 +95,7 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
               afterEl={
                 costPerByte ? (
                   <p className="text-xs leading-5 text-gray-600">
-                    Upload Cost: {costPerByte} IST per byte
+                    Upload Cost: {costPerByte} {feeDenomDisplayName} per byte
                   </p>
                 ) : null
               }
@@ -128,7 +130,9 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
                 <div className="self-end">
                   <p className="mt-2 text-sm text-gray-600">
                     Upload Cost:{" "}
-                    <span className="font-medium">{bundleCost} IST</span>
+                    <span className="font-medium">
+                      {bundleCost} {feeDenomDisplayName}
+                    </span>
                   </p>
                   <p
                     className={classNames(

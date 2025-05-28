@@ -74,7 +74,7 @@ export const WalletContextProvider = ({
           {
             registry,
             gasPrice: {
-              denom: "uist",
+              denom: "ubld",
               amount: Decimal.fromUserInput("50000000", 0),
             },
           },

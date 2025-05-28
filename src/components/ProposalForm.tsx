@@ -5,6 +5,7 @@ import {
   forwardRef,
   FormEvent,
   ReactNode,
+  useMemo,
 } from "react";
 import { CodeInputGroup } from "./CodeInputGroup";
 import { CoreEval } from "@agoric/cosmic-proto/swingset/swingset.js";
@@ -12,9 +13,13 @@ import { Button } from "./Button";
 import { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { ParameterChangeFormSection } from "./ParameterChangeForm";
 import { DepositSection } from "./DepositSection";
-import { paramOptions } from "../config/agoric/params";
+import { makeParamOptions } from "../config/agoric/params";
 import type { ParameterChangeTypeOption } from "../types/form";
 import { TitleDescriptionInputs } from "./TitleDescriptionInputs";
+import { swingSetParamsQuery } from "../lib/queries";
+import { useQuery } from "@tanstack/react-query";
+import { selectStorageCostDenom } from "../lib/selectors";
+import { useNetwork } from "../hooks/useNetwork";
 
 type BaseProposalArgs = {
   title: string;
@@ -24,9 +29,11 @@ type BaseProposalArgs = {
 
 export type ProposalArgs = BaseProposalArgs & ProposalDetail;
 
-export type QueryType = ReturnType<(typeof paramOptions)[number]["query"]>;
+export type QueryType = ReturnType<
+  ReturnType<typeof makeParamOptions>[number]["query"]
+>;
 export type SelectorReturnType = ReturnType<
-  (typeof paramOptions)[number]["selector"]
+  ReturnType<typeof makeParamOptions>[number]["selector"]
 >;
 
 export type ProposalDetail =
@@ -54,6 +61,7 @@ interface ProposalFormMethods {
 
 const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
   ({ title, description, handleSubmit, msgType, governanceForumLink }, ref) => {
+    const { api } = useNetwork();
     const [evals, setEvals] = useState<CoreEval[]>([]);
     const formRef = useRef<HTMLFormElement>(null);
     const codeInputRef = useRef<{ reset: () => void } | null>(null);
@@ -99,6 +107,12 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
       throw new Error("Error reading form data.");
     };
 
+    const swingsetParams = useQuery(swingSetParamsQuery(api));
+    const feeDenom = useMemo(
+      () => selectStorageCostDenom(swingsetParams),
+      [swingsetParams],
+    );
+
     return (
       <form ref={formRef} className="" onSubmit={onSubmit}>
         <div className="space-y-12 sm:space-y-16">
@@ -111,7 +125,9 @@ const ProposalForm = forwardRef<ProposalFormMethods, ProposalFormProps>(
                 <ParameterChangeFormSection<QueryType, SelectorReturnType>
                   ref={paramChangeRef}
                   options={
-                    paramOptions as unknown as ParameterChangeTypeOption<
+                    makeParamOptions(
+                      feeDenom,
+                    ) as unknown as ParameterChangeTypeOption<
                       QueryType,
                       SelectorReturnType
                     >[]

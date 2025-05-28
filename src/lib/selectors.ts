@@ -20,6 +20,14 @@ export const selectStorageCost = (
     : undefined;
 };
 
+export const selectStorageCostDenom = (
+  query: UseQueryResult<SwingSetParams, unknown>,
+) => {
+  const { isLoading, data } = query;
+  if (isLoading || !data) return undefined;
+  return data?.fee_unit_price[0].denom;
+};
+
 export const selectBeansPerUnit = (
   query: UseQueryResult<SwingSetParams, unknown>,
 ) => {
@@ -32,6 +40,14 @@ export const selectIstBalance = (
 ) => {
   if (!query?.data) return undefined;
   const itm = (query.data as BankBalances).find((x) => x.denom === "uist");
+  return itm ? BigInt(itm.amount) : undefined;
+};
+
+export const selectBldBalance = (
+  query: UseQueryResult<BankBalances, unknown>,
+) => {
+  if (!query?.data) return undefined;
+  const itm = (query.data as BankBalances).find((x) => x.denom === "ubld");
   return itm ? BigInt(itm.amount) : undefined;
 };
 

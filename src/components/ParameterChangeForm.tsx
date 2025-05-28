@@ -62,7 +62,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   };
 
   const feeUnit = useMemo(() => {
-    if (currentParams && match.transformColumn === "ist") {
+    if (currentParams && ["ist", "bld"].includes(match.transformColumn ?? "")) {
       const param = (currentParams as unknown as BeansPerUnit[]).find(
         (x: BeansPerUnit) => x.key === "feeUnit",
       );
@@ -71,14 +71,14 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     return null;
   }, [currentParams, match]);
 
-  const toIst = useCallback(
+  const toFeeUnit = useCallback(
     (value: string) => {
       if (feeUnit) return Number(value) / feeUnit;
       return value;
     },
     [feeUnit],
   );
-  const fromIst = useCallback(
+  const fromFeeUnit = useCallback(
     (value: string) => {
       if (feeUnit) return String(Number(value) * feeUnit);
       return value;
@@ -109,8 +109,8 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     if (!stagedParams) return;
     const newParams = [...stagedParams];
     let newVal: string;
-    if (match.transformColumn === "ist") {
-      newVal = fromIst(value);
+    if (["ist", "bld"].includes(match.transformColumn ?? "")) {
+      newVal = fromFeeUnit(value);
     } else {
       newVal = value;
     }
@@ -161,7 +161,9 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
               rows={stagedParams as unknown as RowValue[]}
               handleValueChanged={handleValueChanged}
               transformInput={
-                match.transformColumn === "ist" ? toIst : undefined
+                ["ist", "bld"].includes(match.transformColumn ?? "")
+                  ? toFeeUnit
+                  : undefined
               }
               valueKey={match.valueKey || ("value" as string)}
               inputType={match.inputType || "string"}

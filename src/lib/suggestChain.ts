@@ -16,18 +16,6 @@ export const stakeCurrency: FeeCurrency = {
   },
 };
 
-export const stableCurrency: FeeCurrency = {
-  coinDenom: "IST",
-  coinMinimalDenom: "uist",
-  coinDecimals: 6,
-  coinGeckoId: undefined,
-  gasPriceStep: {
-    low: 0,
-    average: 0,
-    high: 0,
-  },
-};
-
 export const bech32Config: Bech32Config = {
   bech32PrefixAccAddr: "agoric",
   bech32PrefixAccPub: "agoricpub",
@@ -71,8 +59,8 @@ const makeChainInfo = (
       coinType: AGORIC_COIN_TYPE,
     },
     bech32Config,
-    currencies: [stakeCurrency, stableCurrency],
-    feeCurrencies: [stableCurrency],
+    currencies: [stakeCurrency],
+    feeCurrencies: [stakeCurrency],
     features: ["stargate", "ibc-transfer"],
   };
 };

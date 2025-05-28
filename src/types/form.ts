@@ -9,7 +9,7 @@ export type ParameterChangeTypeOption<T, R extends FormValue[] | undefined> = {
   subspace: string;
   key: string;
   valueKey?: string;
-  transformColumn?: "ist";
+  transformColumn?: "bld";
   headers: string[];
   query: (
     api: string | undefined,

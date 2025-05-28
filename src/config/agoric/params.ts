@@ -23,7 +23,7 @@ export type SelectorReturnType =
   | ReturnType<typeof selectTallyParams>
   | ReturnType<typeof selectVotingParams>;
 
-export const paramOptions = [
+export const makeParamOptions = (feeDenom?: "uist" | "ubld") => [
   {
     title: "SwingSet Bean Params",
     description:
@@ -31,8 +31,8 @@ export const paramOptions = [
     subspace: "swingset",
     key: "beans_per_unit",
     valueKey: "beans",
-    transformColumn: "ist",
-    headers: ["Key", "Beans", "IST"],
+    transformColumn: feeDenom === "uist" ? "ist" : "bld",
+    headers: ["Key", "Beans", feeDenom === "uist" ? "IST" : "BLD"],
     inputType: "number",
     query: swingSetParamsQuery,
     selector: selectBeansPerUnit,
