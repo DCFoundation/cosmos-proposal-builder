@@ -4,7 +4,6 @@ import qs from "query-string";
 import { navigate, useSearch } from "wouter/use-location";
 import { classNames } from "../utils/classNames";
 import { updateSearchString } from "../utils/updateSearchString";
-import { Footer } from "./Footer.tsx";
 
 interface TabsProps {
   tabs: {
@@ -146,9 +145,6 @@ const Tabs = ({ tabs }: TabsProps) => {
                     </Tab>
                   ))}
                 </Tab.List>
-              </div>
-              <div className={"self-end hidden md:flex"}>
-                <Footer />
               </div>
             </div>
           </div>

@@ -3,7 +3,7 @@
 
 const manifestBundleRef = {
   bundleID:
-    "b1-4fa91236698b96550e441179909297b8df96deea6a53bd3d5ae27415d0cab5cf620b8243a70e82a0c27807da572bf90a2094e169cb872e72fa975988b0a8257c"
+    "b1-c016d741a13041e8eefbd05fc5f645113e10beba55fdce2d5ed979bbb1c95077cf2edbe359d588e28bf68d837665458e65c1d534d32f090125951458c461a829"
 };
 const getManifestCall = harden([
   "getManifestForPriceFeed",
@@ -22,7 +22,7 @@ const getManifestCall = harden([
       maxSubmissionCount: 1000,
       maxSubmissionValue:
         115792089237316195423570985008687907853269984665640564039457584007913129639936n,
-      minSubmissionCount: 3,
+      minSubmissionCount: 3, // TODO: parameterize
       minSubmissionValue: 1n,
       restartDelay: 1,
       timeout: 10,
@@ -38,7 +38,7 @@ const getManifestCall = harden([
       "agoric1w8wktaur4zf8qmmtn3n7x3r0jhsjkjntcm3u6h",
     ],
     priceAggregatorRef: {
-      bundleID: "b1-991f5fece438a302e710b2612f67a5bafd23362dc6e1a27228e3b6be3775cb07ef1d1456f3259256dc572effb7c671d8c882a3251b7551bf08e7f93f7d4c71e1",
+      bundleID: "b1-eca5ebeecb317450e049b450fa6449287844a324b0385cbc73e320adef79a168c71ffe441e95ef4ce7b4d15e62bb01ed87dace27d09646609ae3f20c5496a3e9",
     },
   },
 ]);
