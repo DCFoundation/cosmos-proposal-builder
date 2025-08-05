@@ -1,6 +1,5 @@
 import {
   forwardRef,
-  useCallback,
   useEffect,
   useImperativeHandle,
   useMemo,
@@ -15,8 +14,11 @@ import { useNetwork } from "../hooks/useNetwork";
 import { updateSearchString } from "../utils/updateSearchString";
 import { EditableTable, RowValue } from "./EditableTable";
 import { ParamsTypeSelector } from "./ParamsTypeSelector";
-import { BeansPerUnit } from "../types/swingset";
-import type { FormValue, ParameterChangeTypeOption } from "../types/form";
+import type {
+  FormValue,
+  ParameterChangeTypeDescriptor,
+  ValueTransformation,
+} from "../types/form";
 import { toast } from "react-toastify";
 import { NetworkDropdown } from "./NetworkDropdown.tsx";
 
@@ -25,22 +27,30 @@ type ParameterChangeFormMethods = {
 };
 
 type ParameterChangeFormProps<T, R extends FormValue[] | undefined> = {
-  options: ParameterChangeTypeOption<T, R>[];
+  paramDescriptors: ParameterChangeTypeDescriptor<T, R>[];
 };
 
 function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
-  { options }: ParameterChangeFormProps<T, R>,
+  { paramDescriptors }: ParameterChangeFormProps<T, R>,
   ref: React.ForwardedRef<ParameterChangeFormMethods>,
 ) {
   const { paramType } = qs.parse(useSearch());
   const { api } = useNetwork();
-  const match = options.find((x) => x.key === paramType) ?? options[0];
+  const activeParamDesc =
+    paramDescriptors.find((x) => x.key === paramType) ?? paramDescriptors[0];
   const [stagedParams, setStagedParams] = useState<FormValue[] | null>(null);
-  const paramsQuery = useQuery(match.query(api));
+  const paramsQuery = useQuery(activeParamDesc.query(api));
 
   const currentParams = useMemo(
-    () => match.selector(paramsQuery),
-    [paramsQuery, match],
+    () => activeParamDesc.selector(paramsQuery),
+    [paramsQuery, activeParamDesc],
+  );
+
+  const { transformValue, untransformValue, transformedLabel } = useMemo(
+    () =>
+      activeParamDesc.getTransformation?.(paramsQuery) ??
+      ({} as ValueTransformation<string, string | number>),
+    [paramsQuery, activeParamDesc],
   );
 
   useEffect(() => {
@@ -53,38 +63,13 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
     setStagedParams(null);
   }, [api]);
 
-  const handleFormTypeChange = (val: ParameterChangeTypeOption<T, R>) => {
+  const handleFormTypeChange = (val: ParameterChangeTypeDescriptor<T, R>) => {
     setStagedParams(null);
     if (!api) {
       toast.error("Please select a network!", { autoClose: 3000 });
     }
     navigate(updateSearchString({ paramType: val.key }));
   };
-
-  const feeUnit = useMemo(() => {
-    if (currentParams && match.transformColumn === "ist") {
-      const param = (currentParams as unknown as BeansPerUnit[]).find(
-        (x: BeansPerUnit) => x.key === "feeUnit",
-      );
-      return param ? Number(param.beans) : null;
-    }
-    return null;
-  }, [currentParams, match]);
-
-  const toIst = useCallback(
-    (value: string) => {
-      if (feeUnit) return Number(value) / feeUnit;
-      return value;
-    },
-    [feeUnit],
-  );
-  const fromIst = useCallback(
-    (value: string) => {
-      if (feeUnit) return String(Number(value) * feeUnit);
-      return value;
-    },
-    [feeUnit],
-  );
 
   useImperativeHandle(ref, () => ({
     reset: () => {
@@ -99,7 +84,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
         toast.error("No parameter changes to submit!", { autoClose: 3000 });
         throw new Error("No changes to submit.");
       }
-      const changes = match.submitFn(stagedParams);
+      const changes = activeParamDesc.submitFn(stagedParams);
       if (!changes) throw new Error("Error formatting changes");
       return changes;
     },
@@ -108,17 +93,12 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
   const handleValueChanged = (key: string, value: string) => {
     if (!stagedParams) return;
     const newParams = [...stagedParams];
-    let newVal: string;
-    if (match.transformColumn === "ist") {
-      newVal = fromIst(value);
-    } else {
-      newVal = value;
-    }
+    const newVal = untransformValue ? untransformValue(value) : value;
     newParams.forEach(({ key: candidate }, ix) => {
       if (candidate === key) {
         newParams[ix] = {
           key,
-          [match.valueKey || "value"]: newVal,
+          [activeParamDesc.valueKey || "value"]: newVal,
         };
       }
     });
@@ -137,9 +117,11 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
           <div className="flex">
             {api && (
               <ParamsTypeSelector
-                paramOptions={options}
+                paramDescriptors={paramDescriptors}
                 onChange={handleFormTypeChange}
-                initialSelected={match as ParameterChangeTypeOption<T, R>}
+                initialSelected={
+                  activeParamDesc as ParameterChangeTypeDescriptor<T, R>
+                }
               />
             )}
 
@@ -153,18 +135,17 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
             htmlFor="title"
             className="block text-sm font-medium text-blue"
           >
-            {match.title}
+            {activeParamDesc.title}
           </label>
           <div className={"w-full"}>
             <EditableTable
-              headers={match.headers as string[]}
+              headers={activeParamDesc.headers as string[]}
+              transformedLabel={transformedLabel}
               rows={stagedParams as unknown as RowValue[]}
               handleValueChanged={handleValueChanged}
-              transformInput={
-                match.transformColumn === "ist" ? toIst : undefined
-              }
-              valueKey={match.valueKey || ("value" as string)}
-              inputType={match.inputType || "string"}
+              transformValue={transformValue}
+              valueKey={activeParamDesc.valueKey || ("value" as string)}
+              inputType={activeParamDesc.inputType || "string"}
             />
           </div>
         </div>

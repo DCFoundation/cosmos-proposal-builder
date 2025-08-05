@@ -1,3 +1,4 @@
+import type { Coin } from "../types/bank";
 import { useState, forwardRef, useImperativeHandle, useMemo } from "react";
 import { TrashIcon } from "@heroicons/react/24/solid";
 import { bytesToSize } from "../utils/bytesToSize";
@@ -5,6 +6,7 @@ import { CodePreviewModal } from "./CodePreviewModal";
 import { DragDrop, DragDropProps } from "./DragDrop";
 import { IconButton } from "./IconButton";
 import { classNames } from "../utils/classNames";
+import { scaleToDenomBase } from "../utils/coin";
 
 interface CodeInputProps {
   label: string;
@@ -13,8 +15,8 @@ interface CodeInputProps {
   index?: number;
   prismTag: string;
   subtitle: DragDropProps["subtitle"];
-  costPerByte?: number;
-  istBalance?: bigint;
+  costPerByte?: [amount: number, denom: string];
+  accountBalances?: Coin[];
 }
 
 interface FileState {
@@ -25,7 +27,7 @@ interface FileState {
 
 export interface CodeInputMethods {
   reset: () => void;
-  getBundleCost?: () => number | null;
+  getBundleCost?: () => [amount: number, denom: string] | null;
 }
 
 const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
@@ -37,7 +39,7 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
       prismTag,
       subtitle,
       costPerByte,
-      istBalance,
+      accountBalances,
     },
     ref,
   ) => {
@@ -70,16 +72,17 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
     }));
 
     const bundleCost = useMemo(() => {
-      if (costPerByte && size) return costPerByte * size;
-      return null;
+      if (!costPerByte || !size) return null;
+      return [costPerByte[0] * size, costPerByte[1]] as typeof costPerByte;
     }, [costPerByte, size]);
 
     const remainingCost = useMemo(() => {
-      if (istBalance && bundleCost) {
-        return Math.max(bundleCost - Number(istBalance) / 10 ** 6, 0);
-      }
-      return bundleCost;
-    }, [bundleCost, istBalance]);
+      if (!bundleCost || !accountBalances) return bundleCost;
+      const [amount, denom] = bundleCost;
+      const denomBalance = accountBalances.find((x) => x.denom === denom);
+      if (!denomBalance) return bundleCost;
+      return Math.max(amount - Number(denomBalance.amount), 0);
+    }, [bundleCost, accountBalances]);
 
     return (
       <div className="flex flex-col">
@@ -93,7 +96,8 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
               afterEl={
                 costPerByte ? (
                   <p className="text-xs leading-5 text-gray-600">
-                    Upload Cost: {costPerByte} IST per byte
+                    Upload Cost: {scaleToDenomBase(costPerByte).join(" ")} per
+                    byte
                   </p>
                 ) : null
               }
@@ -128,7 +132,9 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
                 <div className="self-end">
                   <p className="mt-2 text-sm text-gray-600">
                     Upload Cost:{" "}
-                    <span className="font-medium">{bundleCost} IST</span>
+                    <span className="font-medium">
+                      {scaleToDenomBase(bundleCost).join(" ")}
+                    </span>
                   </p>
                   <p
                     className={classNames(

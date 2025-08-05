@@ -1,6 +1,6 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { SwingSetParams } from "../types/swingset";
-import type { BankBalances, DenomTrace } from "../types/bank";
+import type { Coin, BankBalances, DenomTrace } from "../types/bank";
 import { TallyParams, VotingParams, DepositParams } from "../types/gov";
 import { objectToArray } from "../utils/object";
 
@@ -10,14 +10,16 @@ export type SelectorFn<T, R> = (
 
 export const selectStorageCost = (
   query: UseQueryResult<SwingSetParams, unknown>,
-) => {
+): [amount: number, denom: string] | undefined => {
   const { isLoading, data } = query;
   if (isLoading || !data) return undefined;
-  const storageByte = data?.beans_per_unit.find((x) => x.key === "storageByte");
-  const feeUnit = data?.beans_per_unit.find((x) => x.key === "feeUnit");
-  return storageByte && feeUnit
-    ? Number(storageByte.beans) / Number(feeUnit.beans)
-    : undefined;
+  const feeUnit = data.fee_unit_price?.[0] as Coin | undefined;
+  const beansPerFeeUnit = data.beans_per_unit.find((x) => x.key === "feeUnit");
+  const beansPerByte = data.beans_per_unit.find((x) => x.key === "storageByte");
+  if (!feeUnit || !beansPerFeeUnit || !beansPerByte) return undefined;
+  const feeUnitsPerByte =
+    Number(beansPerByte.beans) / Number(beansPerFeeUnit.beans);
+  return [feeUnitsPerByte * Number(feeUnit.amount), feeUnit.denom];
 };
 
 export const selectBeansPerUnit = (
@@ -27,19 +29,13 @@ export const selectBeansPerUnit = (
   return query.data?.beans_per_unit;
 };
 
-export const selectIstBalance = (
+export const selectCoinBalance = (
   query: UseQueryResult<BankBalances, unknown>,
+  denom: string,
 ) => {
   if (!query?.data) return undefined;
-  const itm = (query.data as BankBalances).find((x) => x.denom === "uist");
-  return itm ? BigInt(itm.amount) : undefined;
-};
-
-export const selectBldCoins = (
-  query: UseQueryResult<BankBalances, unknown>,
-) => {
-  if (!query?.data) return undefined;
-  return (query.data as BankBalances).filter((x) => x.denom === "ubld");
+  const coin = (query.data as BankBalances).find((x) => x.denom === denom);
+  return coin;
 };
 
 export const selectVotingParams = (

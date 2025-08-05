@@ -17,7 +17,7 @@ import {
 import { isValidBundle } from "../../utils/validate";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { useWatchBundle } from "../../hooks/useWatchBundle";
-import { coinsUnit, renderCoins } from "../../utils/coin.ts";
+import { coinIsGTE, renderCoins } from "../../utils/coin.ts";
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 
 import {
@@ -25,7 +25,7 @@ import {
   depositParamsQuery,
   votingParamsQuery,
 } from "../../lib/queries.ts";
-import { selectBldCoins } from "../../lib/selectors.ts";
+import { selectCoinBalance } from "../../lib/selectors.ts";
 import { DepositParams, VotingParams } from "../../types/gov.ts";
 
 const Agoric = () => {
@@ -40,10 +40,21 @@ const Agoric = () => {
   });
 
   const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
-  const bldCoins = useMemo(
-    () => selectBldCoins(accountBalances),
-    [accountBalances],
-  );
+  const { minDeposit } = useQueries({
+    queries: [depositParamsQuery(api), votingParamsQuery(api)],
+    combine: (
+      results: [
+        UseQueryResult<DepositParams, unknown>,
+        UseQueryResult<VotingParams, unknown>,
+      ],
+    ) => {
+      const [deposit, voting] = results;
+      return {
+        minDeposit: deposit.data?.min_deposit,
+        votingPeriod: voting.data?.voting_period,
+      };
+    },
+  });
 
   const signAndBroadcast = useMemo(
     () => makeSignAndBroadcast(stargateClient, walletAddress, netName),
@@ -130,69 +141,61 @@ const Agoric = () => {
   }
   const [alertBox, setAlertBox] = useState(true);
 
-  const { minDeposit } = useQueries({
-    queries: [depositParamsQuery(api), votingParamsQuery(api)],
-    combine: (
-      results: [
-        UseQueryResult<DepositParams, unknown>,
-        UseQueryResult<VotingParams, unknown>,
-      ],
-    ) => {
-      const [deposit, voting] = results;
-      return {
-        minDeposit: deposit.data?.min_deposit,
-        votingPeriod: voting.data?.voting_period,
-      };
-    },
-  });
+  const canDeposit = useMemo(
+    () =>
+      !minDeposit ||
+      minDeposit.some((cost) => {
+        const balance = selectCoinBalance(accountBalances, cost.denom);
+        return balance && coinIsGTE(balance, cost);
+      }),
+    [minDeposit, accountBalances],
+  );
 
   return (
     <>
-      {minDeposit &&
-        (!bldCoins || coinsUnit(bldCoins) < coinsUnit(minDeposit)) &&
-        alertBox && (
-          <div
-            className={
-              "flex justify-center w-full max-w-7xl px-2 py-2 m-auto bg-white rounded-lg -mb-5"
-            }
-          >
-            <div className={"basis-full"}>
-              <div
-                className={
-                  "toast text-center bg-lightblue2 p-4 text-blue font-light rounded-lg flex justify-between items-center"
-                }
-              >
-                <div className={"basis-auto grow pr-4"}>
-                  You need to have{" "}
-                  <span className={"text-red font-black"}>
-                    {renderCoins(minDeposit)}
-                  </span>{" "}
-                  in your wallet to submit this action
-                </div>
-                <div className={"basis-auto"}>
-                  <svg
-                    width="32"
-                    height="32"
-                    viewBox="0 0 32 32"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                    className={"cursor-pointer"}
-                    onClick={() => setAlertBox(false)}
-                  >
-                    <rect width="32" height="32" rx="6" fill="white" />
-                    <path
-                      d="M20.5 11.5L11.5 20.5M11.5 11.5L20.5 20.5"
-                      stroke="#0F3941"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </div>
+      {!canDeposit && alertBox && (
+        <div
+          className={
+            "flex justify-center w-full max-w-7xl px-2 py-2 m-auto bg-white rounded-lg -mb-5"
+          }
+        >
+          <div className={"basis-full"}>
+            <div
+              className={
+                "toast text-center bg-lightblue2 p-4 text-blue font-light rounded-lg flex justify-between items-center"
+              }
+            >
+              <div className={"basis-auto grow pr-4"}>
+                You need to have{" "}
+                <span className={"text-red font-black"}>
+                  {renderCoins(minDeposit!)}
+                </span>{" "}
+                in your wallet to submit this action
+              </div>
+              <div className={"basis-auto"}>
+                <svg
+                  width="32"
+                  height="32"
+                  viewBox="0 0 32 32"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={"cursor-pointer"}
+                  onClick={() => setAlertBox(false)}
+                >
+                  <rect width="32" height="32" rx="6" fill="white" />
+                  <path
+                    d="M20.5 11.5L11.5 20.5M11.5 11.5L20.5 20.5"
+                    stroke="#0F3941"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
             </div>
           </div>
-        )}
+        </div>
+      )}
       <Tabs
         tabs={[
           {
@@ -288,7 +291,7 @@ const Agoric = () => {
                 description="This is a governance proposal to change chain configuration parameters."
                 governanceForumLink="https://community.agoric.com/c/governance/parameter-changes/16"
                 msgType="parameterChangeProposal"
-                // XXX paramOptions should be passed in as prop
+                // XXX paramDescriptors should be passed in as prop
               />
             ),
           },
