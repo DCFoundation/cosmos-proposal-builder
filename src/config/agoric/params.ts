@@ -67,7 +67,7 @@ export const paramDescriptors = [
           transformedLabel,
           feeUnitCoin.denom,
         );
-        return Math.round(beans);
+        return `${Math.round(beans)}`;
       };
       return { transformedLabel, transformValue, untransformValue };
     },
