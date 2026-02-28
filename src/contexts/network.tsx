@@ -10,7 +10,7 @@ const _netNames = [
   "ollinet",
   "xnet",
   "emerynet",
-  "main",
+  // Temporarily disabled to keep deploy-preview testing off mainnet.
 ] as const;
 export type NetName = (typeof _netNames)[number];
 
