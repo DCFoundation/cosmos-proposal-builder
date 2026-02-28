@@ -12,6 +12,7 @@ import {
   votingParamsQuery,
   tallyParamsQuery,
   depositParamsQuery,
+  mintParamsQuery,
   distributionParamsQuery,
   stakingParamsQuery,
   ibcDenomTracesQuery,
@@ -186,6 +187,33 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
               "denom": "ubld",
             },
           ],
+        }
+      `);
+    });
+  });
+
+  describe("mintParamsQuery Query", () => {
+    it("should return mint inflation params", async ({
+      api,
+      wrapper,
+    }: QueryTestContext) => {
+      const { result, waitFor } = renderHook(
+        () => useQuery(mintParamsQuery(api)),
+        {
+          wrapper,
+        },
+      );
+
+      await waitFor(() => result.current.isSuccess);
+      expect(result.current.data).toBeDefined();
+      expect(result.current.data).toMatchInlineSnapshot(`
+        {
+          "blocks_per_year": "6311520",
+          "goal_bonded": "0.670000000000000000",
+          "inflation_max": "0.050000000000000000",
+          "inflation_min": "0.050000000000000000",
+          "inflation_rate_change": "0.130000000000000000",
+          "mint_denom": "ubld",
         }
       `);
     });

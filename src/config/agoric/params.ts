@@ -3,9 +3,11 @@ import {
   swingSetParamsQuery,
   tallyParamsQuery,
   votingParamsQuery,
+  mintParamsQuery,
 } from "../../lib/queries";
 import {
   selectBeansPerUnit,
+  selectMintParams,
   selectTallyParams,
   selectVotingParams,
 } from "../../lib/selectors";
@@ -13,17 +15,25 @@ import type { Coin } from "../../types/bank";
 import { scaleToDenomBase, scaleFromDenomBase } from "../../utils/coin";
 import { arrayToObject } from "../../utils/object";
 import { SwingSetParams } from "../../types/swingset";
-import { TallyParams, VotingParams } from "../../types/gov";
+import { MintParams, TallyParams, VotingParams } from "../../types/gov";
 
 export type QueryType =
   | ReturnType<typeof swingSetParamsQuery>
   | ReturnType<typeof tallyParamsQuery>
-  | ReturnType<typeof votingParamsQuery>;
+  | ReturnType<typeof votingParamsQuery>
+  | ReturnType<typeof mintParamsQuery>;
 
 export type SelectorReturnType =
   | ReturnType<typeof selectBeansPerUnit>
   | ReturnType<typeof selectTallyParams>
-  | ReturnType<typeof selectVotingParams>;
+  | ReturnType<typeof selectVotingParams>
+  | ReturnType<typeof selectMintParams>;
+
+const mintParamKeyMap: Record<string, string> = {
+  inflation_min: "InflationMin",
+  inflation_max: "InflationMax",
+  inflation_rate_change: "InflationRateChange",
+};
 
 export const paramDescriptors = [
   {
@@ -129,5 +139,28 @@ export const paramDescriptors = [
   } as ParameterChangeTypeDescriptor<
     VotingParams,
     ReturnType<typeof selectVotingParams>
+  >,
+  {
+    title: "Mint Parameters",
+    description: "Configure mint inflation parameters.",
+    subspace: "mint",
+    key: "mint_params",
+    valueKey: undefined, // defaults to value
+    transformColumn: undefined,
+    headers: ["Key", "Value"],
+    inputType: "string",
+    query: mintParamsQuery,
+    selector: selectMintParams,
+    submitFn: (values) =>
+      (values as { key: string; value: string }[])
+        .map(({ key, value }) => ({
+          subspace: "mint",
+          key: mintParamKeyMap[key],
+          value: JSON.stringify(value),
+        }))
+        .filter(({ key }) => !!key),
+  } as ParameterChangeTypeDescriptor<
+    MintParams,
+    ReturnType<typeof selectMintParams>
   >,
 ];
