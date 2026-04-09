@@ -42,6 +42,24 @@ export const makeSignAndBroadcast =
         makeFeeObject({ gas }),
       );
       assertIsDeliverTxSuccess(txResult);
+      // Poll until the node confirms the transaction is indexed, so that
+      // state changes from this block are available for subsequent simulate/
+      // execute calls (e.g. chunk submissions after a manifest).
+      const { transactionHash } = txResult;
+      const pollIntervalMs = 1_000;
+      const maxAttempts = 30;
+      for (let i = 0; i < maxAttempts; i++) {
+        const indexed = await stargateClient.getTx(transactionHash);
+        if (indexed) {
+          if (indexed.code !== 0) {
+            throw new Error(
+              `Transaction ${transactionHash} failed on-chain with code ${indexed.code}`,
+            );
+          }
+          break;
+        }
+        await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));
+      }
     } catch (e) {
       toast.update(toastId, {
         render: parseError(e as Error),
