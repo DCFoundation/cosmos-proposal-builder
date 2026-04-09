@@ -17,7 +17,11 @@ vi.mock("@paralleldrive/cuid2", () => ({
 }));
 
 describe("makeSignAndBroadcast Unit Tests", () => {
-  let mockStargateClient: { simulate: Mock; signAndBroadcast: Mock };
+  let mockStargateClient: {
+    simulate: Mock;
+    signAndBroadcast: Mock;
+    getTx: Mock;
+  };
   let walletAddress: string;
   let netName: string;
   let proposalMsg: EncodeObject;
@@ -28,6 +32,7 @@ describe("makeSignAndBroadcast Unit Tests", () => {
     mockStargateClient = {
       simulate: vi.fn(),
       signAndBroadcast: vi.fn(),
+      getTx: vi.fn(),
     };
 
     walletAddress = "agoric12345";
@@ -45,11 +50,13 @@ describe("makeSignAndBroadcast Unit Tests", () => {
     const MOCK_GAS = 1000;
     const mockTxResult = {
       code: 0,
+      transactionHash: "DEADBEEF",
       events: [],
     };
 
     mockStargateClient.simulate.mockResolvedValue(MOCK_GAS);
     mockStargateClient.signAndBroadcast.mockResolvedValue(mockTxResult);
+    mockStargateClient.getTx.mockResolvedValue({ code: 0 });
 
     const signAndBroadcast = makeSignAndBroadcast(
       // @ts-expect-error mock stargateClient
