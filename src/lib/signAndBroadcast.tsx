@@ -41,6 +41,7 @@ export const makeSignAndBroadcast =
         [proposalMsg],
         makeFeeObject({ gas }),
       );
+      console.info('txResult', txResult);
       assertIsDeliverTxSuccess(txResult);
       // Poll until the node confirms the transaction is indexed, so that
       // state changes from this block are available for subsequent simulate/
@@ -50,6 +51,7 @@ export const makeSignAndBroadcast =
       const maxAttempts = 30;
       for (let i = 0; i < maxAttempts; i++) {
         const indexed = await stargateClient.getTx(transactionHash);
+        console.info('IndexedTx', indexed);
         if (indexed) {
           if (indexed.code !== 0) {
             throw new Error(
