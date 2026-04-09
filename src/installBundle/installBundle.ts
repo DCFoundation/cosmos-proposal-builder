@@ -185,6 +185,7 @@ export const installBundle = async (
     }
 
     for (let i = 0; i < chunks.length; i += 1) {
+      await new Promise(resolve => setTimeout(resolve, 15_000));
       const chunk = chunks[i];
       const proposalMsg = makeSendChunkMsg({
         chunkedArtifactId,
