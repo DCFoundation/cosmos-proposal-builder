@@ -59,8 +59,14 @@ const Agoric = () => {
     clipboard: window.navigator.clipboard,
   });
 
+  const enableChunking = useMemo(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.has("enable-chunking");
+  }, []);
+
   const swingSetParams = useQuery(swingSetParamsQuery(api));
   const chunkSizeLimit = (({ isLoading, data }) => {
+    if (!enableChunking) return Infinity;
     if (isLoading || !data) {
       return Infinity;
     }
