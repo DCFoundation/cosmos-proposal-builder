@@ -63,7 +63,7 @@ const EditableTable = ({
   const shouldTransform = typeof transformValue === "function";
 
   const resolvedHeaders = shouldTransform
-    ? [...headers, transformedLabel ?? (headers.at(-1) as string)]
+    ? [...headers, transformedLabel ?? (headers[headers.length - 1] as string)]
     : headers;
 
   const renderRow = (row: RowValue) => {
