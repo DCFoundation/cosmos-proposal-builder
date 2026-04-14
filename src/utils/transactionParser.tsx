@@ -45,6 +45,9 @@ export function parseError(error: Error) {
   if (error.message.includes("proposal description cannot be blank")) {
     return "Proposal description cannot be blank.";
   }
+  if (error.message.includes("unknown subspace")) {
+    return "This parameter change type is not supported on this network.";
+  }
 
   return error.message;
 }

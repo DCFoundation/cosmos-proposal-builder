@@ -10,16 +10,32 @@ import { StdFee } from "@cosmjs/amino";
 import { fromBech32 } from "@cosmjs/encoding";
 import { coins, Registry } from "@cosmjs/proto-signing";
 import { defaultRegistryTypes } from "@cosmjs/stargate";
+import { MsgSubmitProposal as GovV1MsgSubmitProposal } from "cosmjs-types/cosmos/gov/v1/tx";
 import { TextProposal } from "cosmjs-types/cosmos/gov/v1beta1/gov";
 import { ParameterChangeProposal } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { Any } from "cosmjs-types/google/protobuf/any";
 import type { ParamChange } from "cosmjs-types/cosmos/params/v1beta1/params";
 import { CommunityPoolSpendProposal } from "cosmjs-types/cosmos/distribution/v1beta1/distribution";
+import { MsgUpdateParams as MintMsgUpdateParams } from "cosmjs-types/cosmos/mint/v1beta1/tx";
+import type { MintParams } from "../types/gov";
+
+const toLegacyDecAtomics = (value: string) => {
+  const trimmed = value.trim();
+  const match = trimmed.match(/^(-?)(\d+)(?:\.(\d+))?$/);
+  if (!match) throw new Error(`Invalid decimal value: ${value}`);
+  const [, sign, whole, frac = ""] = match;
+  if (frac.length > 18) {
+    throw new Error("Decimal values support up to 18 fractional digits.");
+  }
+  const atomics = `${whole}${frac.padEnd(18, "0")}`.replace(/^0+(?=\d)/, "");
+  return `${sign}${atomics}`;
+};
 
 export const registry = new Registry([
   ...defaultRegistryTypes,
   ["/agoric.swingset.MsgInstallBundle", MsgInstallBundle],
   ["/agoric.swingset.MsgSendChunk", MsgSendChunk],
+  ["/cosmos.gov.v1.MsgSubmitProposal", GovV1MsgSubmitProposal],
 ]);
 
 export const makeCommunityPoolSpendProposalMsg = ({
@@ -152,6 +168,57 @@ export const makeParamChangeProposalMsg = ({
     ...(deposit &&
       Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
   },
+});
+
+export interface MintUpdateParamsProposalArgs {
+  title: string;
+  description: string;
+  proposer: string;
+  authority: string;
+  params: MintParams;
+  deposit?: number | string;
+}
+
+export const makeMintUpdateParamsProposalMsg = ({
+  title,
+  description,
+  proposer,
+  authority,
+  params,
+  deposit = 1000000,
+}: MintUpdateParamsProposalArgs) => ({
+  typeUrl: "/cosmos.gov.v1.MsgSubmitProposal",
+  value: GovV1MsgSubmitProposal.fromPartial({
+    messages: [
+      Any.fromPartial({
+        typeUrl: "/cosmos.mint.v1beta1.MsgUpdateParams",
+        value: Uint8Array.from(
+          MintMsgUpdateParams.encode(
+            MintMsgUpdateParams.fromPartial({
+              authority,
+              params: {
+                mintDenom: params.mint_denom,
+                inflationRateChange: toLegacyDecAtomics(
+                  params.inflation_rate_change,
+                ),
+                inflationMax: toLegacyDecAtomics(params.inflation_max),
+                inflationMin: toLegacyDecAtomics(params.inflation_min),
+                goalBonded: toLegacyDecAtomics(params.goal_bonded),
+                blocksPerYear: BigInt(params.blocks_per_year),
+              },
+            }),
+          ).finish(),
+        ),
+      }),
+    ],
+    proposer,
+    ...(deposit &&
+      Number(deposit) && { initialDeposit: coins(deposit, "ubld") }),
+    metadata: "",
+    title,
+    summary: description,
+    expedited: false,
+  }),
 });
 
 export interface MsgInstallArgs {

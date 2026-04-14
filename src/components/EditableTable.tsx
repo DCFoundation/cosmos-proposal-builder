@@ -13,6 +13,7 @@ interface EditableTableProps {
   transformValue?: (value: string) => string | number;
   valueKey: string;
   inputType?: HTMLInputElement["type"];
+  readOnlyKeys?: string[];
 }
 
 type InputRefs = {
@@ -27,14 +28,22 @@ const EditableTable = ({
   transformValue,
   valueKey = "value",
   inputType = "number",
+  readOnlyKeys = [],
 }: EditableTableProps) => {
   const tableRef = useRef<HTMLTableElement>(null);
   const inputRefs = useRef<InputRefs>({});
   const [editingKey, setEditingKey] = useState<string | undefined>(undefined);
 
+  const commitEdit = (key: string) => {
+    const value = inputRefs.current[key]?.value;
+    if (value === undefined) return;
+    handleValueChanged(key, value);
+    setEditingKey(undefined);
+  };
+
   useClickOutside(tableRef, () => {
     if (editingKey) {
-      setEditingKey(undefined);
+      commitEdit(editingKey);
     }
   });
 
@@ -54,9 +63,7 @@ const EditableTable = ({
     (key: string) => (e: React.KeyboardEvent<HTMLInputElement>) => {
       if (e.key === "Enter") {
         e.preventDefault();
-        if (!inputRefs.current[key]) throw new Error("Input ref not found.");
-        handleValueChanged(key, inputRefs.current[key]?.value as string);
-        setEditingKey(undefined);
+        commitEdit(key);
       }
     };
 
@@ -67,6 +74,7 @@ const EditableTable = ({
     : headers;
 
   const renderRow = (row: RowValue) => {
+    const isReadOnly = readOnlyKeys.includes(row.key);
     const projectedValue = shouldTransform
       ? transformValue(row[valueKey])
       : row[valueKey];
@@ -104,6 +112,9 @@ const EditableTable = ({
               <input
                 ref={(el) => (inputRefs.current[row.key] = el)}
                 onKeyDown={makeHandleKeyDown(row.key)}
+                onBlur={() => {
+                  if (editingKey === row.key) commitEdit(row.key);
+                }}
                 type={inputType}
                 min={inputType === "number" ? "0" : undefined}
                 //min="1e-12" // @todo, should be one bean (feeUnit)
@@ -122,23 +133,20 @@ const EditableTable = ({
         </td>
         <td className="relative whitespace-nowrap py-2.5 pl-3 pr-4 text-right text-sm font-medium">
           <button
+            disabled={isReadOnly}
             className="text-red hover:text-black w-10"
             onClick={(e) => {
               e.preventDefault();
+              if (isReadOnly) return;
               if (editingKey === row.key) {
-                if (!inputRefs?.current?.[row.key])
-                  throw new Error("Input ref not found.");
-                handleValueChanged(
-                  row.key,
-                  inputRefs.current[row.key]?.value as string,
-                );
-                setEditingKey(undefined);
+                commitEdit(row.key);
               } else {
+                if (editingKey) commitEdit(editingKey);
                 setEditingKey(row.key);
               }
             }}
           >
-            {editingKey !== row.key ? "Edit" : "Save"}
+            {isReadOnly ? "View" : editingKey !== row.key ? "Edit" : "Save"}
             <span className="sr-only">, {row.key}</span>
           </button>
         </td>

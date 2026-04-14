@@ -1,7 +1,12 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { SwingSetParams } from "../types/swingset";
 import type { Coin, BankBalances, DenomTrace } from "../types/bank";
-import { TallyParams, VotingParams, DepositParams } from "../types/gov";
+import {
+  TallyParams,
+  VotingParams,
+  DepositParams,
+  MintParams,
+} from "../types/gov";
 import { objectToArray } from "../utils/object";
 
 export type SelectorFn<T, R> = (
@@ -57,6 +62,25 @@ export const selectDepsoitParams = (
 ) => {
   if (!query?.data) return undefined;
   return objectToArray(query.data);
+};
+
+export const selectMintParams = (
+  query: UseQueryResult<MintParams, unknown>,
+) => {
+  if (!query?.data) return undefined;
+  const params = objectToArray(query.data);
+  if (!params) return undefined;
+  const keys = [
+    "mint_denom",
+    "inflation_min",
+    "inflation_max",
+    "inflation_rate_change",
+    "goal_bonded",
+    "blocks_per_year",
+  ];
+  return keys
+    .map((key) => params.find((param) => param.key === key))
+    .filter((param): param is { key: string; value: unknown } => !!param);
 };
 
 /** filter bank assets, so only ibc/* assets are returned */

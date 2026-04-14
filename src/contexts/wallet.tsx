@@ -13,6 +13,7 @@ import { useNetwork, NetName } from "../hooks/useNetwork";
 import { suggestChain } from "../lib/suggestChain";
 import { getNetConfigUrl } from "../lib/getNetworkConfig";
 import { registry } from "../lib/messageBuilder";
+import { toast } from "react-toastify";
 
 interface WalletContext {
   walletAddress: string | null;
@@ -55,6 +56,11 @@ export const WalletContextProvider = ({
   };
 
   const connectWallet = useCallback(async () => {
+    if (!netName) {
+      toast.error("Please select a network first.", { autoClose: 3000 });
+      return;
+    }
+
     setIsLoading(true);
     const { chainId, rpc } = await suggestChain(
       getNetConfigUrl(netName as NetName),

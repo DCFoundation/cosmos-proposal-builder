@@ -17,6 +17,7 @@ import type {
   VotingParams,
   DepositParams,
   TallyParams,
+  MintParams,
   DistributionParams,
   StakingParams,
 } from "../types/gov";
@@ -104,6 +105,18 @@ export const depositParamsQuery = (
     const res = await fetch(`${api}/cosmos/gov/v1beta1/params/deposit`);
     const data: GovParamsQueryResponse = await res.json();
     return data?.deposit_params;
+  },
+  enabled: !!api,
+});
+
+export const mintParamsQuery = (
+  api: string | undefined,
+): UseQueryOptions<MintParams, unknown> => ({
+  queryKey: ["mintParams", api],
+  queryFn: async (): Promise<MintParams> => {
+    const res = await fetch(`${api}/cosmos/mint/v1beta1/params`);
+    const data: { params: MintParams } = await res.json();
+    return data?.params;
   },
   enabled: !!api,
 });

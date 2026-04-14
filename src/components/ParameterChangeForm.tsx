@@ -146,6 +146,7 @@ function ParameterChangeFormSectionBase<T, R extends FormValue[] | undefined>(
               transformValue={transformValue}
               valueKey={activeParamDesc.valueKey || ("value" as string)}
               inputType={activeParamDesc.inputType || "string"}
+              readOnlyKeys={activeParamDesc.readOnlyKeys}
             />
           </div>
         </div>

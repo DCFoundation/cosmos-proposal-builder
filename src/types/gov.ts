@@ -15,6 +15,15 @@ export type TallyParams = {
   veto_threshold: string; // string (dec) "0.334000000000000000"
 };
 
+export type MintParams = {
+  mint_denom: string;
+  inflation_rate_change: string;
+  inflation_max: string;
+  inflation_min: string;
+  goal_bonded: string;
+  blocks_per_year: string;
+};
+
 export type GovParamsQueryResponse = {
   voting_params: VotingParams;
   deposit_params: DepositParams;

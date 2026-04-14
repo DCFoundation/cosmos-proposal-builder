@@ -20,6 +20,7 @@ export type ParameterChangeTypeDescriptor<
   valueKey?: string;
   transformColumn?: "ist";
   headers: string[];
+  readOnlyKeys?: string[];
   query: (
     api: string | undefined,
     walletAddress?: string,

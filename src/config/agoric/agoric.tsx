@@ -13,6 +13,7 @@ import {
   makeInstallBundleMsg,
   makeSendChunkMsg,
   makeParamChangeProposalMsg,
+  makeMintUpdateParamsProposalMsg,
   makeCommunityPoolSpendProposalMsg,
 } from "../../lib/messageBuilder";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
@@ -28,7 +29,7 @@ import {
   swingSetParamsQuery,
 } from "../../lib/queries.ts";
 import { selectCoinBalance } from "../../lib/selectors.ts";
-import { DepositParams, VotingParams } from "../../types/gov.ts";
+import { DepositParams, MintParams, VotingParams } from "../../types/gov.ts";
 
 const locale = "en";
 
@@ -46,6 +47,14 @@ const pluralRules = new Intl.PluralRules(locale);
 const pluralizeEn = (count: number, singular: string, plural: string) => {
   const category = pluralRules.select(count);
   return category === "one" ? `${count} ${singular}` : `${count} ${plural}`;
+};
+
+const parseSerializedValue = (value: string) => {
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
 };
 
 const Agoric = () => {
@@ -187,10 +196,60 @@ const Agoric = () => {
 
       if (msgType === "parameterChangeProposal") {
         if (vals.msgType !== "parameterChangeProposal") return;
-        proposalMsg = makeParamChangeProposalMsg({
-          ...vals,
-          proposer: walletAddress,
-        });
+        const isMintUpdate = vals.changes.some(
+          ({ subspace }) => subspace === "mint",
+        );
+        if (isMintUpdate) {
+          if (!api) {
+            toast.error("Please select a network!", { autoClose: 3000 });
+            throw new Error("api not found");
+          }
+          const [{ params }, { account }] = await Promise.all([
+            fetch(`${api}/cosmos/mint/v1beta1/params`).then((res) =>
+              res.json(),
+            ),
+            fetch(`${api}/cosmos/auth/v1beta1/module_accounts/gov`).then(
+              (res) => res.json(),
+            ),
+          ]);
+
+          const currentParams = params as MintParams;
+          const govAuthority = account?.base_account?.address as
+            | string
+            | undefined;
+          if (!govAuthority) {
+            throw new Error("Could not resolve gov module authority address.");
+          }
+
+          const patch = vals.changes.reduce<Partial<MintParams>>(
+            (acc, change) => {
+              const key = change.key as keyof MintParams;
+              const parsed = String(
+                parseSerializedValue(change.value as string),
+              );
+              acc[key] = parsed;
+              return acc;
+            },
+            {},
+          );
+          const nextParams = {
+            ...currentParams,
+            ...patch,
+          } as MintParams;
+          proposalMsg = makeMintUpdateParamsProposalMsg({
+            title: vals.title,
+            description: vals.description,
+            proposer: walletAddress,
+            deposit: vals.deposit,
+            authority: govAuthority,
+            params: nextParams,
+          });
+        } else {
+          proposalMsg = makeParamChangeProposalMsg({
+            ...vals,
+            proposer: walletAddress,
+          });
+        }
       }
       if (!proposalMsg) throw new Error("Error parsing query or inputs.");
 
