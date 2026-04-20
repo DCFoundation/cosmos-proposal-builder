@@ -23,10 +23,11 @@ describe("Agoric Config", () => {
     );
     expect(tabs).toEqual([
       "Text Proposal",
-      "CoreEval Proposal",
+      "CoreEval Proposal", 
       "Install Bundle",
       "Parameter Change Proposal",
       "Community Pool Spend",
+      "Gov v1 Parameters",
     ]);
   });
 

@@ -16,6 +16,7 @@ import {
   stakingParamsQuery,
   ibcDenomTracesQuery,
   ibcDenomHashQuery,
+  govV1ParamsQuery,
 } from "./queries";
 import { renderHook } from "@testing-library/react-hooks";
 
@@ -272,5 +273,49 @@ describe("React Query Hook Tests for RPC Endpoints", () => {
         '"Denom hash not found."',
       );
     });
+  });
+});
+
+describe("govV1ParamsQuery Query", () => {
+  it("should return governance v1 parameters with expected structure", async ({
+    api,
+    wrapper,
+  }: QueryTestContext) => {
+    const { result, waitFor } = renderHook(
+      () => useQuery(govV1ParamsQuery(api)),
+      { wrapper },
+    );
+
+    await waitFor(() => result.current.isSuccess);
+    expect(result.current.data).toBeDefined();
+
+    expect(Object.keys(result.current.data || {})).toEqual(
+      expect.arrayContaining([
+        "min_deposit",
+        "max_deposit_period",
+        "voting_period",
+        "quorum",
+        "threshold",
+        "veto_threshold",
+        "min_initial_deposit_ratio",
+        "proposal_cancel_ratio",
+        "expedited_voting_period",
+        "expedited_threshold",
+        "expedited_min_deposit",
+        "burn_vote_quorum",
+        "burn_proposal_deposit_prevote",
+        "burn_vote_veto",
+        "min_deposit_ratio"
+      ])
+    );
+
+    expect(typeof result.current.data?.voting_period).toBe("string");
+    expect(typeof result.current.data?.quorum).toBe("string");
+    expect(Array.isArray(result.current.data?.min_deposit)).toBe(true);
+    expect(typeof result.current.data?.burn_vote_quorum).toBe("boolean");
+    expect(typeof result.current.data?.min_deposit_ratio).toBe("string");
+    expect(typeof result.current.data?.proposal_cancel_ratio).toBe("string");
+
+    expect(result.current.data).toMatchSnapshot();
   });
 });
