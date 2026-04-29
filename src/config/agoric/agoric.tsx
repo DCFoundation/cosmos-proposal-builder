@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Code } from "../../components/inline";
 import { BundleForm, BundleFormArgs } from "../../components/BundleForm";
@@ -59,14 +59,50 @@ const Agoric = () => {
     clipboard: window.navigator.clipboard,
   });
 
-  const enableChunking = useMemo(() => {
+  const { enableChunking, chunkSizeOverride, invalidOverrideRaw } = useMemo(() => {
     const params = new URLSearchParams(window.location.search);
-    return params.has("enable-chunking");
+    if (!params.has("enable-chunking")) {
+      return {
+        enableChunking: false,
+        chunkSizeOverride: null,
+        invalidOverrideRaw: null,
+      };
+    }
+    const raw = params.get("enable-chunking");
+    if (raw === null || raw === "") {
+      return {
+        enableChunking: true,
+        chunkSizeOverride: null,
+        invalidOverrideRaw: null,
+      };
+    }
+    const parsed = Number(raw);
+    if (!Number.isInteger(parsed) || parsed <= 0) {
+      return {
+        enableChunking: true,
+        chunkSizeOverride: null,
+        invalidOverrideRaw: raw,
+      };
+    }
+    return {
+      enableChunking: true,
+      chunkSizeOverride: parsed,
+      invalidOverrideRaw: null,
+    };
   }, []);
+
+  useEffect(() => {
+    if (invalidOverrideRaw === null) return;
+    toast.warn(
+      `Ignoring invalid enable-chunking value ${JSON.stringify(invalidOverrideRaw)}; ` +
+        `expected a positive integer byte count. Falling back to chain config.`,
+    );
+  }, [invalidOverrideRaw]);
 
   const swingSetParams = useQuery(swingSetParamsQuery(api));
   const chunkSizeLimit = (({ isLoading, data }) => {
     if (!enableChunking) return Infinity;
+    if (chunkSizeOverride !== null) return chunkSizeOverride;
     if (isLoading || !data) {
       return Infinity;
     }
