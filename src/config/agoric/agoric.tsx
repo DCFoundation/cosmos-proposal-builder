@@ -59,37 +59,40 @@ const Agoric = () => {
     clipboard: window.navigator.clipboard,
   });
 
-  const { enableChunking, chunkSizeOverride, invalidOverrideRaw } = useMemo(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (!params.has("enable-chunking")) {
-      return {
-        enableChunking: false,
-        chunkSizeOverride: null,
-        invalidOverrideRaw: null,
-      };
-    }
-    const raw = params.get("enable-chunking");
-    if (raw === null || raw === "") {
+  const { enableChunking, chunkSizeOverride, invalidOverrideRaw } = useMemo(
+    () => {
+      const params = new URLSearchParams(window.location.search);
+      if (!params.has("enable-chunking")) {
+        return {
+          enableChunking: false,
+          chunkSizeOverride: null,
+          invalidOverrideRaw: null,
+        };
+      }
+      const raw = params.get("enable-chunking");
+      if (raw === null || raw === "") {
+        return {
+          enableChunking: true,
+          chunkSizeOverride: null,
+          invalidOverrideRaw: null,
+        };
+      }
+      const parsed = Number(raw);
+      if (!Number.isInteger(parsed) || parsed <= 0) {
+        return {
+          enableChunking: true,
+          chunkSizeOverride: null,
+          invalidOverrideRaw: raw,
+        };
+      }
       return {
         enableChunking: true,
-        chunkSizeOverride: null,
+        chunkSizeOverride: parsed,
         invalidOverrideRaw: null,
       };
-    }
-    const parsed = Number(raw);
-    if (!Number.isInteger(parsed) || parsed <= 0) {
-      return {
-        enableChunking: true,
-        chunkSizeOverride: null,
-        invalidOverrideRaw: raw,
-      };
-    }
-    return {
-      enableChunking: true,
-      chunkSizeOverride: parsed,
-      invalidOverrideRaw: null,
-    };
-  }, []);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (invalidOverrideRaw === null) return;
