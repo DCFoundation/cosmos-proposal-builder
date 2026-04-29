@@ -59,8 +59,8 @@ const Agoric = () => {
     clipboard: window.navigator.clipboard,
   });
 
-  const { enableChunking, chunkSizeOverride, invalidOverrideRaw } = useMemo(
-    () => {
+  const { enableChunking, chunkSizeOverride, invalidOverrideRaw } =
+    useMemo(() => {
       const params = new URLSearchParams(window.location.search);
       if (!params.has("enable-chunking")) {
         return {
@@ -90,9 +90,7 @@ const Agoric = () => {
         chunkSizeOverride: parsed,
         invalidOverrideRaw: null,
       };
-    },
-    [],
-  );
+    }, []);
 
   useEffect(() => {
     if (invalidOverrideRaw === null) return;
