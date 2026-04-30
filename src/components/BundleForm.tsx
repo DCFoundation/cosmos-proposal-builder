@@ -59,10 +59,14 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
         return;
       }
       const cost = codeInputRef.current?.getBundleCost?.();
-      const balance = cost
-        ? selectCoinBalance(accountBalances, cost[1])
-        : undefined;
-      if (cost?.[0] && (!balance || Number(balance.amount) < cost[0])) {
+      if (!cost) {
+        toast.error("Cannot verify funds yet. Please retry in a moment.", {
+          autoClose: 3000,
+        });
+        return;
+      }
+      const balance = selectCoinBalance(accountBalances, cost[1]);
+      if (cost[0] && (!balance || Number(balance.amount) < cost[0])) {
         toast.error("Insufficient funds to install bundle.", {
           autoClose: 3000,
         });

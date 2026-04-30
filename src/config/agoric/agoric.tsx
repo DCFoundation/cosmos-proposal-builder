@@ -19,7 +19,11 @@ import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { useWatchBundle } from "../../hooks/useWatchBundle";
 import { coinIsGTE, renderCoins } from "../../utils/coin.ts";
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { installBundle } from "../../installBundle";
+import {
+  installBundle,
+  calculateBundleCost,
+  calculateRemainingCost,
+} from "../../installBundle";
 
 import {
   accountBalancesQuery,
@@ -27,7 +31,7 @@ import {
   votingParamsQuery,
   swingSetParamsQuery,
 } from "../../lib/queries.ts";
-import { selectCoinBalance } from "../../lib/selectors.ts";
+import { selectCoinBalance, selectStorageCost } from "../../lib/selectors.ts";
 import { DepositParams, VotingParams } from "../../types/gov.ts";
 import { parseEnableChunking } from "./enableChunking";
 
@@ -140,6 +144,37 @@ const Agoric = () => {
       makeSendChunkMsg,
       signAndBroadcast,
       watchBundle,
+      validateCost: ({ compressedSize, chunkCount }) => {
+        const costPerByte = selectStorageCost(swingSetParams);
+        const balances = accountBalances.data;
+        if (!costPerByte || !balances) {
+          throw Object.assign(
+            new Error(
+              "Cannot verify funds: chain parameters or wallet balance not loaded yet. Please retry in a moment.",
+            ),
+            { autoCloseToast: 5000 },
+          );
+        }
+        const bundleCost = calculateBundleCost(costPerByte, compressedSize);
+        const remaining = calculateRemainingCost(bundleCost, balances);
+        if (!bundleCost || remaining === null || remaining <= 0) return;
+        const [required, denom] = bundleCost;
+        const available = Number(
+          selectCoinBalance(accountBalances, denom)?.amount ?? 0,
+        );
+        const txCount = chunkCount > 0 ? chunkCount + 1 : 1;
+        const txDescription =
+          chunkCount > 0
+            ? `the initial manifest transaction (of ${txCount} total)`
+            : "the bundle install transaction";
+        throw Object.assign(
+          new Error(
+            `Insufficient funds to submit ${txDescription}. ` +
+              `Required: ${required} ${denom}, available: ${available} ${denom}, short ${remaining} ${denom}.`,
+          ),
+          { autoCloseToast: 8000 },
+        );
+      },
       onProgress: (event) => {
         if (event.type !== "preflight") return;
         const compressionSavings =
