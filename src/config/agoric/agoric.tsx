@@ -29,6 +29,7 @@ import {
 } from "../../lib/queries.ts";
 import { selectCoinBalance } from "../../lib/selectors.ts";
 import { DepositParams, VotingParams } from "../../types/gov.ts";
+import { parseEnableChunking } from "./enableChunking";
 
 const locale = "en";
 
@@ -48,44 +49,6 @@ const pluralizeEn = (count: number, singular: string, plural: string) => {
   return category === "one" ? `${count} ${singular}` : `${count} ${plural}`;
 };
 
-type EnableChunkingState = {
-  enableChunking: boolean;
-  chunkSizeOverride: number | null;
-  invalidOverrideRaw: string | null;
-};
-
-export const parseEnableChunking = (search: string): EnableChunkingState => {
-  const params = new URLSearchParams(search);
-  if (!params.has("enable-chunking")) {
-    return {
-      enableChunking: false,
-      chunkSizeOverride: null,
-      invalidOverrideRaw: null,
-    };
-  }
-  const raw = params.get("enable-chunking");
-  if (raw === null || raw === "") {
-    return {
-      enableChunking: true,
-      chunkSizeOverride: null,
-      invalidOverrideRaw: null,
-    };
-  }
-  const parsed = Number(raw);
-  if (!Number.isInteger(parsed) || parsed <= 0) {
-    return {
-      enableChunking: true,
-      chunkSizeOverride: null,
-      invalidOverrideRaw: raw,
-    };
-  }
-  return {
-    enableChunking: true,
-    chunkSizeOverride: parsed,
-    invalidOverrideRaw: null,
-  };
-};
-
 const Agoric = () => {
   const { netName, networkConfig } = useNetwork();
   const { api } = useNetwork();
@@ -97,24 +60,25 @@ const Agoric = () => {
     clipboard: window.navigator.clipboard,
   });
 
-  const { enableChunking, chunkSizeOverride, invalidOverrideRaw } = useMemo(
+  const chunkingState = useMemo(
     () => parseEnableChunking(window.location.search),
     [],
   );
 
+  const warnedRef = useRef(false);
   useEffect(() => {
-    if (invalidOverrideRaw === null) return;
+    if (chunkingState.kind !== "invalid" || warnedRef.current) return;
+    warnedRef.current = true;
     toast.warn(
-      `Ignoring invalid enable-chunking value ${JSON.stringify(invalidOverrideRaw)}; ` +
-        `expected a positive integer byte count. Falling back to chain config.`,
-      { toastId: `enable-chunking-invalid-${invalidOverrideRaw}` },
+      `Ignoring invalid enable-chunking value ${JSON.stringify(chunkingState.raw)}; ` +
+        `expected a positive integer byte count. Using the chain's chunk_size_limit_bytes instead.`,
     );
-  }, [invalidOverrideRaw]);
+  }, [chunkingState]);
 
   const swingSetParams = useQuery(swingSetParamsQuery(api));
   const chunkSizeLimit = (({ isLoading, data }) => {
-    if (!enableChunking) return Infinity;
-    if (chunkSizeOverride !== null) return chunkSizeOverride;
+    if (chunkingState.kind === "disabled") return Infinity;
+    if (chunkingState.kind === "override") return chunkingState.bytes;
     if (isLoading || !data) {
       return Infinity;
     }
