@@ -56,7 +56,11 @@ export interface InstallBundleParams {
   >;
   watchBundle?: (bundleHash: string, height: number) => Promise<void>;
   onProgress?: (event: InstallBundleProgress) => void;
-  validateCost?: (info: { compressedSize: number; chunkCount: number }) => void;
+  validateCost?: (info: {
+    compressedSize: number;
+    chunked: boolean;
+    chunkCount?: number;
+  }) => void;
 }
 
 export interface InstallBundleResult {
@@ -96,17 +100,17 @@ export const installBundle = async (
   const shouldChunk = bundleJson.length > chunkSizeLimit;
   const chunkCount = shouldChunk
     ? Math.ceil(compressedBundleBytes.byteLength / chunkSizeLimit)
-    : 0;
+    : undefined;
   onProgress?.({
     type: "preflight",
     bundleHash: endoZipBase64Sha512,
     uncompressedSize,
     compressedSize,
     chunked: shouldChunk,
-    chunkCount: shouldChunk ? chunkCount : undefined,
+    chunkCount,
   });
 
-  validateCost?.({ compressedSize, chunkCount });
+  validateCost?.({ compressedSize, chunked: shouldChunk, chunkCount });
 
   let blockHeight: number | undefined;
 
@@ -238,7 +242,7 @@ export const installBundle = async (
     bundleHash: endoZipBase64Sha512,
     blockHeight,
     chunked: shouldChunk,
-    chunkCount: shouldChunk ? chunkCount : undefined,
+    chunkCount,
     compressedSize,
     uncompressedSize,
   };

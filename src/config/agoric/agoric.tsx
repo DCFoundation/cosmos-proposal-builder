@@ -17,12 +17,12 @@ import {
 } from "../../lib/messageBuilder";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { useWatchBundle } from "../../hooks/useWatchBundle";
-import { coinIsGTE, renderCoins } from "../../utils/coin.ts";
+import { coinIsGTE, renderCoins, scaleToDenomBase } from "../../utils/coin.ts";
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
 import {
   installBundle,
   calculateBundleCost,
-  calculateRemainingCost,
+  hasSufficientBalance,
 } from "../../installBundle";
 
 import {
@@ -144,7 +144,7 @@ const Agoric = () => {
       makeSendChunkMsg,
       signAndBroadcast,
       watchBundle,
-      validateCost: ({ compressedSize, chunkCount }) => {
+      validateCost: ({ compressedSize, chunked, chunkCount }) => {
         const costPerByte = selectStorageCost(swingSetParams);
         const balances = accountBalances.data;
         if (!costPerByte || !balances) {
@@ -152,27 +152,28 @@ const Agoric = () => {
             new Error(
               "Cannot verify funds: chain parameters or wallet balance not loaded yet. Please retry in a moment.",
             ),
-            { autoCloseToast: 5000 },
+            { autoCloseToast: 3000 },
           );
         }
         const bundleCost = calculateBundleCost(costPerByte, compressedSize);
-        const remaining = calculateRemainingCost(bundleCost, balances);
-        if (!bundleCost || remaining === null || remaining <= 0) return;
-        const [required, denom] = bundleCost;
+        if (hasSufficientBalance(bundleCost, balances) !== false) return;
+        const [required, denom] = bundleCost!;
         const available = Number(
           selectCoinBalance(accountBalances, denom)?.amount ?? 0,
         );
-        const txCount = chunkCount > 0 ? chunkCount + 1 : 1;
-        const txDescription =
-          chunkCount > 0
-            ? `the initial manifest transaction (of ${txCount} total)`
-            : "the bundle install transaction";
+        const [scaledRequired, scaledDenom] = scaleToDenomBase([
+          required,
+          denom,
+        ]);
+        const [scaledAvailable] = scaleToDenomBase([available, denom]);
+        const txContext = chunked
+          ? ` This bundle would ship in ${(chunkCount ?? 0) + 1} transactions.`
+          : "";
         throw Object.assign(
           new Error(
-            `Insufficient funds to submit ${txDescription}. ` +
-              `Required: ${required} ${denom}, available: ${available} ${denom}, short ${remaining} ${denom}.`,
+            `Insufficient funds. ${scaledRequired} ${scaledDenom} required, only ${scaledAvailable} ${scaledDenom} available.${txContext}`,
           ),
-          { autoCloseToast: 8000 },
+          { autoCloseToast: 3000 },
         );
       },
       onProgress: (event) => {

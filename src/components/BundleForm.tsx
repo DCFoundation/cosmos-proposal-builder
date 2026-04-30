@@ -15,7 +15,7 @@ import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
 import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
 
-import { selectStorageCost, selectCoinBalance } from "../lib/selectors";
+import { selectStorageCost } from "../lib/selectors";
 import { useWallet } from "../hooks/useWallet";
 
 export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
@@ -56,20 +56,6 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       e.preventDefault();
       if (!bundle) {
         toast.error("Bundle JSON not provided.", { autoClose: 3000 });
-        return;
-      }
-      const cost = codeInputRef.current?.getBundleCost?.();
-      if (!cost) {
-        toast.error("Cannot verify funds yet. Please retry in a moment.", {
-          autoClose: 3000,
-        });
-        return;
-      }
-      const balance = selectCoinBalance(accountBalances, cost[1]);
-      if (cost[0] && (!balance || Number(balance.amount) < cost[0])) {
-        toast.error("Insufficient funds to install bundle.", {
-          autoClose: 3000,
-        });
         return;
       }
       handleSubmit({ bundle });
