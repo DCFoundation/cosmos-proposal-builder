@@ -15,6 +15,7 @@ export {
 export type { BundleCost, CostPerByte } from "./balance";
 export {
   calculateBundleCost,
+  calculateInstallCost,
   calculateRemainingCost,
   hasSufficientBalance,
 } from "./balance";

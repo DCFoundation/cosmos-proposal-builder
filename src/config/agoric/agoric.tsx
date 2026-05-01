@@ -340,6 +340,7 @@ const Agoric = () => {
                 ref={bundleFormRef}
                 title="Install Bundle"
                 handleSubmit={handleBundle}
+                chunkSizeLimit={chunkSizeLimit}
                 description={
                   <>
                     The install bundle message deploys and installs an external

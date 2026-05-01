@@ -22,6 +22,50 @@ export const selectStorageCost = (
   return [feeUnitsPerByte * Number(feeUnit.amount), feeUnit.denom];
 };
 
+export type InstallCostRates = {
+  beansPerInboundTx: number;
+  beansPerMessage: number;
+  beansPerMessageByte: number;
+  beansPerStorageByte: number;
+  beansPerFeeUnit: number;
+  feeUnitAmount: number;
+  feeUnitDenom: string;
+};
+
+export const selectInstallCostRates = (
+  query: UseQueryResult<SwingSetParams, unknown>,
+): InstallCostRates | undefined => {
+  const { isLoading, data } = query;
+  if (isLoading || !data) return undefined;
+  const feeUnit = data.fee_unit_price?.[0] as Coin | undefined;
+  const beansBy = (key: string) =>
+    data.beans_per_unit.find((x) => x.key === key);
+  const inboundTx = beansBy("inboundTx");
+  const message = beansBy("message");
+  const messageByte = beansBy("messageByte");
+  const storageByte = beansBy("storageByte");
+  const feeUnitBean = beansBy("feeUnit");
+  if (
+    !feeUnit ||
+    !inboundTx ||
+    !message ||
+    !messageByte ||
+    !storageByte ||
+    !feeUnitBean
+  ) {
+    return undefined;
+  }
+  return {
+    beansPerInboundTx: Number(inboundTx.beans),
+    beansPerMessage: Number(message.beans),
+    beansPerMessageByte: Number(messageByte.beans),
+    beansPerStorageByte: Number(storageByte.beans),
+    beansPerFeeUnit: Number(feeUnitBean.beans),
+    feeUnitAmount: Number(feeUnit.amount),
+    feeUnitDenom: feeUnit.denom,
+  };
+};
+
 export const selectBeansPerUnit = (
   query: UseQueryResult<SwingSetParams, unknown>,
 ) => {

@@ -7,7 +7,11 @@ import { DragDrop, DragDropProps } from "./DragDrop";
 import { IconButton } from "./IconButton";
 import { classNames } from "../utils/classNames";
 import { scaleToDenomBase } from "../utils/coin";
-import { calculateBundleCost, calculateRemainingCost } from "../installBundle";
+import {
+  calculateBundleCost,
+  calculateRemainingCost,
+  type BundleCost,
+} from "../installBundle";
 
 interface CodeInputProps {
   label: string;
@@ -18,6 +22,8 @@ interface CodeInputProps {
   subtitle: DragDropProps["subtitle"];
   costPerByte?: [amount: number, denom: string];
   accountBalances?: Coin[];
+  bundleCost?: BundleCost | null;
+  remainingCost?: number | null;
 }
 
 interface FileState {
@@ -41,6 +47,8 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
       subtitle,
       costPerByte,
       accountBalances,
+      bundleCost: bundleCostProp,
+      remainingCost: remainingCostProp,
     },
     ref,
   ) => {
@@ -65,22 +73,28 @@ const CodeInput = forwardRef<CodeInputMethods, CodeInputProps>(
       reader.readAsText(file);
     };
 
+    const internalBundleCost = useMemo(
+      () => calculateBundleCost(costPerByte, size),
+      [costPerByte, size],
+    );
+
+    const bundleCost =
+      bundleCostProp !== undefined ? bundleCostProp : internalBundleCost;
+
+    const internalRemainingCost = useMemo(
+      () => calculateRemainingCost(internalBundleCost, accountBalances),
+      [internalBundleCost, accountBalances],
+    );
+
+    const remainingCost =
+      remainingCostProp !== undefined ? remainingCostProp : internalRemainingCost;
+
     useImperativeHandle(ref, () => ({
       reset: () => {
         setState({});
       },
       getBundleCost: () => bundleCost,
     }));
-
-    const bundleCost = useMemo(
-      () => calculateBundleCost(costPerByte, size),
-      [costPerByte, size],
-    );
-
-    const remainingCost = useMemo(
-      () => calculateRemainingCost(bundleCost, accountBalances),
-      [bundleCost, accountBalances],
-    );
 
     return (
       <div className="flex flex-col">

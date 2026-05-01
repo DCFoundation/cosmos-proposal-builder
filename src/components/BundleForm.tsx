@@ -3,6 +3,7 @@ import {
   forwardRef,
   useRef,
   useImperativeHandle,
+  useEffect,
   FormEvent,
   useMemo,
   ReactNode,
@@ -15,8 +16,17 @@ import { Button } from "./Button";
 import { useNetwork } from "../hooks/useNetwork";
 import { accountBalancesQuery, swingSetParamsQuery } from "../lib/queries";
 
-import { selectStorageCost, selectCoinBalance } from "../lib/selectors";
+import {
+  selectStorageCost,
+  selectCoinBalance,
+  selectInstallCostRates,
+} from "../lib/selectors";
 import { useWallet } from "../hooks/useWallet";
+import {
+  calculateInstallCost,
+  calculateRemainingCost,
+} from "../installBundle";
+import { gzip } from "../lib/compression";
 
 export type BundleFormArgs = Pick<MsgInstallBundle, "bundle">;
 
@@ -24,6 +34,7 @@ interface BundleFormProps {
   title: string;
   description: string | ReactNode;
   handleSubmit: (proposal: BundleFormArgs) => void;
+  chunkSizeLimit: number;
 }
 
 interface BundleFormMethods {
@@ -31,8 +42,14 @@ interface BundleFormMethods {
 }
 
 const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
-  ({ title, description, handleSubmit }, ref) => {
+  ({ title, description, handleSubmit, chunkSizeLimit }, ref) => {
     const [bundle, setBundle] = useState<BundleFormArgs["bundle"] | null>(null);
+    const [uncompressedSize, setUncompressedSize] = useState<
+      number | undefined
+    >(undefined);
+    const [compressedSize, setCompressedSize] = useState<number | undefined>(
+      undefined,
+    );
     const formRef = useRef<HTMLFormElement>(null);
     const codeInputRef = useRef<CodeInputMethods | null>(null);
     const { api } = useNetwork();
@@ -42,7 +59,44 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
       () => selectStorageCost(swingsetParams),
       [swingsetParams],
     );
+    const installCostRates = useMemo(
+      () => selectInstallCostRates(swingsetParams),
+      [swingsetParams],
+    );
     const accountBalances = useQuery(accountBalancesQuery(api, walletAddress));
+
+    useEffect(() => {
+      if (!bundle) {
+        setUncompressedSize(undefined);
+        setCompressedSize(undefined);
+        return;
+      }
+      const bytes = new TextEncoder().encode(bundle);
+      setUncompressedSize(bytes.byteLength);
+      let cancelled = false;
+      gzip(bytes).then((compressed) => {
+        if (!cancelled) setCompressedSize(compressed.byteLength);
+      });
+      return () => {
+        cancelled = true;
+      };
+    }, [bundle]);
+
+    const bundleCost = useMemo(
+      () =>
+        calculateInstallCost(
+          installCostRates,
+          uncompressedSize,
+          compressedSize,
+          chunkSizeLimit,
+        ),
+      [installCostRates, uncompressedSize, compressedSize, chunkSizeLimit],
+    );
+
+    const remainingCost = useMemo(
+      () => calculateRemainingCost(bundleCost, accountBalances?.data),
+      [bundleCost, accountBalances],
+    );
 
     useImperativeHandle(ref, () => ({
       reset: () => {
@@ -58,15 +112,14 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
         toast.error("Bundle JSON not provided.", { autoClose: 3000 });
         return;
       }
-      const cost = codeInputRef.current?.getBundleCost?.();
-      const balance = cost
-        ? selectCoinBalance(accountBalances, cost[1])
-        : undefined;
-      if (cost?.[0] && (!balance || Number(balance.amount) < cost[0])) {
-        toast.error("Insufficient funds to install bundle.", {
-          autoClose: 3000,
-        });
-        return;
+      if (bundleCost?.[0]) {
+        const balance = selectCoinBalance(accountBalances, bundleCost[1]);
+        if (!balance || Number(balance.amount) < bundleCost[0]) {
+          toast.error("Insufficient funds to install bundle.", {
+            autoClose: 3000,
+          });
+          return;
+        }
       }
       handleSubmit({ bundle });
     };
@@ -96,6 +149,8 @@ const BundleForm = forwardRef<BundleFormMethods, BundleFormProps>(
                     subtitle=".json files permitted"
                     costPerByte={costPerByte}
                     accountBalances={accountBalances?.data}
+                    bundleCost={bundleCost}
+                    remainingCost={remainingCost}
                   />
                 </div>
               </div>
