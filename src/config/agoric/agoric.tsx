@@ -17,9 +17,13 @@ import {
 } from "../../lib/messageBuilder";
 import { makeSignAndBroadcast } from "../../lib/signAndBroadcast";
 import { useWatchBundle } from "../../hooks/useWatchBundle";
-import { coinIsGTE, renderCoins } from "../../utils/coin.ts";
+import { coinIsGTE, renderCoins, scaleToDenomBase } from "../../utils/coin.ts";
 import { useQueries, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { installBundle } from "../../installBundle";
+import {
+  installBundle,
+  calculateBundleCost,
+  hasSufficientBalance,
+} from "../../installBundle";
 
 import {
   accountBalancesQuery,
@@ -27,7 +31,7 @@ import {
   votingParamsQuery,
   swingSetParamsQuery,
 } from "../../lib/queries.ts";
-import { selectCoinBalance } from "../../lib/selectors.ts";
+import { selectCoinBalance, selectStorageCost } from "../../lib/selectors.ts";
 import { DepositParams, VotingParams } from "../../types/gov.ts";
 import { parseEnableChunking } from "./enableChunking";
 
@@ -140,6 +144,38 @@ const Agoric = () => {
       makeSendChunkMsg,
       signAndBroadcast,
       watchBundle,
+      validateCost: ({ compressedSize, chunked, chunkCount }) => {
+        const costPerByte = selectStorageCost(swingSetParams);
+        const balances = accountBalances.data;
+        if (!costPerByte || !balances) {
+          throw Object.assign(
+            new Error(
+              "Cannot verify funds: chain parameters or wallet balance not loaded yet. Please retry in a moment.",
+            ),
+            { autoCloseToast: 3000 },
+          );
+        }
+        const bundleCost = calculateBundleCost(costPerByte, compressedSize);
+        if (hasSufficientBalance(bundleCost, balances) !== false) return;
+        const [required, denom] = bundleCost!;
+        const available = Number(
+          selectCoinBalance(accountBalances, denom)?.amount ?? 0,
+        );
+        const [scaledRequired, scaledDenom] = scaleToDenomBase([
+          required,
+          denom,
+        ]);
+        const [scaledAvailable] = scaleToDenomBase([available, denom]);
+        const txContext = chunked
+          ? ` This bundle would ship in ${(chunkCount ?? 0) + 1} transactions.`
+          : "";
+        throw Object.assign(
+          new Error(
+            `Insufficient funds. ${scaledRequired} ${scaledDenom} required, only ${scaledAvailable} ${scaledDenom} available.${txContext}`,
+          ),
+          { autoCloseToast: 3000 },
+        );
+      },
       onProgress: (event) => {
         if (event.type !== "preflight") return;
         const compressionSavings =
