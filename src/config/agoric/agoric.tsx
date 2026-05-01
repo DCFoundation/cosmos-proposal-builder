@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { Code } from "../../components/inline";
 import { BundleForm, BundleFormArgs } from "../../components/BundleForm";
@@ -29,6 +29,7 @@ import {
 } from "../../lib/queries.ts";
 import { selectCoinBalance } from "../../lib/selectors.ts";
 import { DepositParams, VotingParams } from "../../types/gov.ts";
+import { parseEnableChunking } from "./enableChunking";
 
 const locale = "en";
 
@@ -59,14 +60,25 @@ const Agoric = () => {
     clipboard: window.navigator.clipboard,
   });
 
-  const enableChunking = useMemo(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.has("enable-chunking");
-  }, []);
+  const chunkingState = useMemo(
+    () => parseEnableChunking(window.location.search),
+    [],
+  );
+
+  const warnedRef = useRef(false);
+  useEffect(() => {
+    if (chunkingState.kind !== "invalid" || warnedRef.current) return;
+    warnedRef.current = true;
+    toast.warn(
+      `Ignoring invalid enable-chunking value ${JSON.stringify(chunkingState.raw)}; ` +
+        `expected a positive integer byte count. Using the chain's chunk_size_limit_bytes instead.`,
+    );
+  }, [chunkingState]);
 
   const swingSetParams = useQuery(swingSetParamsQuery(api));
   const chunkSizeLimit = (({ isLoading, data }) => {
-    if (!enableChunking) return Infinity;
+    if (chunkingState.kind === "disabled") return Infinity;
+    if (chunkingState.kind === "override") return chunkingState.bytes;
     if (isLoading || !data) {
       return Infinity;
     }
@@ -147,7 +159,7 @@ const Agoric = () => {
         const txCount = chunkCount + 1;
         const txEn = pluralizeEn(txCount, "transaction", "transactions");
         const chunkEn = pluralizeEn(chunkCount, "chunk", "chunks");
-        const txSummary = `Submitting bundle in ${txCount} ${txEn} (1 manifest and ${chunkCount} ${chunkEn})`;
+        const txSummary = `Submitting bundle in ${txEn} (1 manifest and ${chunkEn})`;
         toast.info([txSummary, ...txInfo].join(", "));
       },
     });
