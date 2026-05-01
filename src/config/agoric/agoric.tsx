@@ -159,7 +159,7 @@ const Agoric = () => {
         const txCount = chunkCount + 1;
         const txEn = pluralizeEn(txCount, "transaction", "transactions");
         const chunkEn = pluralizeEn(chunkCount, "chunk", "chunks");
-        const txSummary = `Submitting bundle in ${txCount} ${txEn} (1 manifest and ${chunkCount} ${chunkEn})`;
+        const txSummary = `Submitting bundle in ${txEn} (1 manifest and ${chunkEn})`;
         toast.info([txSummary, ...txInfo].join(", "));
       },
     });
