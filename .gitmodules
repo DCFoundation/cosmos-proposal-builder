@@ -1,0 +1,3 @@
+[submodule "src/lib/chain-registry"]
+	path = src/lib/chain-registry
+	url = https://github.com/cosmos/chain-registry
