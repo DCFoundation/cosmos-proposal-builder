@@ -19,6 +19,8 @@ import type {
   TallyParams,
   DistributionParams,
   StakingParams,
+  GovV1Params,
+  GovV1ParamsQueryResponse,
 } from "../types/gov";
 
 export const swingSetParamsQuery = (
@@ -31,6 +33,37 @@ export const swingSetParamsQuery = (
     return data?.params;
   },
   enabled: !!api,
+});
+
+//
+// Example module account query result:
+// {
+//   account: {
+//     "@type": "/cosmos.auth.v1beta1.ModuleAccount",
+//     base_account: {
+//       address: "agoric10d07y265gmmuvt4z0w9aw880jnsr700jgl36x9",
+//       pub_key: null,
+//       account_number: "5",
+//       sequence: "0",
+//     },
+//     name: "gov",
+//     permissions: ["burner"],
+//   },
+// };
+export const moduleAccountQuery = (
+  api: string | undefined,
+  moduleName: string | null,
+): UseQueryOptions<string, unknown> => ({
+  queryKey: ["moduleAccount", api, moduleName],
+  queryFn: async (): Promise<string> => {
+    const res = await fetch(
+      `${api}/cosmos/auth/v1beta1/module_accounts/${moduleName}`,
+    );
+    const data: { account: { base_account: { address: string } } } =
+      await res.json();
+    return data?.account?.base_account?.address;
+  },
+  enabled: !!api && !!moduleName,
 });
 
 export const accountBalancesQuery = (
@@ -169,6 +202,18 @@ export const ibcDenomHashQuery = (
     );
     const data: DenomHashResponse = await res.json();
     return data?.hash?.length ? `ibc/${data.hash}` : "Denom hash not found.";
+  },
+  enabled: !!api,
+});
+
+export const govV1ParamsQuery = (
+  api: string | undefined,
+): UseQueryOptions<GovV1Params, unknown> => ({
+  queryKey: ["govV1Params", api],
+  queryFn: async (): Promise<GovV1Params> => {
+    const res = await fetch(`${api}/cosmos/gov/v1/params/`);
+    const data: GovV1ParamsQueryResponse = await res.json();
+    return data?.params;
   },
   enabled: !!api,
 });

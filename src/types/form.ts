@@ -36,3 +36,13 @@ export type ParameterChangeTypeDescriptor<
     values: FormValue[],
   ) => { subspace: string; key: string; value: string }[];
 };
+
+
+export type ParameterChangeTypeDescriptorV1<
+  T,
+  R extends FormValue[] | undefined,
+> = {
+  title: string;
+  description: string;
+  key: string;
+};

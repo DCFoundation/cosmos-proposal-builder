@@ -1,7 +1,7 @@
 import type { UseQueryResult } from "@tanstack/react-query";
 import type { SwingSetParams } from "../types/swingset";
 import type { Coin, BankBalances, DenomTrace } from "../types/bank";
-import { TallyParams, VotingParams, DepositParams } from "../types/gov";
+import { TallyParams, VotingParams, DepositParams, GovV1Params, GovV1ParamFormData, Duration } from "../types/gov";
 import { objectToArray } from "../utils/object";
 
 export type SelectorFn<T, R> = (
@@ -59,6 +59,8 @@ export const selectDepsoitParams = (
   return objectToArray(query.data);
 };
 
+// Remove duplicate - will use the one at the end
+
 /** filter bank assets, so only ibc/* assets are returned */
 export const selectIbcAssets = (
   query: UseQueryResult<BankBalances, unknown>,
@@ -76,4 +78,38 @@ export const selectSinglePathDenomTraces = (
     return !matches || matches.length === 1;
   }
   return query.data.filter(hasOnePath);
+};
+
+// Helper function to convert Duration to seconds string
+const durationToSeconds = (duration?: Duration): string => {
+  if (!duration?.seconds) return "0";
+  return duration.seconds.toString();
+};
+
+// Selector for Gov v1 parameters - converts API response to form data (ALL parameters from real chains)
+export const selectGovV1Params = (
+  query: UseQueryResult<GovV1Params, unknown>,
+): GovV1ParamFormData | undefined => {
+  if (!query?.data) return undefined;
+  
+  const params = query.data;
+  
+  // Use actual values from API, no arbitrary defaults - include ALL parameters that real chains return
+  return {
+    minDeposit: params.minDeposit,
+    maxDepositPeriod: durationToSeconds(params.maxDepositPeriod),
+    votingPeriod: durationToSeconds(params.votingPeriod),
+    quorum: params.quorum,
+    threshold: params.threshold,
+    vetoThreshold: params.vetoThreshold,  // Fix: use correct field
+    minInitialDepositRatio: params.minInitialDepositRatio,  // Fix: use correct field
+    min_deposit_ratio: params.min_deposit_ratio,
+    proposal_cancel_ratio: params.proposal_cancel_ratio,
+    expedited_min_deposit: params.expedited_min_deposit,
+    expedited_threshold: params.expedited_threshold,
+    expedited_voting_period: durationToSeconds(params.expedited_voting_period),
+    burnVoteQuorum: params.burnVoteQuorum,
+    burnProposalDepositPrevote: params.burnProposalDepositPrevote,
+    burnVoteVeto: params.burnVoteVeto,
+  };
 };

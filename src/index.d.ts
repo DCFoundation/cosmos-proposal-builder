@@ -23,7 +23,8 @@ declare global {
       | "parameterChangeProposal"
       | "addPSM"
       | "addVault"
-      | "communityPoolSpendProposal";
+      | "communityPoolSpendProposal"
+      | "govV1ParameterChange";
     paramType: string;
   }
 
